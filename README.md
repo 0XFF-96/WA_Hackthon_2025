@@ -24,6 +24,24 @@ Detailed PowerPoint presentation structure with:
 - Pre-presentation checklist
 - Common mistakes to avoid
 
+### 🖥️ [DEMO_PLAN.md](./DEMO_PLAN.md)
+Technical demo planning and execution guide with:
+- Demo strategy selection and story structure
+- Technical preparation and backup systems
+- Demo scenarios by product type
+- Risk management and recovery strategies
+- Team coordination for demos
+- Success metrics and evaluation
+
+### 📊 [MARKET_ANALYSIS.md](./MARKET_ANALYSIS.md)
+Framework for market research and validation featuring:
+- Market size analysis (TAM, SAM, SOM)
+- Customer segmentation and persona development
+- Competitive landscape analysis
+- Revenue model and pricing strategy
+- Go-to-market planning
+- Validation strategies and risk analysis
+
 ### 🎤 [SPEECH_NOTES.md](./SPEECH_NOTES.md)
 Comprehensive speech notes and talking points featuring:
 - Opening hooks and attention-grabbers
@@ -32,6 +50,30 @@ Comprehensive speech notes and talking points featuring:
 - Delivery techniques and body language tips
 - Team coordination strategies
 - Mental preparation and confidence building
+
+### 📋 [TEAM_CHECKLIST.md](./TEAM_CHECKLIST.md)
+Complete preparation checklist with:
+- Phase-by-phase preparation guide
+- Team coordination strategies
+- Success metrics and evaluation criteria
+- Common pitfalls to avoid
+- Post-presentation follow-up activities
+
+### 🎨 [VISUAL_TEMPLATES.md](./VISUAL_TEMPLATES.md)
+Design templates and guidelines including:
+- Slide layout templates
+- Color schemes and typography
+- Data visualization examples
+- Visual asset recommendations
+- File organization best practices
+
+### ❓ [FAQ.md](./FAQ.md)
+Frequently asked questions covering:
+- Content development guidance
+- Presentation delivery tips
+- Team coordination strategies
+- Technical implementation questions
+- Competition and business strategy advice
 
 ## 🎯 How to Use These Materials
 
