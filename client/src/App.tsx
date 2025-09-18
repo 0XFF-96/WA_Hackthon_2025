@@ -8,6 +8,8 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Home from "@/pages/Home";
 import Dashboard from "@/pages/Dashboard";
+import AgentChat from "@/pages/AgentChat";
+import WorkflowVisualization from "@/pages/WorkflowVisualization";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -72,10 +74,12 @@ function AppRoutes() {
       </Route>
       <Route path="/workflow">
         <DashboardLayout>
-          <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">Diagnosis Workflow</h1>
-            <p className="text-muted-foreground">Step-by-step diagnosis procedures</p>
-          </div>
+          <WorkflowVisualization />
+        </DashboardLayout>
+      </Route>
+      <Route path="/chat">
+        <DashboardLayout>
+          <AgentChat />
         </DashboardLayout>
       </Route>
       <Route path="/analytics">

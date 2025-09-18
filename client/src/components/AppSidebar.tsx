@@ -20,14 +20,16 @@ import {
   BarChart3, 
   Settings,
   Activity,
-  Stethoscope
+  Stethoscope,
+  MessageCircle,
+  GitBranch
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 const navigationItems = [
   {
     title: "Dashboard",
-    url: "/",
+    url: "/dashboard",
     icon: LayoutDashboard,
   },
   {
@@ -41,9 +43,14 @@ const navigationItems = [
     icon: Brain,
   },
   {
-    title: "Diagnosis Workflow",
+    title: "Agent Chat",
+    url: "/chat",
+    icon: MessageCircle,
+  },
+  {
+    title: "Workflow Graph",
     url: "/workflow",
-    icon: FileText,
+    icon: GitBranch,
   },
   {
     title: "Analytics",
