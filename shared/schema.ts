@@ -168,6 +168,27 @@ export const insertVitalsSchema = createInsertSchema(vitals).omit({
   createdAt: true,
 });
 
+// Form-friendly vitals schema with proper type coercion for numeric inputs
+export const insertVitalsFormSchema = insertVitalsSchema.extend({
+  recordedAt: z.coerce.date().optional(),
+  temperature: z.coerce.number().nullable().optional().transform(val => val?.toString() ?? null),
+  bloodPressureSystolic: z.coerce.number().nullable().optional(),
+  bloodPressureDiastolic: z.coerce.number().nullable().optional(),
+  heartRate: z.coerce.number().nullable().optional(),
+  respiratoryRate: z.coerce.number().nullable().optional(),
+  oxygenSaturation: z.coerce.number().nullable().optional(),
+  weight: z.coerce.number().nullable().optional().transform(val => val?.toString() ?? null),
+  height: z.coerce.number().nullable().optional().transform(val => val?.toString() ?? null),
+  painScale: z.coerce.number().nullable().optional(),
+  symptoms: z.array(z.object({
+    name: z.string(),
+    severity: z.string(),
+    duration: z.string().optional()
+  })).optional().default([]),
+  notes: z.string().optional().default(""),
+  recordedBy: z.string().optional().default("")
+});
+
 export const insertImagingSchema = createInsertSchema(imaging).omit({
   id: true,
   createdAt: true,
@@ -205,6 +226,7 @@ export type AiAgent = typeof aiAgents.$inferSelect;
 export type InsertAiAgent = z.infer<typeof insertAiAgentSchema>;
 export type Vitals = typeof vitals.$inferSelect;
 export type InsertVitals = z.infer<typeof insertVitalsSchema>;
+export type InsertVitalsForm = z.infer<typeof insertVitalsFormSchema>;
 export type Imaging = typeof imaging.$inferSelect;
 export type InsertImaging = z.infer<typeof insertImagingSchema>;
 export type Notes = typeof notes.$inferSelect;

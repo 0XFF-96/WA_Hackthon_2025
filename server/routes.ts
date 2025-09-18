@@ -157,12 +157,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id: caseId } = req.params;
       
-      // Validate vitals data
+      // Validate vitals data with caseId from params (ignore any body.caseId)
       const validationResult = insertVitalsSchema.omit({
         id: true,
         createdAt: true,
-        updatedAt: true,
-      }).safeParse({ ...req.body, caseId });
+      }).safeParse({ 
+        ...req.body, 
+        caseId, // Use caseId from URL params
+        recordedAt: req.body.recordedAt ? new Date(req.body.recordedAt) : new Date()
+      });
       
       if (!validationResult.success) {
         return res.status(400).json({ 

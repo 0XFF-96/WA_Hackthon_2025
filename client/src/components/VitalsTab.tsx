@@ -49,8 +49,8 @@ import {
   TrendingDown,
   Minus
 } from "lucide-react";
-import type { Vitals, InsertVitals } from "@shared/schema";
-import { insertVitalsSchema } from "@shared/schema";
+import type { Vitals, InsertVitals, InsertVitalsForm } from "@shared/schema";
+import { insertVitalsFormSchema } from "@shared/schema";
 
 interface VitalsTabProps {
   caseId: string;
@@ -79,8 +79,8 @@ export function VitalsTab({ caseId }: VitalsTabProps) {
   const { toast } = useToast();
 
   // Form for adding new vitals
-  const form = useForm<InsertVitals>({
-    resolver: zodResolver(insertVitalsSchema),
+  const form = useForm<InsertVitalsForm>({
+    resolver: zodResolver(insertVitalsFormSchema),
     defaultValues: {
       caseId,
       recordedAt: new Date(),
@@ -101,22 +101,37 @@ export function VitalsTab({ caseId }: VitalsTabProps) {
 
   // Fetch vitals for this case
   const { data: vitals = [], isLoading, error } = useQuery<Vitals[]>({
-    queryKey: ['/api/vitals', caseId],
+    queryKey: [`/api/vitals?caseId=${caseId}`],
     staleTime: 30000
   });
 
   // Add vitals mutation
   const addVitalsMutation = useMutation({
-    mutationFn: async (vitalsData: InsertVitals) => 
-      apiRequest(`/api/cases/${caseId}/vitals`, 'POST', vitalsData),
+    mutationFn: async (vitalsData: InsertVitalsForm) => 
+      apiRequest('POST', `/api/cases/${caseId}/vitals`, vitalsData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/vitals', caseId] });
+      queryClient.invalidateQueries({ queryKey: [`/api/vitals?caseId=${caseId}`] });
       toast({
         title: "Vitals recorded successfully",
         description: "New vital signs have been added to the patient record.",
       });
       setIsAddVitalsOpen(false);
-      form.reset();
+      form.reset({
+        caseId,
+        recordedAt: new Date(),
+        temperature: null,
+        bloodPressureSystolic: null,
+        bloodPressureDiastolic: null,
+        heartRate: null,
+        respiratoryRate: null,
+        oxygenSaturation: null,
+        weight: null,
+        height: null,
+        painScale: null,
+        symptoms: [],
+        notes: "",
+        recordedBy: ""
+      });
       setSymptoms([]);
     },
     onError: (error: any) => {
@@ -128,7 +143,7 @@ export function VitalsTab({ caseId }: VitalsTabProps) {
     },
   });
 
-  const handleAddVitals = (data: InsertVitals) => {
+  const handleAddVitals = (data: InsertVitalsForm) => {
     // Add symptoms to the data
     const vitalsWithSymptoms = { ...data, symptoms };
     addVitalsMutation.mutate(vitalsWithSymptoms);
@@ -217,7 +232,7 @@ export function VitalsTab({ caseId }: VitalsTabProps) {
         <Button 
           variant="outline" 
           className="mt-4" 
-          onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/vitals', caseId] })}
+          onClick={() => queryClient.invalidateQueries({ queryKey: [`/api/vitals?caseId=${caseId}`] })}
         >
           Try Again
         </Button>
