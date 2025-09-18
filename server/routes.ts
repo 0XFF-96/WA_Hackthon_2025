@@ -24,6 +24,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI case analysis endpoint
+  app.post("/api/ai/analyze-case", async (req, res) => {
+    try {
+      const { query, patientContext } = req.body;
+      
+      if (!query) {
+        return res.status(400).json({ error: "Query is required" });
+      }
+
+      const responses = await aiService.generateMultiAgentResponse(query, patientContext);
+      res.json(responses);
+    } catch (error) {
+      console.error('AI case analysis error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      res.status(500).json({ error: errorMessage });
+    }
+  });
+
   // Medical image analysis endpoint
   app.post("/api/analyze-image", async (req, res) => {
     try {

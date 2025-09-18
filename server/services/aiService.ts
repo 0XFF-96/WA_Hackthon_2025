@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 
-// the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
+// Using GPT-4o as the model for AI analysis
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 interface AgentResponse {
@@ -22,13 +22,15 @@ export class AIService {
     }
   ): Promise<AgentResponse[]> {
     try {
+      console.log('Starting multi-agent analysis...', { userQuery, patientContext });
       const contextPrompt = patientContext 
         ? `Patient: ${patientContext.name}, Age: ${patientContext.age}, Symptoms: ${patientContext.symptoms}${patientContext.medicalHistory ? `, Medical History: ${patientContext.medicalHistory}` : ''}`
         : '';
 
       // Orchestrator response
+      console.log('Calling Orchestrator AI...');
       const orchestratorResponse = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: "gpt-4o",
         messages: [
           {
             role: "system",
@@ -42,9 +44,12 @@ export class AIService {
         response_format: { type: "json_object" }
       });
 
+      console.log('Orchestrator response received');
+
       // Diagnostician response
+      console.log('Calling Diagnostician AI...');
       const diagnosticianResponse = await openai.chat.completions.create({
-        model: "gpt-5", 
+        model: "gpt-4o", 
         messages: [
           {
             role: "system",
@@ -58,9 +63,12 @@ export class AIService {
         response_format: { type: "json_object" }
       });
 
+      console.log('Diagnostician response received');
+
       // Radiologist response
+      console.log('Calling Radiologist AI...');
       const radiologistResponse = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: "gpt-4o",
         messages: [
           {
             role: "system", 
@@ -74,9 +82,12 @@ export class AIService {
         response_format: { type: "json_object" }
       });
 
+      console.log('Radiologist response received');
+
       // Treatment planner response
+      console.log('Calling Treatment Planner AI...');
       const treatmentResponse = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: "gpt-4o",
         messages: [
           {
             role: "system",
@@ -113,6 +124,7 @@ export class AIService {
         }
       ];
 
+      console.log('All AI responses received, returning results:', responses);
       return responses;
     } catch (error) {
       console.error('AI Service Error:', error);
@@ -128,7 +140,7 @@ export class AIService {
   }> {
     try {
       const response = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: "gpt-4o",
         messages: [
           {
             role: "system",

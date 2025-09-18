@@ -25,6 +25,7 @@ import {
 import { Link } from "wouter";
 import type { CaseWithDetails } from "@shared/schema";
 import { VitalsTab } from "@/components/VitalsTab";
+import { AICaseAnalysis } from "@/components/AICaseAnalysis";
 
 export default function CaseDetail() {
   const [match, params] = useRoute("/cases/:id");
@@ -254,10 +255,12 @@ export default function CaseDetail() {
                   <div className="pt-2 border-t">
                     <p className="font-medium text-xs text-muted-foreground mb-1">Emergency Contact</p>
                     <p className="text-sm">
-                      {(caseData.patient.emergencyContact as any).name} ({(caseData.patient.emergencyContact as any).relationship})
+                      {typeof caseData.patient.emergencyContact === 'object' && caseData.patient.emergencyContact && 'name' in caseData.patient.emergencyContact ? 
+                        `${(caseData.patient.emergencyContact as any).name} (${(caseData.patient.emergencyContact as any).relationship})` : 'N/A'}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {(caseData.patient.emergencyContact as any).phone}
+                      {typeof caseData.patient.emergencyContact === 'object' && caseData.patient.emergencyContact && 'phone' in caseData.patient.emergencyContact ? 
+                        (caseData.patient.emergencyContact as any).phone : 'N/A'}
                     </p>
                   </div>
                 )}
@@ -285,7 +288,7 @@ export default function CaseDetail() {
                     </p>
                     <ul className="text-muted-foreground space-y-1">
                       {caseData.patient.medications.map((med, idx) => (
-                        <li key={idx}>• {med}</li>
+                        <li key={idx}>• {typeof med === 'string' ? med : String(med)}</li>
                       ))}
                     </ul>
                   </div>
@@ -337,7 +340,7 @@ export default function CaseDetail() {
                       <p className="font-medium mb-1">Risk Factors:</p>
                       <ul className="space-y-1">
                         {assessment.factors.map((factor, idx) => (
-                          <li key={idx}>• {factor}</li>
+                          <li key={idx}>• {typeof factor === 'string' ? factor : String(factor)}</li>
                         ))}
                       </ul>
                     </div>
@@ -353,7 +356,7 @@ export default function CaseDetail() {
       <Card data-testid="card-case-tabs">
         <CardContent className="pt-6">
           <Tabs defaultValue="vitals" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="vitals" data-testid="tab-vitals">
                 <Activity className="w-4 h-4 mr-2" />
                 Vitals & Symptoms
@@ -369,6 +372,10 @@ export default function CaseDetail() {
               <TabsTrigger value="orders" data-testid="tab-orders">
                 <ClipboardList className="w-4 h-4 mr-2" />
                 Orders
+              </TabsTrigger>
+              <TabsTrigger value="ai-analysis" data-testid="tab-ai-analysis">
+                <Brain className="w-4 h-4 mr-2" />
+                AI Analysis
               </TabsTrigger>
             </TabsList>
 
@@ -404,6 +411,10 @@ export default function CaseDetail() {
                   {caseData.orders?.length || 0} medical orders available
                 </p>
               </div>
+            </TabsContent>
+
+            <TabsContent value="ai-analysis" className="mt-6">
+              <AICaseAnalysis caseData={caseData} />
             </TabsContent>
           </Tabs>
         </CardContent>
