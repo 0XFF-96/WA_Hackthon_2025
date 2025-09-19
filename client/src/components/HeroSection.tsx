@@ -1,16 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Brain, Activity, Users, Zap } from "lucide-react";
+import { ArrowRight, Brain, Activity, Users, Zap, Workflow } from "lucide-react";
 import heroImage from '@assets/generated_images/Medical_AI_diagnostic_interface_b11401a9.png';
 import dashboardImage from '@assets/generated_images/Healthcare_dashboard_interface_tablet_e70c1368.png';
 
 interface HeroSectionProps {
   onGetStarted: () => void;
   onLearnMore: () => void;
+  onStartAssessment: () => void;
+  onStartMonitoring: () => void;
+  onWorkflowManagement: () => void;
 }
 
-export function HeroSection({ onGetStarted, onLearnMore }: HeroSectionProps) {
+export function HeroSection({ onGetStarted, onLearnMore, onStartAssessment, onStartMonitoring, onWorkflowManagement }: HeroSectionProps) {
   //todo: remove mock functionality
   const stats = [
     { icon: Brain, label: "AI Accuracy", value: "96.5%", color: "text-primary" },
@@ -79,6 +82,35 @@ export function HeroSection({ onGetStarted, onLearnMore }: HeroSectionProps) {
                   >
                     Start Diagnosis Demo
                     <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                  <Button 
+                    size="lg"
+                    variant="outline"
+                    onClick={onStartAssessment}
+                    className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+                    data-testid="button-start-assessment"
+                  >
+                    Check Your Bone Health
+                  </Button>
+                  <Button 
+                    size="lg"
+                    variant="outline"
+                    onClick={onStartMonitoring}
+                    className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+                    data-testid="button-start-monitoring"
+                  >
+                    <Activity className="w-4 h-4 mr-2" />
+                    Health Monitoring
+                  </Button>
+                  <Button 
+                    size="lg"
+                    variant="outline"
+                    onClick={onWorkflowManagement}
+                    className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+                    data-testid="button-workflow-management"
+                  >
+                    <Workflow className="w-4 h-4 mr-2" />
+                    Workflow Management
                   </Button>
                   <Button 
                     size="lg"
