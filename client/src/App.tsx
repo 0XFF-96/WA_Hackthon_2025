@@ -9,9 +9,13 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import Home from "@/pages/Home";
 import Dashboard from "@/pages/Dashboard";
 import AgentChat from "@/pages/AgentChat";
+import AIAgents from "@/pages/AIAgents";
+import Analytics from "@/pages/Analytics";
 import WorkflowVisualization from "@/pages/WorkflowVisualization";
 import CaseManagement from "@/pages/CaseManagement";
 import CaseDetail from "@/pages/CaseDetail";
+import Monitoring from "@/pages/Monitoring";
+import WorkflowManagement from "@/pages/WorkflowManagement";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -53,6 +57,8 @@ function AppRoutes() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/monitoring" component={Monitoring} />
+      <Route path="/workflow" component={WorkflowManagement} />
       <Route path="/dashboard">
         <DashboardLayout>
           <Dashboard />
@@ -70,10 +76,7 @@ function AppRoutes() {
       </Route>
       <Route path="/agents">
         <DashboardLayout>
-          <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">AI Agents</h1>
-            <p className="text-muted-foreground">Monitor AI agent performance and status</p>
-          </div>
+          <AIAgents />
         </DashboardLayout>
       </Route>
       <Route path="/workflow">
@@ -88,10 +91,7 @@ function AppRoutes() {
       </Route>
       <Route path="/analytics">
         <DashboardLayout>
-          <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">Analytics</h1>
-            <p className="text-muted-foreground">System performance and diagnostic analytics</p>
-          </div>
+          <Analytics />
         </DashboardLayout>
       </Route>
       <Route path="/system">

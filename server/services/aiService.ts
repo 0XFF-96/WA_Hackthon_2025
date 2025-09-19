@@ -1,7 +1,10 @@
 import OpenAI from "openai";
 
 // Using GPT-4o as the model for AI analysis
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Fallback to mock responses if no API key is provided
+const openai = process.env.OPENAI_API_KEY 
+  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  : null;
 
 interface AgentResponse {
   agentType: 'orchestrator' | 'diagnostician' | 'radiologist' | 'treatment_planner';
@@ -12,6 +15,40 @@ interface AgentResponse {
 }
 
 export class AIService {
+  // Mock responses for when OpenAI API is not available
+  private getMockResponses(userQuery: string, patientContext?: any): AgentResponse[] {
+    return [
+      {
+        agentType: 'orchestrator',
+        agentName: 'HealthAI Orchestrator',
+        content: `Analyzing your query: "${userQuery}". Coordinating with specialist agents for comprehensive analysis...`,
+        confidence: 95,
+        reasoning: 'Mock orchestrator response for demonstration'
+      },
+      {
+        agentType: 'diagnostician',
+        agentName: 'Dr. Neural',
+        content: `Based on the patient symptoms and available data, I'm analyzing potential micro-fracture patterns. The clinical presentation suggests stress-related bone changes in the affected area. I recommend considering the patient's age, activity level, and pain characteristics for differential diagnosis.`,
+        confidence: 87,
+        reasoning: 'Mock diagnostic analysis for demonstration'
+      },
+      {
+        agentType: 'radiologist',
+        agentName: 'RadiologyAI',
+        content: `Imaging analysis reveals subtle density changes consistent with early-stage micro-fracture development. Bone architecture shows minor disruption patterns. I recommend X-ray as initial imaging, with MRI if X-ray is negative but clinical suspicion remains high.`,
+        confidence: 91,
+        reasoning: 'Mock radiological analysis for demonstration'
+      },
+      {
+        agentType: 'treatment_planner',
+        agentName: 'TreatmentBot',
+        content: `Treatment recommendations: 1) Immediate load reduction and rest protocol for 4-6 weeks, 2) Anti-inflammatory management with NSAIDs, 3) Physical therapy consultation for gradual return to activity, 4) Follow-up imaging in 2-3 weeks. Consider calcium and vitamin D supplementation based on patient history.`,
+        confidence: 93,
+        reasoning: 'Mock treatment planning for demonstration'
+      }
+    ];
+  }
+
   async generateMultiAgentResponse(
     userQuery: string, 
     patientContext?: {
@@ -21,6 +58,12 @@ export class AIService {
       medicalHistory?: string;
     }
   ): Promise<AgentResponse[]> {
+    
+    // If no OpenAI API key, return mock responses
+    if (!openai) {
+      console.log('OpenAI API key not found, using mock responses');
+      return this.getMockResponses(userQuery, patientContext);
+    }
     try {
       console.log('Starting multi-agent analysis...', { userQuery, patientContext });
       const contextPrompt = patientContext 
