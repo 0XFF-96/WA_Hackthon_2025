@@ -1,0 +1,120 @@
+---
+globs: **/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx
+description: Testing standards and best practices for the healthcare AI platform
+---
+
+# Testing Standards
+
+## Testing Philosophy
+Given the critical nature of medical applications, testing must be comprehensive and reliable to ensure patient safety and data integrity.
+
+## Test Types
+
+### Unit Tests
+- Test individual components and functions
+- Focus on medical logic and calculations
+- Test AI agent responses and medical algorithms
+- Validate medical data transformations
+
+### Integration Tests
+- Test API endpoints with medical data
+- Test database operations with medical records
+- Test AI service integration
+- Test workflow progression and status updates
+
+### Medical-Specific Tests
+- Test medical calculation accuracy
+- Test risk assessment algorithms
+- Test AI medical analysis responses
+- Test patient data validation
+
+## Testing Patterns
+
+### Medical Data Testing
+```typescript
+// Good: Medical data validation test
+describe('Patient Assessment', () => {
+  it('should calculate osteoporosis risk correctly', () => {
+    const assessmentData: AssessmentData = {
+      ageGroup: 'over-70',
+      osteoporosisHistory: true,
+      previousFractures: true,
+      // ... other fields
+    };
+    
+    const result = calculateRiskAssessment(assessmentData);
+    expect(result.riskLevel).toBe('high');
+    expect(result.score).toBeGreaterThan(50);
+  });
+});
+```
+
+### AI Agent Testing
+```typescript
+// Good: AI agent response testing
+describe('AI Service', () => {
+  it('should generate appropriate medical responses', async () => {
+    const mockQuery = 'Patient presents with hip pain after fall';
+    const mockContext = {
+      name: 'John Doe',
+      age: 75,
+      symptoms: 'Hip pain, difficulty walking'
+    };
+    
+    const responses = await aiService.generateMultiAgentResponse(mockQuery, mockContext);
+    
+    expect(responses).toHaveLength(4); // All agents respond
+    expect(responses[0].agentType).toBe('orchestrator');
+    expect(responses[1].agentType).toBe('diagnostician');
+    // ... validate other agents
+  });
+});
+```
+
+## Test Data Management
+- Use realistic medical test data
+- Ensure test data privacy compliance
+- Use consistent test data across tests
+- Mock external medical services appropriately
+
+## Medical Workflow Testing
+- Test assessment workflow progression
+- Test monitoring data collection
+- Test AI workflow recommendations
+- Test patient communication workflows
+
+## Error Handling Tests
+- Test medical data validation errors
+- Test AI service failures
+- Test database connection issues
+- Test network failures during medical operations
+
+## Accessibility Testing
+- Test keyboard navigation for medical interfaces
+- Test screen reader compatibility
+- Test high contrast mode
+- Test medical data accessibility
+
+## Performance Testing
+- Test AI response times
+- Test database query performance
+- Test large medical dataset handling
+- Test concurrent user scenarios
+
+## Security Testing
+- Test patient data privacy
+- Test authentication and authorization
+- Test medical data encryption
+- Test HIPAA compliance
+
+## Test Organization
+- Group tests by medical domain
+- Use descriptive test names
+- Test both positive and negative cases
+- Include edge cases for medical data
+
+## Continuous Integration
+- Run tests on every commit
+- Include medical data validation in CI
+- Test AI service integration in CI
+- Validate medical calculations in CI

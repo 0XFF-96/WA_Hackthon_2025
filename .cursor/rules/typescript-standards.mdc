@@ -1,0 +1,56 @@
+---
+globs: *.ts,*.tsx
+description: TypeScript coding standards and best practices
+---
+
+# TypeScript Standards
+
+## Type Safety
+- Always use strict TypeScript configuration as defined in [tsconfig.json](mdc:tsconfig.json)
+- Prefer explicit types over `any`
+- Use proper type guards and type assertions
+- Leverage Zod schemas for runtime validation
+
+## Import/Export Patterns
+- Use absolute imports with `@/` prefix for client code
+- Use `@shared/` prefix for shared utilities
+- Prefer named exports over default exports for better tree-shaking
+- Group imports: external libraries, internal modules, relative imports
+
+## Interface Design
+- Use PascalCase for interfaces and types
+- Prefix interfaces with `I` only when necessary for disambiguation
+- Use descriptive names that reflect medical domain concepts
+- Group related interfaces in the same file
+
+## Component Patterns
+- Use functional components with TypeScript
+- Define props interfaces inline or in separate files
+- Use proper generic types for reusable components
+- Implement proper error boundaries and loading states
+
+## Medical Data Types
+- Use specific medical terminology in type names
+- Implement proper validation for medical data
+- Use enums for medical status values
+- Follow healthcare data standards for patient information
+
+## Example Structure
+```typescript
+// Good: Specific medical interface
+interface PatientAssessment {
+  patientId: string;
+  assessmentDate: Date;
+  riskFactors: OsteoporosisRiskFactor[];
+  mtfSuspected: boolean;
+  confidence: number;
+}
+
+// Good: Proper enum for medical status
+enum FractureType {
+  VERTEBRAL = 'vertebral',
+  HIP = 'hip',
+  WRIST = 'wrist',
+  OTHER = 'other'
+}
+```

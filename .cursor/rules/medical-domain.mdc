@@ -1,0 +1,122 @@
+---
+description: Medical domain knowledge and terminology guidelines
+---
+
+# Medical Domain Guidelines
+
+## Medical Terminology
+This platform focuses on minimal trauma fracture (MTF) detection and osteoporosis risk management. Use proper medical terminology and follow clinical standards.
+
+## Key Medical Concepts
+
+### Minimal Trauma Fractures (MTF)
+- Fractures caused by falls from standing height or lower
+- Important warning signs for osteoporosis
+- Require immediate specialist attention
+- High risk of subsequent fractures
+
+### Osteoporosis Risk Factors
+- Age (especially >70 years)
+- Previous fractures
+- Family history of osteoporosis
+- Low calcium intake
+- Smoking
+- Sedentary lifestyle
+- Certain medications
+
+### Medical Assessment Workflow
+1. **Symptom Evaluation**: Pain location, severity, duration
+2. **Functional Assessment**: Mobility, daily activities
+3. **Risk Factor Analysis**: Medical history, lifestyle factors
+4. **Clinical Decision Making**: AI-assisted diagnosis and treatment planning
+
+## Medical Data Standards
+
+### Patient Information
+- Use proper medical record formats
+- Implement HIPAA compliance
+- Ensure data privacy and security
+- Use standardized medical terminology
+
+### Clinical Measurements
+- Use appropriate units for medical measurements
+- Implement proper validation for medical values
+- Use clinical reference ranges
+- Follow medical data standards
+
+### Medical Imaging
+- Support standard medical imaging formats
+- Implement proper image analysis workflows
+- Use appropriate medical imaging terminology
+- Ensure image quality and resolution standards
+
+## AI Medical Analysis
+
+### Diagnostic Accuracy
+- Implement evidence-based medical criteria
+- Use proper clinical decision support
+- Ensure AI recommendations are clinically appropriate
+- Provide confidence levels for medical assessments
+
+### Medical Safety
+- Implement proper medical disclaimers
+- Ensure AI recommendations are safe
+- Provide appropriate medical warnings
+- Follow medical AI safety guidelines
+
+## Medical Workflow Integration
+
+### Healthcare Provider Workflow
+- Integrate with existing medical systems
+- Support clinical decision making
+- Provide appropriate medical alerts
+- Ensure workflow efficiency
+
+### Patient Communication
+- Use clear, medical-appropriate language
+- Provide patient education materials
+- Ensure accessibility for elderly patients
+- Support multiple communication channels
+
+## Medical Compliance
+
+### Regulatory Requirements
+- Follow HIPAA compliance guidelines
+- Implement proper medical data security
+- Ensure patient privacy protection
+- Follow medical device regulations
+
+### Clinical Standards
+- Use evidence-based medical practices
+- Follow clinical guidelines for osteoporosis
+- Implement proper medical documentation
+- Ensure clinical quality standards
+
+## Medical Error Prevention
+- Implement proper medical data validation
+- Use appropriate medical terminology
+- Ensure clinical accuracy in AI responses
+- Provide proper medical disclaimers
+
+## Example Medical Implementation
+```typescript
+// Good: Medical assessment with proper terminology
+interface OsteoporosisRiskAssessment {
+  patientId: string;
+  assessmentDate: Date;
+  riskFactors: {
+    age: number;
+    previousFractures: boolean;
+    familyHistory: boolean;
+    smoking: boolean;
+    lowCalciumIntake: boolean;
+  };
+  mtfSuspected: boolean;
+  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+  recommendations: {
+    immediate: string[];
+    followUp: string[];
+    prevention: string[];
+  };
+}
+```

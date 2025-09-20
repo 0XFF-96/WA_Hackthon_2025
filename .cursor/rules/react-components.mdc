@@ -1,0 +1,66 @@
+---
+globs: client/src/components/**/*.tsx,client/src/pages/**/*.tsx
+description: React component development guidelines
+---
+
+# React Component Guidelines
+
+## Component Structure
+- Use functional components with hooks
+- Follow the single responsibility principle
+- Keep components focused on specific medical workflows
+- Use proper TypeScript interfaces for props
+
+## File Organization
+- One component per file
+- Co-locate related components in feature directories
+- Use index files for clean exports
+- Follow the pattern: `ComponentName.tsx`
+
+## Component Naming
+- Use PascalCase for component names
+- Use descriptive names that reflect medical functionality
+- Prefix with domain when needed (e.g., `MTFDetection`, `PatientAssessment`)
+
+## Props and State
+- Define clear prop interfaces
+- Use proper default values
+- Implement proper state management patterns
+- Use React Query for server state
+
+## Medical UI Components
+- Follow healthcare design guidelines from [design_guidelines.md](mdc:design_guidelines.md)
+- Use Radix UI components as base
+- Implement proper accessibility for medical interfaces
+- Use medical-appropriate color schemes and typography
+
+## Component Examples
+```typescript
+// Good: Medical component with proper typing
+interface PatientCardProps {
+  patient: Patient;
+  onSelect: (patientId: string) => void;
+  showRiskLevel?: boolean;
+}
+
+export function PatientCard({ patient, onSelect, showRiskLevel = false }: PatientCardProps) {
+  // Component implementation
+}
+
+// Good: Feature-specific component organization
+// client/src/components/assessment/AssessmentLanding.tsx
+// client/src/components/monitoring/MonitoringDashboard.tsx
+// client/src/components/workflow/WorkflowVisualization.tsx
+```
+
+## State Management
+- Use React Query for server state
+- Use local state for UI interactions
+- Implement proper loading and error states
+- Use custom hooks for complex logic
+
+## Accessibility
+- Implement proper ARIA labels for medical data
+- Ensure keyboard navigation works
+- Use proper semantic HTML elements
+- Follow WCAG 2.1 AA guidelines for medical interfaces

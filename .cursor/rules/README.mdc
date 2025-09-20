@@ -1,0 +1,90 @@
+---
+alwaysApply: true
+description: Overview of all Cursor rules for the healthcare AI platform
+---
+
+# Healthcare AI Platform - Cursor Rules Overview
+
+This healthcare AI platform focuses on minimal trauma fracture (MTF) detection and osteoporosis risk management. The following rules guide development across the entire codebase.
+
+## Rule Categories
+
+### 🏗️ **Project Structure** ([project-structure.mdc](mdc:.cursor/rules/project-structure.mdc))
+- Full-stack TypeScript architecture (React + Express)
+- Multi-agent AI system for medical diagnosis
+- Healthcare-specific design system and accessibility
+- Organized component structure by medical domain
+
+### 💻 **TypeScript Standards** ([typescript-standards.mdc](mdc:.cursor/rules/typescript-standards.mdc))
+- Strict type safety with medical domain types
+- Proper import/export patterns with `@/` and `@shared/` prefixes
+- Medical-specific interfaces and enums
+- Zod schemas for runtime validation
+
+### ⚛️ **React Components** ([react-components.mdc](mdc:.cursor/rules/react-components.mdc))
+- Functional components with proper TypeScript
+- Medical UI components following healthcare design guidelines
+- Accessibility compliance for medical interfaces
+- Feature-based component organization
+
+### 🤖 **AI Agents** ([ai-agents.mdc](mdc:.cursor/rules/ai-agents.mdc))
+- Multi-agent system: Orchestrator, Diagnostician, RadiologyAI, TreatmentBot, Rubric Evaluator
+- Medical AI integration with OpenAI GPT-4o
+- Clinical rubric evaluation system
+- Proper medical context and safety
+
+### 🏥 **Healthcare Design** ([healthcare-design.mdc](mdc:.cursor/rules/healthcare-design.mdc))
+- Professional medical interface standards
+- Healthcare color palette and typography
+- WCAG 2.1 AA accessibility compliance
+- Medical-appropriate UI components and layouts
+
+### 🗄️ **Database Schema** ([database-schema.mdc](mdc:.cursor/rules/database-schema.mdc))
+- Drizzle ORM with Zod validation
+- Medical entities: Patients, Cases, Vitals, Imaging, AI Agents
+- HIPAA compliance and data privacy
+- Type-safe database operations
+
+### 🔄 **Medical Workflows** ([medical-workflows.mdc](mdc:.cursor/rules/medical-workflows.mdc))
+- Patient assessment workflow (symptoms, risk factors, recent events)
+- Monitoring and vital signs tracking
+- AI-assisted diagnosis and treatment planning
+- Patient communication and education
+
+### 🌐 **API Development** ([api-development.mdc](mdc:.cursor/rules/api-development.mdc))
+- RESTful API with Express.js
+- Medical data validation and error handling
+- AI service integration with proper fallbacks
+- Security and HIPAA compliance
+
+### 🧪 **Testing Standards** ([testing-standards.mdc](mdc:.cursor/rules/testing-standards.mdc))
+- Comprehensive testing for medical applications
+- Medical data validation and AI response testing
+- Accessibility and security testing
+- Performance testing for medical workflows
+
+### 🏥 **Medical Domain** ([medical-domain.mdc](mdc:.cursor/rules/medical-domain.mdc))
+- Minimal trauma fracture (MTF) detection
+- Osteoporosis risk assessment
+- Medical terminology and clinical standards
+- HIPAA compliance and patient safety
+
+## Key Files to Reference
+
+- **Design Guidelines**: [design_guidelines.md](mdc:design_guidelines.md)
+- **TypeScript Config**: [tsconfig.json](mdc:tsconfig.json)
+- **Package Config**: [package.json](mdc:package.json)
+- **Database Schema**: [shared/schema.ts](mdc:shared/schema.ts)
+- **AI Service**: [server/services/aiService.ts](mdc:server/services/aiService.ts)
+- **Agent Types**: [client/src/types/agentChat.ts](mdc:client/src/types/agentChat.ts)
+
+## Development Workflow
+
+1. **Medical Domain First**: Always consider medical accuracy and patient safety
+2. **Type Safety**: Use strict TypeScript with proper medical types
+3. **Accessibility**: Ensure WCAG 2.1 AA compliance for medical interfaces
+4. **AI Integration**: Implement proper medical context and safety measures
+5. **Testing**: Comprehensive testing for medical applications
+6. **Documentation**: Clear medical terminology and clinical standards
+
+This platform serves healthcare professionals in detecting and managing minimal trauma fractures, with a focus on osteoporosis prevention and patient safety.

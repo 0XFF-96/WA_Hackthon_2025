@@ -1,0 +1,45 @@
+---
+alwaysApply: true
+description: Project structure and architecture guidelines for the healthcare AI platform
+---
+
+# Healthcare AI Platform - Project Structure
+
+This is a healthcare AI platform focused on minimal trauma fracture (MTF) detection and osteoporosis risk management. The project follows a full-stack TypeScript architecture with React frontend and Express backend.
+
+## Project Architecture
+
+### Frontend (client/)
+- **Framework**: React 18 + TypeScript + Vite
+- **UI Library**: Radix UI + Tailwind CSS
+- **Routing**: Wouter
+- **State Management**: React Query (TanStack Query)
+- **Styling**: Tailwind CSS with custom healthcare design system
+
+### Backend (server/)
+- **Runtime**: Node.js + Express + TypeScript
+- **Database**: PostgreSQL with Drizzle ORM
+- **AI Integration**: OpenAI GPT-4o for multi-agent medical analysis
+- **Authentication**: Express sessions with Passport.js
+
+### Shared (shared/)
+- **Schema**: Zod schemas for type-safe data validation
+- **Types**: Shared TypeScript interfaces
+
+## Key Directories
+
+- `client/src/components/` - React components organized by feature
+- `client/src/pages/` - Route components
+- `client/src/types/` - TypeScript type definitions
+- `client/src/hooks/` - Custom React hooks
+- `client/src/lib/` - Utility functions and configurations
+- `server/services/` - Business logic and AI services
+- `shared/` - Shared schemas and types
+
+## Design System
+
+Follow the healthcare design guidelines in [design_guidelines.md](mdc:design_guidelines.md) which emphasizes:
+- Professional medical interface standards
+- WCAG 2.1 AA accessibility compliance
+- Healthcare-specific color palette and typography
+- Material Design principles adapted for medical use
