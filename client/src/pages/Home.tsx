@@ -33,6 +33,13 @@ export default function Home() {
     navigate('/workflow');
   };
 
+  // 新增：MTF检测处理函数
+  const handleMTFDetection = () => {
+    console.log('MTF Detection clicked - navigating to enhanced dashboard');
+    // 直接导航到Dashboard并切换到MTF Detection标签页
+    navigate('/dashboard?tab=mtf-detection');
+  };
+
   return (
     <div data-testid="page-home">
       <HeroSection 
@@ -41,6 +48,7 @@ export default function Home() {
         onStartAssessment={handleStartAssessment}
         onStartMonitoring={handleStartMonitoring}
         onWorkflowManagement={handleWorkflowManagement}
+        onMTFDetection={handleMTFDetection}
       />
       
       {showAssessment && (

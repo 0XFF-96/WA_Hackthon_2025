@@ -43,7 +43,7 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
   const [importedFiles, setImportedFiles] = useState<ImportedFile[]>([]);
   const [processingProgress, setProcessingProgress] = useState(0);
 
-  // 手动输入表单状态
+  // Manual input form state
   const [manualForm, setManualForm] = useState({
     patientId: '',
     patientName: '',
@@ -56,14 +56,14 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
     reportDate: new Date().toISOString().split('T')[0]
   });
 
-  // 处理手动输入提交
+  // Handle manual input submission
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
     setProcessingProgress(0);
 
     try {
-      // 模拟处理进度
+      // Simulate processing progress
       for (let i = 0; i <= 100; i += 10) {
         setProcessingProgress(i);
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -246,47 +246,47 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Scan className="h-5 w-5" />
-            报告导入中心
+            Report Import Center
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)}>
             <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="manual">手动输入</TabsTrigger>
-              <TabsTrigger value="file">文件上传</TabsTrigger>
-              <TabsTrigger value="integration">系统集成</TabsTrigger>
-              <TabsTrigger value="email">邮件导入</TabsTrigger>
+              <TabsTrigger value="manual">Manual Input</TabsTrigger>
+              <TabsTrigger value="file">File Upload</TabsTrigger>
+              <TabsTrigger value="integration">System Integration</TabsTrigger>
+              <TabsTrigger value="email">Email Import</TabsTrigger>
             </TabsList>
 
-            {/* 手动输入 */}
+            {/* Manual Input */}
             <TabsContent value="manual" className="space-y-4">
               <form onSubmit={handleManualSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">患者ID *</label>
+                    <label className="block text-sm font-medium mb-2">Patient ID *</label>
                     <Input
                       value={manualForm.patientId}
                       onChange={(e) => setManualForm({...manualForm, patientId: e.target.value})}
-                      placeholder="输入患者ID"
+                      placeholder="Enter patient ID"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">患者姓名 *</label>
+                    <label className="block text-sm font-medium mb-2">Patient Name *</label>
                     <Input
                       value={manualForm.patientName}
                       onChange={(e) => setManualForm({...manualForm, patientName: e.target.value})}
-                      placeholder="输入患者姓名"
+                      placeholder="Enter patient name"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">年龄 *</label>
+                    <label className="block text-sm font-medium mb-2">Age *</label>
                     <Input
                       type="number"
                       value={manualForm.age}
                       onChange={(e) => setManualForm({...manualForm, age: e.target.value})}
-                      placeholder="输入年龄"
+                      placeholder="Enter age"
                       min="0"
                       max="150"
                       required
@@ -296,35 +296,35 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">性别 *</label>
+                    <label className="block text-sm font-medium mb-2">Gender *</label>
                     <Select value={manualForm.gender} onValueChange={(value) => setManualForm({...manualForm, gender: value})}>
                       <SelectTrigger>
-                        <SelectValue placeholder="选择性别" />
+                        <SelectValue placeholder="Select gender" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="male">男</SelectItem>
-                        <SelectItem value="female">女</SelectItem>
-                        <SelectItem value="other">其他</SelectItem>
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">报告类型 *</label>
+                    <label className="block text-sm font-medium mb-2">Report Type *</label>
                     <Select value={manualForm.reportType} onValueChange={(value) => setManualForm({...manualForm, reportType: value})}>
                       <SelectTrigger>
-                        <SelectValue placeholder="选择报告类型" />
+                        <SelectValue placeholder="Select report type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="xray">X光片</SelectItem>
+                        <SelectItem value="xray">X-Ray</SelectItem>
                         <SelectItem value="mri">MRI</SelectItem>
-                        <SelectItem value="ct">CT扫描</SelectItem>
-                        <SelectItem value="discharge_summary">出院小结</SelectItem>
-                        <SelectItem value="gp_notes">全科医生记录</SelectItem>
+                        <SelectItem value="ct">CT Scan</SelectItem>
+                        <SelectItem value="discharge_summary">Discharge Summary</SelectItem>
+                        <SelectItem value="gp_notes">GP Notes</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">报告日期 *</label>
+                    <label className="block text-sm font-medium mb-2">Report Date *</label>
                     <Input
                       type="date"
                       value={manualForm.reportDate}
@@ -335,11 +335,11 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">报告内容 *</label>
+                  <label className="block text-sm font-medium mb-2">Report Content *</label>
                   <Textarea
                     value={manualForm.reportText}
                     onChange={(e) => setManualForm({...manualForm, reportText: e.target.value})}
-                    placeholder="粘贴或输入放射学报告内容..."
+                    placeholder="Paste or enter radiology report content..."
                     className="min-h-[200px]"
                     required
                   />
@@ -347,19 +347,19 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">医疗机构</label>
+                    <label className="block text-sm font-medium mb-2">Medical Facility</label>
                     <Input
                       value={manualForm.facility}
                       onChange={(e) => setManualForm({...manualForm, facility: e.target.value})}
-                      placeholder="输入医疗机构名称"
+                      placeholder="Enter medical facility name"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">开单医生</label>
+                    <label className="block text-sm font-medium mb-2">Ordering Physician</label>
                     <Input
                       value={manualForm.orderingPhysician}
                       onChange={(e) => setManualForm({...manualForm, orderingPhysician: e.target.value})}
-                      placeholder="输入开单医生姓名"
+                      placeholder="Enter ordering physician name"
                     />
                   </div>
                 </div>
@@ -368,7 +368,7 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <Brain className="h-4 w-4 animate-spin" />
-                      <span className="text-sm">AI正在分析报告...</span>
+                      <span className="text-sm">AI analyzing report...</span>
                     </div>
                     <Progress value={processingProgress} className="h-2" />
                   </div>
@@ -378,12 +378,12 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
                   {isProcessing ? (
                     <>
                       <Brain className="h-4 w-4 mr-2 animate-spin" />
-                      处理中...
+                      Processing...
                     </>
                   ) : (
                     <>
                       <FileText className="h-4 w-4 mr-2" />
-                      导入并分析报告
+                      Import & Analyze Report
                     </>
                   )}
                 </Button>

@@ -73,7 +73,7 @@ export function PatientOutreachCenter({
   const [activeTab, setActiveTab] = useState('email');
   const [sendingProgress, setSendingProgress] = useState(0);
 
-  // 生成外联内容
+  // Generate outreach content
   const generateOutreach = async () => {
     setIsGenerating(true);
     
@@ -99,13 +99,13 @@ export function PatientOutreachCenter({
       }
     } catch (error) {
       console.error('Failed to generate outreach:', error);
-      alert(`生成外联内容失败: ${error instanceof Error ? error.message : '未知错误'}`);
+      alert(`Failed to generate outreach content: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsGenerating(false);
     }
   };
 
-  // 发送外联
+  // Send outreach
   const sendOutreach = async (type: 'email' | 'sms' | 'phone') => {
     if (!outreachContent) return;
 
@@ -113,13 +113,13 @@ export function PatientOutreachCenter({
     setSendingProgress(0);
 
     try {
-      // 模拟发送进度
+      // Simulate sending progress
       for (let i = 0; i <= 100; i += 20) {
         setSendingProgress(i);
         await new Promise(resolve => setTimeout(resolve, 200));
       }
 
-      // 模拟API调用
+      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       const outreachRecord = {
@@ -133,17 +133,17 @@ export function PatientOutreachCenter({
 
       onOutreachSent?.(outreachRecord);
       
-      alert(`${type === 'email' ? '邮件' : type === 'sms' ? '短信' : '电话'}外联已发送成功！`);
+      alert(`${type === 'email' ? 'Email' : type === 'sms' ? 'SMS' : 'Phone'} outreach sent successfully!`);
     } catch (error) {
       console.error('Failed to send outreach:', error);
-      alert('发送失败，请重试');
+      alert('Failed to send. Please try again.');
     } finally {
       setIsSending(false);
       setSendingProgress(0);
     }
   };
 
-  // 获取优先级颜色
+  // Get priority color
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'critical': return 'bg-red-100 text-red-800 border-red-200';
@@ -155,21 +155,21 @@ export function PatientOutreachCenter({
 
   return (
     <div className="space-y-6">
-      {/* 患者信息卡 */}
+      {/* Patient Information Card */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
-            患者外联中心 - {patient.name}
+            Patient Outreach Center - {patient.name}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <div className="text-sm text-gray-600">患者信息</div>
+              <div className="text-sm text-gray-600">Patient Information</div>
               <div className="space-y-1">
                 <div className="font-medium">{patient.name}</div>
-                <div className="text-sm text-gray-500">{patient.age}岁 {patient.gender === 'female' ? '女' : '男'}</div>
+                <div className="text-sm text-gray-500">{patient.age}y {patient.gender === 'female' ? 'F' : 'M'}</div>
                 <div className="text-sm text-gray-500">{patient.email}</div>
                 {patient.phone && (
                   <div className="text-sm text-gray-500">{patient.phone}</div>
@@ -178,35 +178,35 @@ export function PatientOutreachCenter({
             </div>
 
             <div className="space-y-2">
-              <div className="text-sm text-gray-600">风险评估</div>
+              <div className="text-sm text-gray-600">Risk Assessment</div>
               <div className="space-y-1">
                 <Badge className={getPriorityColor(riskAssessment.priority)}>
-                  {riskAssessment.priority.toUpperCase()} 优先级
+                  {riskAssessment.priority.toUpperCase()} Priority
                 </Badge>
-                <div className="text-sm">风险评分: {scanResult.riskScore}/100</div>
-                <div className="text-sm">紧急程度: {riskAssessment.urgency}小时内</div>
+                <div className="text-sm">Risk Score: {scanResult.riskScore}/100</div>
+                <div className="text-sm">Urgency: Within {riskAssessment.urgency}h</div>
                 {scanResult.mtfSuspected && (
-                  <Badge variant="destructive">MTF疑似</Badge>
+                  <Badge variant="destructive">MTF Suspected</Badge>
                 )}
               </div>
             </div>
 
             <div className="space-y-2">
-              <div className="text-sm text-gray-600">推荐行动</div>
+              <div className="text-sm text-gray-600">Recommended Actions</div>
               <div className="space-y-1">
                 {riskAssessment.specialistReferral && (
                   <div className="flex items-center gap-1 text-sm">
                     <CheckCircle className="h-3 w-3 text-green-600" />
-                    需要专科转诊
+                    Specialist referral required
                   </div>
                 )}
                 {riskAssessment.followUpRequired && (
                   <div className="flex items-center gap-1 text-sm">
                     <Clock className="h-3 w-3 text-orange-600" />
-                    需要随访
+                    Follow-up required
                   </div>
                 )}
-                <div className="text-sm">预估费用: ¥{riskAssessment.estimatedCost}</div>
+                <div className="text-sm">Estimated cost: ${riskAssessment.estimatedCost}</div>
               </div>
             </div>
           </div>
@@ -216,12 +216,12 @@ export function PatientOutreachCenter({
               {isGenerating ? (
                 <>
                   <MessageSquare className="h-4 w-4 mr-2 animate-spin" />
-                  生成个性化外联内容中...
+                  Generating personalized outreach content...
                 </>
               ) : (
                 <>
                   <MessageSquare className="h-4 w-4 mr-2" />
-                  生成外联内容
+                  Generate Outreach Content
                 </>
               )}
             </Button>
@@ -229,35 +229,35 @@ export function PatientOutreachCenter({
         </CardContent>
       </Card>
 
-      {/* 外联内容 */}
+      {/* Outreach Content */}
       {outreachContent && (
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="email">邮件</TabsTrigger>
-            <TabsTrigger value="sms">短信</TabsTrigger>
-            <TabsTrigger value="phone">电话</TabsTrigger>
-            <TabsTrigger value="assessment">自评表单</TabsTrigger>
+            <TabsTrigger value="email">Email</TabsTrigger>
+            <TabsTrigger value="sms">SMS</TabsTrigger>
+            <TabsTrigger value="phone">Phone</TabsTrigger>
+            <TabsTrigger value="assessment">Self-Assessment</TabsTrigger>
           </TabsList>
 
-          {/* 邮件外联 */}
+          {/* Email Outreach */}
           <TabsContent value="email">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Mail className="h-5 w-5" />
-                  个性化邮件
+                  Personalized Email
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">邮件主题:</label>
+                  <label className="block text-sm font-medium mb-2">Email Subject:</label>
                   <div className="p-3 bg-gray-50 rounded-lg text-sm border">
                     {outreachContent.email.subject}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">邮件内容:</label>
+                  <label className="block text-sm font-medium mb-2">Email Content:</label>
                   <Textarea
                     value={outreachContent.email.personalizedContent}
                     readOnly
@@ -269,7 +269,7 @@ export function PatientOutreachCenter({
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <Send className="h-4 w-4 animate-pulse" />
-                      <span className="text-sm">正在发送邮件...</span>
+                      <span className="text-sm">Sending email...</span>
                     </div>
                     <Progress value={sendingProgress} className="h-2" />
                   </div>
@@ -282,66 +282,66 @@ export function PatientOutreachCenter({
                     className="flex-1"
                   >
                     <Send className="h-4 w-4 mr-2" />
-                    发送邮件
+                    Send Email
                   </Button>
                   <Button variant="outline">
                     <Eye className="h-4 w-4 mr-2" />
-                    预览
+                    Preview
                   </Button>
                   <Button variant="outline">
                     <Edit className="h-4 w-4 mr-2" />
-                    编辑
+                    Edit
                   </Button>
                   <Button variant="outline">
                     <Copy className="h-4 w-4 mr-2" />
-                    复制
+                    Copy
                   </Button>
                 </div>
 
-                {/* 邮件统计 */}
+                {/* Email Statistics */}
                 <div className="grid grid-cols-3 gap-4 p-4 bg-blue-50 rounded-lg">
                   <div className="text-center">
-                    <div className="text-lg font-bold text-blue-600">预计打开率</div>
+                    <div className="text-lg font-bold text-blue-600">Expected Open Rate</div>
                     <div className="text-sm text-blue-800">85%</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-blue-600">预计响应率</div>
+                    <div className="text-lg font-bold text-blue-600">Expected Response Rate</div>
                     <div className="text-sm text-blue-800">62%</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-blue-600">发送时机</div>
-                    <div className="text-sm text-blue-800">立即发送</div>
+                    <div className="text-lg font-bold text-blue-600">Send Timing</div>
+                    <div className="text-sm text-blue-800">Send Now</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* 短信外联 */}
+          {/* SMS Outreach */}
           <TabsContent value="sms">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <MessageSquare className="h-5 w-5" />
-                  短信通知
+                  SMS Notification
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="p-4 bg-gray-50 rounded-lg border">
-                  <div className="text-sm font-medium mb-2">短信内容 ({outreachContent.sms.message.length}/160 字符):</div>
+                  <div className="text-sm font-medium mb-2">SMS Content ({outreachContent.sms.message.length}/160 characters):</div>
                   <div className="text-sm">{outreachContent.sms.message}</div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <span className="text-sm text-gray-600">优先级:</span>
-                    <Badge className={getPriorityColor(outreachContent.sms.priority)} size="sm">
+                    <span className="text-sm text-gray-600">Priority:</span>
+                    <Badge className={getPriorityColor(outreachContent.sms.priority)}>
                       {outreachContent.sms.priority.toUpperCase()}
                     </Badge>
                   </div>
                   <div>
-                    <span className="text-sm text-gray-600">紧急程度:</span>
-                    <span className="ml-2 text-sm font-medium">{outreachContent.sms.urgency}小时内</span>
+                    <span className="text-sm text-gray-600">Urgency:</span>
+                    <span className="ml-2 text-sm font-medium">Within {outreachContent.sms.urgency}h</span>
                   </div>
                 </div>
 
@@ -352,46 +352,46 @@ export function PatientOutreachCenter({
                     className="flex-1"
                   >
                     <MessageSquare className="h-4 w-4 mr-2" />
-                    发送短信
+                    Send SMS
                   </Button>
                   <Button variant="outline">
                     <Edit className="h-4 w-4 mr-2" />
-                    编辑
+                    Edit
                   </Button>
                   <Button variant="outline">
                     <Calendar className="h-4 w-4 mr-2" />
-                    定时发送
+                    Schedule Send
                   </Button>
                 </div>
 
                 <div className="text-xs text-gray-500 p-3 bg-yellow-50 rounded-lg">
                   <AlertCircle className="h-4 w-4 inline mr-1" />
-                  短信发送将产生费用。根据优先级，高优先级短信将优先发送。
+                  SMS sending will incur charges. High priority messages will be sent first based on priority level.
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* 电话外联 */}
+          {/* Phone Outreach */}
           <TabsContent value="phone">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Phone className="h-5 w-5" />
-                  电话脚本
+                  Phone Script
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">开场白:</label>
+                    <label className="block text-sm font-medium mb-2">Opening:</label>
                     <div className="p-3 bg-gray-50 rounded-lg text-sm border">
                       {outreachContent.phone.opening}
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">要点 ({outreachContent.phone.keyPoints.length}项):</label>
+                    <label className="block text-sm font-medium mb-2">Key Points ({outreachContent.phone.keyPoints.length} items):</label>
                     <div className="space-y-2">
                       {outreachContent.phone.keyPoints.map((point, index) => (
                         <div key={index} className="flex items-start gap-2 p-2 bg-gray-50 rounded">
@@ -405,7 +405,7 @@ export function PatientOutreachCenter({
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">结束语:</label>
+                    <label className="block text-sm font-medium mb-2">Closing:</label>
                     <div className="p-3 bg-gray-50 rounded-lg text-sm border">
                       {outreachContent.phone.closing}
                     </div>
@@ -419,32 +419,32 @@ export function PatientOutreachCenter({
                     className="flex-1"
                   >
                     <Phone className="h-4 w-4 mr-2" />
-                    标记为已致电
+                    Mark as Called
                   </Button>
                   <Button variant="outline">
                     <Download className="h-4 w-4 mr-2" />
-                    导出脚本
+                    Export Script
                   </Button>
                   <Button variant="outline">
                     <Calendar className="h-4 w-4 mr-2" />
-                    安排回拨
+                    Schedule Callback
                   </Button>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 p-4 bg-green-50 rounded-lg">
                   <div>
-                    <div className="text-sm font-medium text-green-800">通话提示</div>
+                    <div className="text-sm font-medium text-green-800">Call Tips</div>
                     <div className="text-xs text-green-700">
-                      • 保持语调温和、专业<br/>
-                      • 允许患者提问<br/>
-                      • 记录重要信息
+                      • Maintain gentle, professional tone<br/>
+                      • Allow patient questions<br/>
+                      • Record important information
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-green-800">预计时长</div>
+                    <div className="text-sm font-medium text-green-800">Expected Duration</div>
                     <div className="text-xs text-green-700">
-                      5-10分钟<br/>
-                      (取决于患者的问题)
+                      5-10 minutes<br/>
+                      (depends on patient questions)
                     </div>
                   </div>
                 </div>
@@ -452,34 +452,34 @@ export function PatientOutreachCenter({
             </Card>
           </TabsContent>
 
-          {/* 自评表单 */}
+          {/* Self-Assessment Form */}
           <TabsContent value="assessment">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="h-5 w-5" />
-                  患者自评表单
+                  Patient Self-Assessment Form
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="p-4 bg-blue-50 rounded-lg">
-                  <div className="text-sm font-medium text-blue-900 mb-2">表单说明</div>
+                  <div className="text-sm font-medium text-blue-900 mb-2">Form Instructions</div>
                   <div className="text-sm text-blue-800">{outreachContent.selfAssessment.instructions}</div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <span className="text-sm text-gray-600">问题数量:</span>
-                    <span className="ml-2 font-medium">{outreachContent.selfAssessment.questions.length}题</span>
+                    <span className="text-sm text-gray-600">Number of Questions:</span>
+                    <span className="ml-2 font-medium">{outreachContent.selfAssessment.questions.length} items</span>
                   </div>
                   <div>
-                    <span className="text-sm text-gray-600">预计完成时间:</span>
-                    <span className="ml-2 font-medium">{outreachContent.selfAssessment.estimatedTime}分钟</span>
+                    <span className="text-sm text-gray-600">Estimated Time:</span>
+                    <span className="ml-2 font-medium">{outreachContent.selfAssessment.estimatedTime} min</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">问题预览 (前3题):</label>
+                  <label className="block text-sm font-medium mb-2">Question Preview (first 3):</label>
                   <div className="space-y-3">
                     {outreachContent.selfAssessment.questions.slice(0, 3).map((question, index) => (
                       <div key={index} className="p-3 border rounded-lg">
@@ -487,18 +487,18 @@ export function PatientOutreachCenter({
                           {index + 1}. {question.question}
                         </div>
                         <div className="text-xs text-gray-600">
-                          类型: {question.type} | 必填: {question.required ? '是' : '否'}
+                          Type: {question.type} | Required: {question.required ? 'Yes' : 'No'}
                         </div>
                         {question.options && (
                           <div className="text-xs text-gray-500 mt-1">
-                            选项数: {question.options.length}
+                            Options: {question.options.length}
                           </div>
                         )}
                       </div>
                     ))}
                     {outreachContent.selfAssessment.questions.length > 3 && (
                       <div className="text-center text-sm text-gray-500">
-                        ...还有 {outreachContent.selfAssessment.questions.length - 3} 题
+                        ...{outreachContent.selfAssessment.questions.length - 3} more questions
                       </div>
                     )}
                   </div>
@@ -507,20 +507,20 @@ export function PatientOutreachCenter({
                 <div className="flex gap-2">
                   <Button className="flex-1">
                     <FileText className="h-4 w-4 mr-2" />
-                    生成表单链接
+                    Generate Form Link
                   </Button>
                   <Button variant="outline">
                     <Eye className="h-4 w-4 mr-2" />
-                    预览表单
+                    Preview Form
                   </Button>
                   <Button variant="outline">
                     <Edit className="h-4 w-4 mr-2" />
-                    自定义问题
+                    Customize Questions
                   </Button>
                 </div>
 
                 <div className="text-xs text-gray-500 p-3 bg-gray-50 rounded-lg">
-                  表单链接将在生成后自动包含在邮件和短信中。患者完成后，结果将自动同步到系统。
+                  Form links will be automatically included in emails and SMS after generation. Results will sync to the system automatically when patients complete the form.
                 </div>
               </CardContent>
             </Card>

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Brain, Activity, Users, Zap, Workflow } from "lucide-react";
+import { ArrowRight, Brain, Activity, Users, Zap, Workflow, Shield } from "lucide-react";
 import heroImage from '@assets/generated_images/Medical_AI_diagnostic_interface_b11401a9.png';
 import dashboardImage from '@assets/generated_images/Healthcare_dashboard_interface_tablet_e70c1368.png';
 
@@ -11,15 +11,23 @@ interface HeroSectionProps {
   onStartAssessment: () => void;
   onStartMonitoring: () => void;
   onWorkflowManagement: () => void;
+  onMTFDetection: () => void; // 新增MTF检测回调
 }
 
-export function HeroSection({ onGetStarted, onLearnMore, onStartAssessment, onStartMonitoring, onWorkflowManagement }: HeroSectionProps) {
+export function HeroSection({ 
+  onGetStarted, 
+  onLearnMore, 
+  onStartAssessment, 
+  onStartMonitoring, 
+  onWorkflowManagement,
+  onMTFDetection 
+}: HeroSectionProps) {
   //todo: remove mock functionality
   const stats = [
     { icon: Brain, label: "AI Accuracy", value: "96.5%", color: "text-primary" },
     { icon: Activity, label: "Avg. Processing", value: "2.3s", color: "text-green-600" },
     { icon: Users, label: "Cases Analyzed", value: "12.5K", color: "text-blue-600" },
-    { icon: Zap, label: "Success Rate", value: "94.2%", color: "text-orange-600" },
+    { icon: Shield, label: "MTF Detection", value: "94.2%", color: "text-red-600" }, // 更新统计项
   ];
 
   return (
@@ -73,54 +81,63 @@ export function HeroSection({ onGetStarted, onLearnMore, onStartAssessment, onSt
                   </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button 
-                    size="lg"
-                    onClick={onGetStarted}
-                    className="bg-white text-primary hover:bg-white/90"
-                    data-testid="button-get-started"
-                  >
-                    Start Diagnosis Demo
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                  <Button 
-                    size="lg"
-                    variant="outline"
-                    onClick={onStartAssessment}
-                    className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
-                    data-testid="button-start-assessment"
-                  >
-                    Check Your Bone Health
-                  </Button>
-                  <Button 
-                    size="lg"
-                    variant="outline"
-                    onClick={onStartMonitoring}
-                    className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
-                    data-testid="button-start-monitoring"
-                  >
-                    <Activity className="w-4 h-4 mr-2" />
-                    Health Monitoring
-                  </Button>
-                  <Button 
-                    size="lg"
-                    variant="outline"
-                    onClick={onWorkflowManagement}
-                    className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
-                    data-testid="button-workflow-management"
-                  >
-                    <Workflow className="w-4 h-4 mr-2" />
-                    Workflow Management
-                  </Button>
-                  <Button 
-                    size="lg"
-                    variant="outline"
-                    onClick={onLearnMore}
-                    className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
-                    data-testid="button-learn-more"
-                  >
-                    Learn More
-                  </Button>
+                {/* 主要行动按钮 - 突出MTF检测 */}
+                <div className="space-y-4">
+                  {/* 第一行：主要CTA按钮 */}
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Button 
+                      size="lg"
+                      onClick={onMTFDetection}
+                      className="bg-red-600 text-white hover:bg-red-700 border-2 border-red-400"
+                      data-testid="button-mtf-detection"
+                    >
+                      <Shield className="w-4 h-4 mr-2" />
+                      MTF Detection Center
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                    <Button 
+                      size="lg"
+                      onClick={onGetStarted}
+                      className="bg-white text-primary hover:bg-white/90"
+                      data-testid="button-get-started"
+                    >
+                      General Dashboard
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </div>
+
+                  {/* 第二行：辅助功能按钮 */}
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button 
+                      size="sm"
+                      variant="outline"
+                      onClick={onStartAssessment}
+                      className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+                      data-testid="button-start-assessment"
+                    >
+                      Bone Health Check
+                    </Button>
+                    <Button 
+                      size="sm"
+                      variant="outline"
+                      onClick={onStartMonitoring}
+                      className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+                      data-testid="button-start-monitoring"
+                    >
+                      <Activity className="w-4 h-4 mr-2" />
+                      Health Monitoring
+                    </Button>
+                    <Button 
+                      size="sm"
+                      variant="outline"
+                      onClick={onWorkflowManagement}
+                      className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+                      data-testid="button-workflow-management"
+                    >
+                      <Workflow className="w-4 h-4 mr-2" />
+                      Workflow
+                    </Button>
+                  </div>
                 </div>
 
                 {/* Stats */}
@@ -149,12 +166,15 @@ export function HeroSection({ onGetStarted, onLearnMore, onStartAssessment, onSt
                   />
                 </div>
                 
-                {/* Floating Elements */}
-                <div className="absolute -top-4 -right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold animate-pulse">
-                  AI Active
+                {/* Floating Elements - 更新为MTF相关 */}
+                <div className="absolute -top-4 -right-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold animate-pulse">
+                  MTF AI Active
                 </div>
                 <div className="absolute -bottom-4 -left-4 bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs">
-                  Real-time Analysis
+                  Real-time MTF Analysis
+                </div>
+                <div className="absolute top-1/2 -left-6 bg-orange-500 text-white px-2 py-1 rounded-full text-xs transform -translate-y-1/2">
+                  94.2% Accuracy
                 </div>
               </div>
             </div>
@@ -164,7 +184,7 @@ export function HeroSection({ onGetStarted, onLearnMore, onStartAssessment, onSt
         {/* Bottom Section */}
         <div className="p-6 text-center">
           <p className="text-white/70 text-sm" data-testid="text-hero-footer">
-            Trusted by healthcare professionals • HIPAA Compliant • 99.9% Uptime
+            Trusted by healthcare professionals • HIPAA Compliant • 99.9% Uptime • MTF Detection Certified
           </p>
         </div>
       </div>

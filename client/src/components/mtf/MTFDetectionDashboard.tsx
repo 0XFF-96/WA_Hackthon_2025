@@ -92,12 +92,12 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
   const fetchMTFCases = async () => {
     try {
       setIsLoading(true);
-      // 模拟数据 - 在实际应用中应该从API获取
+      // Mock data - should fetch from API in real application
       const mockCases: MTFCase[] = [
         {
           id: 'case_001',
           patientId: 'patient_001',
-          patientName: '张丽华',
+          patientName: 'Margaret Johnson',
           age: 73,
           gender: 'female',
           riskScore: 89,
@@ -113,7 +113,7 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
         {
           id: 'case_002',
           patientId: 'patient_002',
-          patientName: '王建国',
+          patientName: 'Robert Chen',
           age: 68,
           gender: 'male',
           riskScore: 76,
@@ -129,7 +129,7 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
         {
           id: 'case_003',
           patientId: 'patient_003',
-          patientName: '李梅',
+          patientName: 'Susan Lee',
           age: 65,
           gender: 'female',
           riskScore: 62,
@@ -184,17 +184,17 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">MTF检测控制台</h1>
-          <p className="text-gray-600">微创骨折检测与患者外联管理系统</p>
+          <h1 className="text-3xl font-bold text-gray-900">MTF Detection Console</h1>
+          <p className="text-gray-600">Minimal trauma fracture detection and patient outreach management system</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm">
             <FileText className="w-4 h-4 mr-2" />
-            导入报告
+            Import Reports
           </Button>
           <Button size="sm">
             <Shield className="w-4 h-4 mr-2" />
-            批量扫描
+            Batch Scan
           </Button>
         </div>
       </div>
@@ -204,7 +204,7 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
         <Alert className="border-red-200 bg-red-50">
           <AlertTriangle className="h-4 w-4 text-red-600" />
           <AlertDescription className="text-red-800">
-            <strong>{criticalCases.length}个紧急MTF病例</strong> 需要在24小时内进行专科评估
+            <strong>{criticalCases.length} critical MTF cases</strong> require specialist evaluation within 24 hours
           </AlertDescription>
         </Alert>
       )}
@@ -215,7 +215,7 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">已处理报告</p>
+                <p className="text-sm font-medium text-gray-600">Reports Processed</p>
                 <p className="text-2xl font-bold text-gray-900">{systemStats.totalProcessed}</p>
               </div>
               <FileText className="h-8 w-8 text-blue-600" />
@@ -227,7 +227,7 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">MTF检出</p>
+                <p className="text-sm font-medium text-gray-600">MTF Detected</p>
                 <p className="text-2xl font-bold text-gray-900">{systemStats.mtfDetected}</p>
               </div>
               <Shield className="h-8 w-8 text-red-600" />
@@ -239,7 +239,7 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">待审核</p>
+                <p className="text-sm font-medium text-gray-600">Pending Review</p>
                 <p className="text-2xl font-bold text-gray-900">{pendingCases.length}</p>
               </div>
               <Clock className="h-8 w-8 text-orange-600" />
@@ -251,7 +251,7 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">平均置信度</p>
+                <p className="text-sm font-medium text-gray-600">Avg Confidence</p>
                 <p className="text-2xl font-bold text-gray-900">{systemStats.averageConfidence.toFixed(1)}%</p>
               </div>
               <Brain className="h-8 w-8 text-purple-600" />
@@ -263,7 +263,7 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">质量评分</p>
+                <p className="text-sm font-medium text-gray-600">Quality Score</p>
                 <p className="text-2xl font-bold text-gray-900">{systemStats.qualityScore.toFixed(1)}</p>
               </div>
               <BarChart3 className="h-8 w-8 text-green-600" />
@@ -275,7 +275,7 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">平均处理时间</p>
+                <p className="text-sm font-medium text-gray-600">Avg Processing Time</p>
                 <p className="text-2xl font-bold text-gray-900">{systemStats.averageProcessingTime.toFixed(1)}s</p>
               </div>
               <TrendingUp className="h-8 w-8 text-indigo-600" />
@@ -287,15 +287,15 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="overview">总览</TabsTrigger>
-          <TabsTrigger value="critical">紧急病例 ({criticalCases.length})</TabsTrigger>
-          <TabsTrigger value="pending">待处理 ({pendingCases.length})</TabsTrigger>
-          <TabsTrigger value="analytics">分析统计</TabsTrigger>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="critical">Critical Cases ({criticalCases.length})</TabsTrigger>
+          <TabsTrigger value="pending">Pending ({pendingCases.length})</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4">
-            <h3 className="text-lg font-semibold">最新MTF检测结果</h3>
+            <h3 className="text-lg font-semibold">Latest MTF Detection Results</h3>
             {isLoading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map(i => (
@@ -326,7 +326,7 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
 
         <TabsContent value="critical" className="space-y-4">
           <div className="grid gap-4">
-            <h3 className="text-lg font-semibold text-red-700">紧急MTF病例</h3>
+            <h3 className="text-lg font-semibold text-red-700">Critical MTF Cases</h3>
             {criticalCases.map((case_) => (
               <MTFCaseCard 
                 key={case_.id} 
@@ -343,7 +343,7 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
 
         <TabsContent value="pending" className="space-y-4">
           <div className="grid gap-4">
-            <h3 className="text-lg font-semibold">待处理病例</h3>
+            <h3 className="text-lg font-semibold">Pending Cases</h3>
             {pendingCases.map((case_) => (
               <MTFCaseCard 
                 key={case_.id} 
@@ -388,65 +388,65 @@ function MTFCaseCard({ case_, onSelect, getRiskLevelColor, getStatusColor, getUr
             <div className="flex items-center gap-3">
               <User className="h-4 w-4 text-gray-500" />
               <span className="font-medium text-lg">{case_.patientName}</span>
-              <Badge variant="outline">{case_.age}岁 {case_.gender === 'female' ? '女' : '男'}</Badge>
+              <Badge variant="outline">{case_.age}y {case_.gender === 'female' ? 'F' : 'M'}</Badge>
               <Badge className={getRiskLevelColor(case_.riskLevel)}>
                 {case_.riskLevel.toUpperCase()}
               </Badge>
               {case_.mtfSuspected && (
-                <Badge variant="destructive">MTF疑似</Badge>
+                <Badge variant="destructive">MTF Suspected</Badge>
               )}
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
-                <span className="text-gray-500">风险评分:</span>
+                <span className="text-gray-500">Risk Score:</span>
                 <span className="ml-2 font-medium">{case_.riskScore}/100</span>
               </div>
               <div>
-                <span className="text-gray-500">置信度:</span>
+                <span className="text-gray-500">Confidence:</span>
                 <span className="ml-2 font-medium">{case_.confidence}%</span>
               </div>
               <div>
-                <span className="text-gray-500">报告类型:</span>
+                <span className="text-gray-500">Report Type:</span>
                 <span className="ml-2 font-medium">{case_.reportType.toUpperCase()}</span>
               </div>
               <div className="flex items-center">
-                <span className="text-gray-500">紧急程度:</span>
+                <span className="text-gray-500">Urgency:</span>
                 <span className="ml-2 flex items-center gap-1">
                   {getUrgencyIcon(case_.urgency)}
-                  {case_.urgency}小时
+                  {case_.urgency}h
                 </span>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
               <Badge className={getStatusColor(case_.status)}>
-                {case_.status === 'pending' ? '待处理' : 
-                 case_.status === 'reviewed' ? '已审核' :
-                 case_.status === 'contacted' ? '已联系' : '已完成'}
+                {case_.status === 'pending' ? 'Pending' : 
+                 case_.status === 'reviewed' ? 'Reviewed' :
+                 case_.status === 'contacted' ? 'Contacted' : 'Completed'}
               </Badge>
               {case_.specialistReferral && (
-                <Badge variant="outline">需专科转诊</Badge>
+                <Badge variant="outline">Specialist Referral Required</Badge>
               )}
               <span className="text-xs text-gray-500">
-                {case_.createdAt.toLocaleString('zh-CN')}
+                {case_.createdAt.toLocaleString('en-US')}
               </span>
             </div>
           </div>
 
           <div className="flex gap-2 ml-4">
             <Button size="sm" variant="outline" onClick={onSelect}>
-              查看详情
+              View Details
             </Button>
             {case_.status === 'pending' && (
               <>
                 <Button size="sm" variant="outline">
                   <Phone className="w-4 h-4 mr-1" />
-                  联系患者
+                  Contact Patient
                 </Button>
                 <Button size="sm">
                   <Mail className="w-4 h-4 mr-1" />
-                  发送外联
+                  Send Outreach
                 </Button>
               </>
             )}
@@ -476,13 +476,13 @@ function AnalyticsSection({ stats, cases }: AnalyticsSectionProps) {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold">系统分析统计</h3>
+      <h3 className="text-lg font-semibold">System Analytics</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* 风险等级分布 */}
+        {/* Risk Level Distribution */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">风险等级分布</CardTitle>
+            <CardTitle className="text-base">Risk Level Distribution</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -503,10 +503,10 @@ function AnalyticsSection({ stats, cases }: AnalyticsSectionProps) {
           </CardContent>
         </Card>
 
-        {/* 处理状态分布 */}
+        {/* Processing Status Distribution */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">处理状态分布</CardTitle>
+            <CardTitle className="text-base">Processing Status Distribution</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -518,9 +518,9 @@ function AnalyticsSection({ stats, cases }: AnalyticsSectionProps) {
                      status === 'contacted' ? <Phone className="w-4 h-4 text-blue-500" /> :
                      <CheckCircle className="w-4 h-4 text-green-500" />}
                     <span>
-                      {status === 'pending' ? '待处理' :
-                       status === 'reviewed' ? '已审核' :
-                       status === 'contacted' ? '已联系' : '已完成'}
+                      {status === 'pending' ? 'Pending' :
+                       status === 'reviewed' ? 'Reviewed' :
+                       status === 'contacted' ? 'Contacted' : 'Completed'}
                     </span>
                   </div>
                   <span className="font-medium">{count}</span>
@@ -531,16 +531,16 @@ function AnalyticsSection({ stats, cases }: AnalyticsSectionProps) {
         </Card>
       </div>
 
-      {/* 系统性能指标 */}
+      {/* System Performance Metrics */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">系统性能指标</CardTitle>
+          <CardTitle className="text-base">System Performance Metrics</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">AI置信度</span>
+                <span className="text-sm text-gray-600">AI Confidence</span>
                 <span className="text-sm font-medium">{stats.averageConfidence.toFixed(1)}%</span>
               </div>
               <Progress value={stats.averageConfidence} className="h-2" />
@@ -548,7 +548,7 @@ function AnalyticsSection({ stats, cases }: AnalyticsSectionProps) {
             
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">质量评分</span>
+                <span className="text-sm text-gray-600">Quality Score</span>
                 <span className="text-sm font-medium">{stats.qualityScore.toFixed(1)}</span>
               </div>
               <Progress value={stats.qualityScore} className="h-2" />
@@ -556,10 +556,10 @@ function AnalyticsSection({ stats, cases }: AnalyticsSectionProps) {
             
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">处理效率</span>
+                <span className="text-sm text-gray-600">Processing Efficiency</span>
                 <span className="text-sm font-medium">
-                  {stats.averageProcessingTime < 3 ? '优秀' : 
-                   stats.averageProcessingTime < 5 ? '良好' : '需优化'}
+                  {stats.averageProcessingTime < 3 ? 'Excellent' : 
+                   stats.averageProcessingTime < 5 ? 'Good' : 'Needs Improvement'}
                 </span>
               </div>
               <Progress 
