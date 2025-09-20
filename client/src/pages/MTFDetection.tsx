@@ -247,7 +247,16 @@ export default function MTFDetectionPage() {
                 gender: 'female'
               }}
               scanResult={selectedCase?.scanResult || importResult?.scanResult}
-              riskAssessment={selectedCase?.riskAssessment || importResult?.riskAssessment}
+              riskAssessment={selectedCase?.riskAssessment || importResult?.riskAssessment || {
+                riskLevel: 'medium',
+                riskScore: 75,
+                priority: 'medium',
+                confidence: 85,
+                mtfSuspected: true,
+                specialistReferral: true,
+                followUpRequired: true,
+                estimatedCost: 450
+              }}
               onOutreachSent={(outreach) => {
                 console.log('Outreach sent:', outreach);
                 // Update patient status or show success message
