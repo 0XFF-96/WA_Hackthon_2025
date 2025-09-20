@@ -4,8 +4,12 @@ import { storage } from "./storage";
 import { aiService } from "./services/aiService";
 import { z } from "zod";
 import { insertCaseSchema, insertVitalsSchema } from "@shared/schema";
+import mtfDetectionRoutes from "./routes/mtfDetection";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // MTF Detection routes
+  app.use("/api/mtf", mtfDetectionRoutes);
+
   // Multi-agent chat endpoint
   app.post("/api/chat/multi-agent", async (req, res) => {
     try {
