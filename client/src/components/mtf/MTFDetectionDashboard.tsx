@@ -334,25 +334,25 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
       </Card>
 
       {/* System Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { icon: FileText, label: "Reports Processed", value: systemStats.totalProcessed.toString(), change: "+12%", color: "text-blue-600" },
-          { icon: Shield, label: "MTF Detected", value: systemStats.mtfDetected.toString(), change: "+8%", color: "text-red-600" },
-          { icon: Clock, label: "Pending Review", value: pendingCases.length.toString(), change: "-5%", color: "text-orange-600" },
-          { icon: Brain, label: "Avg Confidence", value: `${systemStats.averageConfidence.toFixed(1)}%`, change: "+2%", color: "text-purple-600" },
+          { icon: FileText, label: "Reports Processed", value: systemStats.totalProcessed.toString(), change: "+12%", color: "text-blue-600", bgColor: "bg-blue-50" },
+          { icon: Shield, label: "MTF Detected", value: systemStats.mtfDetected.toString(), change: "+8%", color: "text-red-600", bgColor: "bg-red-50" },
+          { icon: Clock, label: "Pending Review", value: pendingCases.length.toString(), change: "-5%", color: "text-orange-600", bgColor: "bg-orange-50" },
+          { icon: Brain, label: "Avg Confidence", value: `${systemStats.averageConfidence.toFixed(1)}%`, change: "+2%", color: "text-purple-600", bgColor: "bg-purple-50" },
         ].map((stat, index) => (
-          <Card key={index} data-testid={`stat-card-${index}`}>
+          <Card key={index} data-testid={`stat-card-${index}`} className="hover:shadow-md transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">{stat.label}</p>
-                  <p className="text-2xl font-bold" data-testid={`stat-value-${index}`}>{stat.value}</p>
-                </div>
-                <div className="text-right">
-                  <stat.icon className={`w-5 h-5 ${stat.color} mb-1`} />
-                  <Badge variant="secondary" className="text-xs">
+                  <p className="text-sm text-muted-foreground font-medium">{stat.label}</p>
+                  <p className="text-2xl font-bold text-gray-900" data-testid={`stat-value-${index}`}>{stat.value}</p>
+                  <Badge variant="secondary" className="text-xs px-2 py-0.5">
                     {stat.change}
                   </Badge>
+                </div>
+                <div className={`w-12 h-12 ${stat.bgColor} rounded-lg flex items-center justify-center`}>
+                  <stat.icon className={`w-6 h-6 ${stat.color}`} />
                 </div>
               </div>
             </CardContent>
@@ -362,10 +362,17 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
 
       {/* Critical Cases Alert */}
       {criticalCases.length > 0 && (
-        <Alert className="border-red-200 bg-red-50">
-          <AlertTriangle className="h-4 w-4 text-red-600" />
-          <AlertDescription className="text-red-800">
-            <strong>{criticalCases.length} critical MTF cases</strong> require specialist evaluation within 24 hours
+        <Alert className="border-red-200 bg-gradient-to-r from-red-50 to-red-100 shadow-sm">
+          <AlertTriangle className="h-5 w-5 text-red-600" />
+          <AlertDescription className="text-red-800 font-medium">
+            <div className="flex items-center justify-between">
+              <span>
+                <strong>{criticalCases.length} critical MTF cases</strong> require specialist evaluation within 24 hours
+              </span>
+              <Button size="sm" variant="outline" className="text-red-700 border-red-300 hover:bg-red-100">
+                View Cases
+              </Button>
+            </div>
           </AlertDescription>
         </Alert>
       )}
@@ -373,11 +380,13 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Critical Cases List */}
         <div className="lg:col-span-2 space-y-4">
-          <Card>
-            <CardHeader className="pb-4">
+          <Card className="shadow-sm">
+            <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center">
-                  <AlertTriangle className="w-5 h-5 mr-2 text-red-600" />
+                <CardTitle className="flex items-center text-lg">
+                  <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                    <AlertTriangle className="w-4 h-4 text-red-600" />
+                  </div>
                   Critical Cases ({criticalCases.length})
                 </CardTitle>
                 <div className="flex items-center space-x-2">
@@ -387,19 +396,25 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
                       placeholder="Search cases..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9 w-48 h-9 px-3 py-1 text-sm border border-input bg-background rounded-md"
+                      className="pl-9 w-48 h-9 px-3 py-1 text-sm border border-input bg-background rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       data-testid="input-search-cases"
                     />
                   </div>
-                  <Button variant="outline" size="icon">
+                  <Button variant="outline" size="icon" className="hover:bg-gray-50">
                     <Filter className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3">
               {criticalCases.length === 0 ? (
-                <p className="text-center text-muted-foreground py-4">No critical cases found</p>
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <p className="text-muted-foreground font-medium">No critical cases found</p>
+                  <p className="text-sm text-muted-foreground mt-1">All cases are being processed normally</p>
+                </div>
               ) : (
                 criticalCases.map((case_) => (
                   <CriticalCaseCard 
@@ -417,16 +432,18 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Recent Cases */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <User className="w-5 h-5 mr-2" />
+          <Card className="shadow-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center text-base">
+                <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center mr-2">
+                  <User className="w-3 h-3 text-blue-600" />
+                </div>
                 Recent Cases
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3">
               {filteredCases.slice(0, 3).map((case_) => (
                 <MTFCaseCard 
                   key={case_.id} 
@@ -438,30 +455,37 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
                   compact={true}
                 />
               ))}
+              {filteredCases.length === 0 && (
+                <div className="text-center py-4">
+                  <p className="text-sm text-muted-foreground">No recent cases</p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
           {/* System Alerts */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center text-orange-600">
-                <AlertCircle className="w-5 h-5 mr-2" />
+          <Card className="shadow-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center text-base text-orange-600">
+                <div className="w-6 h-6 bg-orange-100 rounded-lg flex items-center justify-center mr-2">
+                  <AlertCircle className="w-3 h-3 text-orange-600" />
+                </div>
                 System Alerts
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex items-start space-x-3 p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
+              <div className="flex items-start space-x-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
                 <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-medium">High case volume</p>
-                  <p className="text-xs text-muted-foreground">Processing queue at 85% capacity</p>
+                  <p className="text-sm font-medium text-yellow-800">High case volume</p>
+                  <p className="text-xs text-yellow-700">Processing queue at 85% capacity</p>
                 </div>
               </div>
-              <div className="flex items-start space-x-3 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+              <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
                 <Brain className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-medium">AI Model Updated</p>
-                  <p className="text-xs text-muted-foreground">New MTF detection model deployed</p>
+                  <p className="text-sm font-medium text-blue-800">AI Model Updated</p>
+                  <p className="text-xs text-blue-700">New MTF detection model deployed</p>
                 </div>
               </div>
             </CardContent>
@@ -484,67 +508,80 @@ interface CriticalCaseCardProps {
 
 function CriticalCaseCard({ case_, onSelect, getRiskLevelColor, getStatusColor, getUrgencyIcon }: CriticalCaseCardProps) {
   return (
-    <Card className="border-l-4 border-l-red-500 bg-red-50 hover:bg-red-100 transition-colors">
+    <Card className="border-l-4 border-l-red-500 bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 transition-all duration-200 shadow-sm">
       <CardContent className="p-4">
-        <div className="flex items-center justify-between">
-          <div className="space-y-2 flex-1">
+        <div className="flex items-start justify-between">
+          <div className="space-y-3 flex-1">
             <div className="flex items-center gap-3">
-              <User className="h-4 w-4 text-gray-500" />
-              <span className="font-medium text-lg">{case_.patientName}</span>
-              <Badge variant="outline">{case_.age}y {case_.gender === 'female' ? 'F' : 'M'}</Badge>
-              <Badge className={getRiskLevelColor(case_.riskLevel)}>
-                {case_.riskLevel.toUpperCase()}
-              </Badge>
-              {case_.mtfSuspected && (
-                <Badge variant="destructive">MTF Suspected</Badge>
-              )}
+              <div className="w-8 h-8 bg-red-200 rounded-lg flex items-center justify-center">
+                <User className="h-4 w-4 text-red-600" />
+              </div>
+              <div>
+                <div className="font-semibold text-lg text-gray-900">{case_.patientName}</div>
+                <div className="text-sm text-gray-600">{case_.age}y {case_.gender === 'female' ? 'F' : 'M'} • {case_.patientId}</div>
+              </div>
+              <div className="flex gap-2">
+                <Badge className={getRiskLevelColor(case_.riskLevel)}>
+                  {case_.riskLevel.toUpperCase()}
+                </Badge>
+                {case_.mtfSuspected && (
+                  <Badge variant="destructive">MTF Suspected</Badge>
+                )}
+              </div>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-              <div>
-                <span className="text-gray-500">Patient ID:</span>
-                <span className="ml-2 font-medium">{case_.patientId}</span>
+              <div className="bg-white/60 p-2 rounded-lg">
+                <div className="text-gray-500 text-xs">Risk Score</div>
+                <div className="font-bold text-red-600">{case_.riskScore}/100</div>
               </div>
-              <div>
-                <span className="text-gray-500">Risk Score:</span>
-                <span className="ml-2 font-medium text-red-600">{case_.riskScore}/100</span>
+              <div className="bg-white/60 p-2 rounded-lg">
+                <div className="text-gray-500 text-xs">Confidence</div>
+                <div className="font-bold text-gray-900">{case_.confidence}%</div>
               </div>
-              <div>
-                <span className="text-gray-500">Upload Time:</span>
-                <span className="ml-2 font-medium">{case_.createdAt.toLocaleString('en-US')}</span>
+              <div className="bg-white/60 p-2 rounded-lg">
+                <div className="text-gray-500 text-xs">Report Type</div>
+                <div className="font-bold text-gray-900">{case_.reportType.toUpperCase()}</div>
               </div>
-              <div className="flex items-center">
-                <span className="text-gray-500">Urgency:</span>
-                <span className="ml-2 flex items-center gap-1">
+              <div className="bg-white/60 p-2 rounded-lg">
+                <div className="text-gray-500 text-xs">Urgency</div>
+                <div className="font-bold text-gray-900 flex items-center gap-1">
                   {getUrgencyIcon(case_.urgency)}
                   {case_.urgency}h
-                </span>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Badge className={getStatusColor(case_.status)}>
-                {case_.status === 'pending' ? 'Pending' : 
-                 case_.status === 'reviewed' ? 'Reviewed' :
-                 case_.status === 'contacted' ? 'Contacted' : 'Completed'}
-              </Badge>
-              {case_.specialistReferral && (
-                <Badge variant="outline">Specialist Referral Required</Badge>
-              )}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Badge className={getStatusColor(case_.status)}>
+                  {case_.status === 'pending' ? 'Pending' : 
+                   case_.status === 'reviewed' ? 'Reviewed' :
+                   case_.status === 'contacted' ? 'Contacted' : 'Completed'}
+                </Badge>
+                {case_.specialistReferral && (
+                  <Badge variant="outline" className="border-red-300 text-red-700">
+                    Specialist Referral Required
+                  </Badge>
+                )}
+              </div>
+              <div className="text-xs text-gray-500">
+                {case_.createdAt.toLocaleString('en-US')}
+              </div>
             </div>
           </div>
 
-          <div className="flex gap-2 ml-4">
-            <Button size="sm" variant="outline" onClick={onSelect}>
+          <div className="flex flex-col gap-2 ml-4">
+            <Button size="sm" variant="outline" onClick={onSelect} className="text-red-700 border-red-300 hover:bg-red-50">
               View Details
             </Button>
-            <Button size="sm" variant="outline">
-              <Phone className="w-4 h-4 mr-1" />
-              Contact Patient
+            <Button size="sm" variant="outline" className="text-red-700 border-red-300 hover:bg-red-50">
+              <Phone className="w-3 h-3 mr-1" />
+              Contact
             </Button>
-            <Button size="sm">
-              <Mail className="w-4 h-4 mr-1" />
-              Send Outreach
+            <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white">
+              <Mail className="w-3 h-3 mr-1" />
+              Outreach
             </Button>
           </div>
         </div>

@@ -147,49 +147,6 @@ export default function MTFDetectionPage() {
           </Badge>
         </div>
       </div>
-
-      {/* Workflow Overview
-      {!importResult && (
-        <Card className="border-t-4 border-t-blue-500 shadow-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <BarChart3 className="h-5 w-5 text-blue-600" />
-              MTF Detection Workflow
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-center">
-              <div className="flex items-center space-x-8">
-                {workflowSteps.map((step, index) => (
-                  <div key={step.id} className="flex items-center">
-                    <div className="flex flex-col items-center">
-                      <div className={`w-16 h-16 rounded-xl flex items-center justify-center transition-all duration-200 ${
-                        step.status === 'completed' 
-                          ? 'bg-green-100 text-green-600 shadow-md border-2 border-green-200' :
-                        step.status === 'in_progress' 
-                          ? 'bg-blue-100 text-blue-600 shadow-md border-2 border-blue-200' :
-                          `bg-gray-50 text-gray-400 border-2 border-gray-200 hover:bg-${step.color}-50 hover:text-${step.color}-500`
-                      }`}>
-                        <step.icon className="w-7 h-7" />
-                      </div>
-                      <div className="text-center mt-4 max-w-28">
-                        <div className="font-semibold text-sm text-gray-900">{step.title}</div>
-                        <div className="text-xs text-gray-600 mt-1 leading-tight">{step.description}</div>
-                      </div>
-                    </div>
-                    {index < workflowSteps.length - 1 && (
-                      <div className="flex items-center ml-8">
-                        <ArrowRight className="w-6 h-6 text-gray-300" />
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )} */}
-
       {/* Analysis Results Display */}
       {importResult && (
         <Card className="border-l-4 border-l-green-500 bg-gradient-to-r from-green-50 to-emerald-50 shadow-md">
@@ -269,7 +226,7 @@ export default function MTFDetectionPage() {
         </div>
 
         {/* Detection Console */}
-        <TabsContent value="dashboard" className="mt-6">
+        <TabsContent value="dashboard" className="mt-4">
           <MTFDetectionDashboard onCaseSelect={handleCaseSelect} />
         </TabsContent>
 
