@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,10 +11,19 @@ import {
   Users,
   Brain,
   Scan,
-  Monitor
+  Monitor,
+  Upload,
+  Search,
+  AlertCircle,
+  Mail,
+  ChevronRight,
+  FileText,
+  Bot,
+  UserCheck
 } from 'lucide-react';
 
-// No longer importing MTFDetectionDashboard as we're splitting the functionality
+// Import the workflow visualization component
+import { WorkflowVisualization } from './WorkflowVisualization';
 
 interface MTFDetectionConsoleProps {
   onCaseSelect?: (caseId: string) => void;
@@ -101,6 +110,9 @@ export function MTFDetectionConsole({ onCaseSelect }: MTFDetectionConsoleProps) 
 function OverviewTab({ onCaseSelect }: { onCaseSelect?: (caseId: string) => void }) {
   return (
     <div className="space-y-6">
+      {/* Animated Workflow */}
+      <WorkflowVisualization />
+
       {/* System Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {[

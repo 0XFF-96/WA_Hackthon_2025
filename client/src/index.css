@@ -513,4 +513,87 @@
       left: 100%;
     }
   }
+
+  /* Workflow animations */
+  @keyframes workflow-flow {
+    0% { 
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% { 
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes step-highlight {
+    0%, 100% { 
+      background-color: white;
+      border-color: rgb(229, 231, 235);
+      transform: scale(1);
+    }
+    50% { 
+      background-color: rgb(239, 246, 255);
+      border-color: rgb(59, 130, 246);
+      transform: scale(1.02);
+    }
+  }
+
+  @keyframes data-flow {
+    0% { 
+      left: -10px;
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% { 
+      left: calc(100% + 10px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes progress-wave {
+    0% { 
+      background-position: -200% 50%;
+    }
+    100% { 
+      background-position: 200% 50%;
+    }
+  }
+
+  .animate-workflow-flow {
+    animation: workflow-flow 3s ease-in-out infinite;
+  }
+
+  .animate-step-highlight {
+    animation: step-highlight 2s ease-in-out infinite;
+  }
+
+  .animate-data-flow {
+    animation: data-flow 4s linear infinite;
+  }
+
+  .animate-progress-wave {
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), transparent);
+    background-size: 200% 100%;
+    animation: progress-wave 2s linear infinite;
+  }
+
+  .workflow-step-active {
+    animation: step-highlight 2s ease-in-out infinite;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .data-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgb(59, 130, 246);
+    border-radius: 50%;
+    animation: data-flow 4s linear infinite;
+  }
 }
