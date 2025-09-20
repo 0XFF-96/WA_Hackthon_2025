@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MTFDetectionDashboard } from '@/components/mtf/MTFDetectionDashboard';
+import { MTFDetectionConsole } from '@/components/mtf/MTFDetectionConsole';
 import { ReportImportHub } from '@/components/mtf/ReportImportHub';
 import { PatientOutreachCenter } from '@/components/mtf/PatientOutreachCenter';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -227,7 +227,7 @@ export default function MTFDetectionPage() {
 
         {/* Detection Console */}
         <TabsContent value="dashboard" className="mt-4">
-          <MTFDetectionDashboard onCaseSelect={handleCaseSelect} />
+          <MTFDetectionConsole onCaseSelect={handleCaseSelect} />
         </TabsContent>
 
         {/* Report Import */}
