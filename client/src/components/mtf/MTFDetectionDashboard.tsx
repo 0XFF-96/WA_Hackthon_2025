@@ -27,7 +27,13 @@ import {
   Plus,
   Filter,
   Search,
-  AlertCircle
+  AlertCircle,
+  Activity,
+  Zap,
+  Eye,
+  FileCheck,
+  Scan,
+  TrendingDown
 } from 'lucide-react';
 
 interface MTFDetectionDashboardProps {
@@ -69,6 +75,42 @@ interface WorkflowStep {
   color: string;
 }
 
+interface ReportScanData {
+  id: string;
+  patientId: string;
+  scanType: 'xray' | 'ct' | 'mri' | 'ultrasound';
+  scanTime: Date;
+  aiPriority: 'critical' | 'high' | 'medium' | 'low';
+  riskScore: number;
+  status: 'outreach_sent' | 'pending_review' | 'processing' | 'completed';
+}
+
+interface KPIData {
+  totalReportsScanned: number;
+  suspectedMTFCases: number;
+  outreachEmailsSent: number;
+  pendingDoctorReview: number;
+}
+
+interface BatchProcessingData {
+  currentBatch: number;
+  totalBatches: number;
+  priorityDistribution: {
+    critical: number;
+    high: number;
+    medium: number;
+    low: number;
+  };
+}
+
+interface RiskTrendData {
+  date: string;
+  critical: number;
+  high: number;
+  medium: number;
+  low: number;
+}
+
 export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardProps) {
   const [activeTab, setActiveTab] = useState('overview');
   const [searchQuery, setSearchQuery] = useState('');
@@ -83,10 +125,28 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
   });
   const [mtfCases, setMtfCases] = useState<MTFCase[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [reportScanData, setReportScanData] = useState<ReportScanData[]>([]);
+  const [kpiData, setKpiData] = useState<KPIData>({
+    totalReportsScanned: 0,
+    suspectedMTFCases: 0,
+    outreachEmailsSent: 0,
+    pendingDoctorReview: 0
+  });
+  const [batchProcessingData, setBatchProcessingData] = useState<BatchProcessingData>({
+    currentBatch: 0,
+    totalBatches: 0,
+    priorityDistribution: { critical: 0, high: 0, medium: 0, low: 0 }
+  });
+  const [riskTrendData, setRiskTrendData] = useState<RiskTrendData[]>([]);
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     fetchSystemStats();
     fetchMTFCases();
+    fetchReportScanData();
+    fetchKPIData();
+    fetchBatchProcessingData();
+    fetchRiskTrendData();
   }, []);
 
   const fetchSystemStats = async () => {
@@ -248,6 +308,119 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
     }
   };
 
+  const fetchReportScanData = async () => {
+    try {
+      // Mock data - should fetch from API in real application
+      const mockData: ReportScanData[] = [
+        {
+          id: 'scan_001',
+          patientId: 'P001234',
+          scanType: 'xray',
+          scanTime: new Date('2024-01-15T10:30:00'),
+          aiPriority: 'critical',
+          riskScore: 89,
+          status: 'pending_review'
+        },
+        {
+          id: 'scan_002',
+          patientId: 'P001235',
+          scanType: 'ct',
+          scanTime: new Date('2024-01-15T10:25:00'),
+          aiPriority: 'high',
+          riskScore: 76,
+          status: 'outreach_sent'
+        },
+        {
+          id: 'scan_003',
+          patientId: 'P001236',
+          scanType: 'mri',
+          scanTime: new Date('2024-01-15T10:20:00'),
+          aiPriority: 'medium',
+          riskScore: 62,
+          status: 'completed'
+        },
+        {
+          id: 'scan_004',
+          patientId: 'P001237',
+          scanType: 'xray',
+          scanTime: new Date('2024-01-15T10:15:00'),
+          aiPriority: 'low',
+          riskScore: 34,
+          status: 'processing'
+        },
+        {
+          id: 'scan_005',
+          patientId: 'P001238',
+          scanType: 'ct',
+          scanTime: new Date('2024-01-15T10:10:00'),
+          aiPriority: 'critical',
+          riskScore: 92,
+          status: 'pending_review'
+        }
+      ];
+      setReportScanData(mockData);
+    } catch (error) {
+      console.error('Failed to fetch report scan data:', error);
+    }
+  };
+
+  const fetchKPIData = async () => {
+    try {
+      // Simulate API call with animation
+      setTimeout(() => {
+        setKpiData({
+          totalReportsScanned: 1247,
+          suspectedMTFCases: 89,
+          outreachEmailsSent: 156,
+          pendingDoctorReview: 23
+        });
+      }, 500);
+    } catch (error) {
+      console.error('Failed to fetch KPI data:', error);
+    }
+  };
+
+  const fetchBatchProcessingData = async () => {
+    try {
+      setTimeout(() => {
+        setBatchProcessingData({
+          currentBatch: 82,
+          totalBatches: 100,
+          priorityDistribution: {
+            critical: 12,
+            high: 28,
+            medium: 35,
+            low: 25
+          }
+        });
+      }, 800);
+    } catch (error) {
+      console.error('Failed to fetch batch processing data:', error);
+    }
+  };
+
+  const fetchRiskTrendData = async () => {
+    try {
+      const mockTrendData: RiskTrendData[] = [
+        { date: '2024-01-09', critical: 8, high: 15, medium: 22, low: 18 },
+        { date: '2024-01-10', critical: 12, high: 18, medium: 25, low: 20 },
+        { date: '2024-01-11', critical: 6, high: 12, medium: 28, low: 22 },
+        { date: '2024-01-12', critical: 15, high: 22, medium: 30, low: 25 },
+        { date: '2024-01-13', critical: 9, high: 16, medium: 26, low: 19 },
+        { date: '2024-01-14', critical: 11, high: 20, medium: 32, low: 24 },
+        { date: '2024-01-15', critical: 12, high: 25, medium: 35, low: 28 }
+      ];
+      setRiskTrendData(mockTrendData);
+      
+      // Show alert after data loads
+      setTimeout(() => {
+        setShowAlert(true);
+      }, 1200);
+    } catch (error) {
+      console.error('Failed to fetch risk trend data:', error);
+    }
+  };
+
   const handleNewCase = () => {
     console.log('New case clicked');
   };
@@ -332,6 +505,227 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
           </div>
         </CardContent>
       </Card>
+
+      {/* AI Report Auto-Scanning Section */}
+      <div className="space-y-6">
+        {/* Section Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <Scan className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">AI Report Auto-Scanning</h2>
+              <p className="text-sm text-gray-600">Real-time radiology report analysis and MTF detection</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              Auto-Scanning Active
+            </div>
+          </div>
+        </div>
+
+        {/* KPI Cards with Animated Counters */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { 
+              icon: FileCheck, 
+              label: "Total Reports Scanned", 
+              value: kpiData.totalReportsScanned, 
+              change: "+12%", 
+              color: "text-blue-600", 
+              bgColor: "bg-blue-50",
+              borderColor: "border-blue-200"
+            },
+            { 
+              icon: AlertTriangle, 
+              label: "Suspected MTF Cases", 
+              value: kpiData.suspectedMTFCases, 
+              change: "+8%", 
+              color: "text-red-600", 
+              bgColor: "bg-red-50",
+              borderColor: "border-red-200"
+            },
+            { 
+              icon: Mail, 
+              label: "Outreach Emails Sent", 
+              value: kpiData.outreachEmailsSent, 
+              change: "+15%", 
+              color: "text-green-600", 
+              bgColor: "bg-green-50",
+              borderColor: "border-green-200"
+            },
+            { 
+              icon: Eye, 
+              label: "Pending Doctor Review", 
+              value: kpiData.pendingDoctorReview, 
+              change: "-5%", 
+              color: "text-orange-600", 
+              bgColor: "bg-orange-50",
+              borderColor: "border-orange-200"
+            },
+          ].map((stat, index) => (
+            <Card key={index} className={`hover:shadow-lg transition-all duration-300 border-l-4 ${stat.borderColor} ${stat.bgColor}`}>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground font-medium">{stat.label}</p>
+                    <AnimatedCounter value={stat.value} />
+                    <Badge variant="secondary" className="text-xs px-2 py-0.5">
+                      {stat.change}
+                    </Badge>
+                  </div>
+                  <div className={`w-12 h-12 ${stat.bgColor} rounded-lg flex items-center justify-center border ${stat.borderColor}`}>
+                    <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Report Table */}
+        <Card className="shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center text-lg">
+              <div className="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center mr-2">
+                <FileText className="w-3 h-3 text-purple-600" />
+              </div>
+              Recent Scan Results
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-3 px-4 font-medium text-gray-600">Patient ID</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-600">Scan Type</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-600">Scan Time</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-600">AI Priority</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-600">Risk Score</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-600">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reportScanData.map((report, index) => (
+                    <ReportTableRow 
+                      key={report.id} 
+                      report={report} 
+                      index={index}
+                      getRiskLevelColor={getRiskLevelColor}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Batch Processing Monitor */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="shadow-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center text-base">
+                <div className="w-6 h-6 bg-indigo-100 rounded-lg flex items-center justify-center mr-2">
+                  <Activity className="w-3 h-3 text-indigo-600" />
+                </div>
+                Batch Processing Monitor
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-gray-600">Current Batch Progress</span>
+                    <span className="font-medium">{batchProcessingData.currentBatch}/{batchProcessingData.totalBatches}</span>
+                  </div>
+                  <Progress 
+                    value={(batchProcessingData.currentBatch / batchProcessingData.totalBatches) * 100} 
+                    className="h-2"
+                  />
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-indigo-600">
+                    {Math.round((batchProcessingData.currentBatch / batchProcessingData.totalBatches) * 100)}%
+                  </div>
+                  <div className="text-sm text-gray-600">Complete</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center text-base">
+                <div className="w-6 h-6 bg-pink-100 rounded-lg flex items-center justify-center mr-2">
+                  <BarChart3 className="w-3 h-3 text-pink-600" />
+                </div>
+                Priority Distribution
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {Object.entries(batchProcessingData.priorityDistribution).map(([priority, count]) => (
+                  <div key={priority} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full ${
+                        priority === 'critical' ? 'bg-red-500' :
+                        priority === 'high' ? 'bg-orange-500' :
+                        priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
+                      }`}></div>
+                      <span className="capitalize text-sm font-medium">{priority}</span>
+                    </div>
+                    <span className="font-bold text-lg">{count}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Risk Trend Section */}
+        <Card className="shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center text-base">
+              <div className="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center mr-2">
+                <TrendingUp className="w-3 h-3 text-emerald-600" />
+              </div>
+              Risk Trend Analysis (Last 7 Days)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="text-center">
+                <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                <p className="text-gray-600">Risk trend chart will be displayed here</p>
+                <p className="text-sm text-gray-500">Integration with Recharts coming soon</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Alert Card */}
+        {showAlert && (
+          <div className="animate-fade-in-right">
+            <Alert className="border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50 shadow-sm">
+              <TrendingUp className="h-5 w-5 text-orange-600" />
+              <AlertDescription className="text-orange-800 font-medium">
+                <div className="flex items-center justify-between">
+                  <span>
+                    <strong>+12 Critical cases today</strong> (↑25% vs yesterday)
+                  </span>
+                  <Button size="sm" variant="outline" className="text-orange-700 border-orange-300 hover:bg-orange-100">
+                    View Details
+                  </Button>
+                </div>
+              </AlertDescription>
+            </Alert>
+          </div>
+        )}
+      </div>
 
       {/* System Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -494,6 +888,134 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
       </div>
 
     </div>
+  );
+}
+
+// Animated Counter Component
+interface AnimatedCounterProps {
+  value: number;
+  duration?: number;
+}
+
+function AnimatedCounter({ value, duration = 2000 }: AnimatedCounterProps) {
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    let startTime: number;
+    let animationFrame: number;
+
+    const animate = (currentTime: number) => {
+      if (!startTime) startTime = currentTime;
+      const progress = Math.min((currentTime - startTime) / duration, 1);
+      
+      setDisplayValue(Math.floor(progress * value));
+      
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      }
+    };
+
+    animationFrame = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+    };
+  }, [value, duration]);
+
+  return (
+    <span className="text-2xl font-bold text-gray-900">
+      {displayValue.toLocaleString()}
+    </span>
+  );
+}
+
+// Report Table Row Component
+interface ReportTableRowProps {
+  report: ReportScanData;
+  index: number;
+  getRiskLevelColor: (level: string) => string;
+}
+
+function ReportTableRow({ report, index, getRiskLevelColor }: ReportTableRowProps) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, index * 100); // Staggered animation
+
+    return () => clearTimeout(timer);
+  }, [index]);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'outreach_sent': return 'bg-green-100 text-green-800';
+      case 'pending_review': return 'bg-yellow-100 text-yellow-800';
+      case 'processing': return 'bg-blue-100 text-blue-800';
+      case 'completed': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'outreach_sent': return 'Outreach Sent';
+      case 'pending_review': return 'Pending Review';
+      case 'processing': return 'Processing';
+      case 'completed': return 'Completed';
+      default: return status;
+    }
+  };
+
+  const isCritical = report.aiPriority === 'critical';
+
+  return (
+    <tr 
+      className={`border-b hover:bg-gray-50 transition-all duration-300 ${
+        isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
+      } ${isCritical ? 'bg-red-50 border-red-200' : ''}`}
+      style={{
+        animationDelay: `${index * 100}ms`,
+        animation: isCritical ? 'blink 2s ease-in-out' : 'none'
+      }}
+    >
+      <td className="py-3 px-4 font-medium text-gray-900">{report.patientId}</td>
+      <td className="py-3 px-4">
+        <Badge variant="outline" className="uppercase">
+          {report.scanType}
+        </Badge>
+      </td>
+      <td className="py-3 px-4 text-sm text-gray-600">
+        {report.scanTime.toLocaleString('en-US')}
+      </td>
+      <td className="py-3 px-4">
+        <Badge className={getRiskLevelColor(report.aiPriority)}>
+          {report.aiPriority.toUpperCase()}
+        </Badge>
+      </td>
+      <td className="py-3 px-4">
+        <div className="flex items-center gap-2">
+          <div className="w-16 bg-gray-200 rounded-full h-2">
+            <div 
+              className={`h-2 rounded-full transition-all duration-1000 ${
+                report.riskScore >= 80 ? 'bg-red-500' :
+                report.riskScore >= 60 ? 'bg-orange-500' :
+                report.riskScore >= 40 ? 'bg-yellow-500' : 'bg-green-500'
+              }`}
+              style={{ width: `${report.riskScore}%` }}
+            ></div>
+          </div>
+          <span className="text-sm font-medium">{report.riskScore}</span>
+        </div>
+      </td>
+      <td className="py-3 px-4">
+        <Badge className={getStatusColor(report.status)}>
+          {getStatusText(report.status)}
+        </Badge>
+      </td>
+    </tr>
   );
 }
 
