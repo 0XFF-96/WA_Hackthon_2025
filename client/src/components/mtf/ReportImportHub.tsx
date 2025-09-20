@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,16 @@ import {
   AlertTriangle,
   X,
   Plus,
-  Brain
+  Brain,
+  Activity,
+  RefreshCw,
+  Clock,
+  Zap,
+  ArrowRight,
+  Download,
+  Settings,
+  Eye,
+  Trash2
 } from 'lucide-react';
 
 interface ReportImportHubProps {
@@ -37,11 +46,46 @@ interface ImportedFile {
   error?: string;
 }
 
+interface SystemIntegration {
+  id: string;
+  name: string;
+  type: 'epic' | 'cerner' | 'pacs' | 'ris' | 'hl7' | 'api';
+  status: 'connected' | 'disconnected' | 'syncing' | 'error';
+  lastSync: string;
+  reports: number;
+  syncProgress?: number;
+  error?: string;
+  config?: any;
+}
+
+interface ImportedReport {
+  id: string;
+  patientId: string;
+  patientName: string;
+  reportType: string;
+  reportDate: string;
+  source: string;
+  status: 'imported' | 'processing' | 'analyzed' | 'error';
+  riskScore?: number;
+  priority?: 'critical' | 'high' | 'medium' | 'low';
+  confidence?: number;
+  createdAt: string;
+}
+
 export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
   const [activeTab, setActiveTab] = useState<'manual' | 'file' | 'integration' | 'email'>('manual');
   const [isProcessing, setIsProcessing] = useState(false);
   const [importedFiles, setImportedFiles] = useState<ImportedFile[]>([]);
   const [processingProgress, setProcessingProgress] = useState(0);
+  const [systemIntegrations, setSystemIntegrations] = useState<SystemIntegration[]>([]);
+  const [importedReports, setImportedReports] = useState<ImportedReport[]>([]);
+  const [isAutoSync, setIsAutoSync] = useState(false);
+  const [syncStats, setSyncStats] = useState({
+    totalImported: 0,
+    todayImported: 0,
+    pendingAnalysis: 0,
+    errorCount: 0
+  });
 
   // Manual input form state
   const [manualForm, setManualForm] = useState({
@@ -55,6 +99,108 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
     orderingPhysician: '',
     reportDate: new Date().toISOString().split('T')[0]
   });
+
+  // Initialize mock data
+  useEffect(() => {
+    const mockIntegrations: SystemIntegration[] = [
+      {
+        id: 'epic-001',
+        name: 'Epic MyChart',
+        type: 'epic',
+        status: 'connected',
+        lastSync: '2 hours ago',
+        reports: 145,
+        config: { endpoint: 'https://epic.example.com/api', version: 'v2.1' }
+      },
+      {
+        id: 'cerner-001',
+        name: 'Cerner PowerChart',
+        type: 'cerner',
+        status: 'disconnected',
+        lastSync: 'Never',
+        reports: 0,
+        config: { endpoint: 'https://cerner.example.com/api', version: 'v1.8' }
+      },
+      {
+        id: 'pacs-001',
+        name: 'PACS System',
+        type: 'pacs',
+        status: 'connected',
+        lastSync: '1 hour ago',
+        reports: 67,
+        config: { endpoint: 'https://pacs.example.com/dicom', version: 'DICOM 3.0' }
+      },
+      {
+        id: 'ris-001',
+        name: 'RIS System',
+        type: 'ris',
+        status: 'connected',
+        lastSync: '30 minutes ago',
+        reports: 23,
+        config: { endpoint: 'https://ris.example.com/api', version: 'v3.2' }
+      },
+      {
+        id: 'hl7-001',
+        name: 'HL7 Interface',
+        type: 'hl7',
+        status: 'connected',
+        lastSync: '15 minutes ago',
+        reports: 89,
+        config: { endpoint: 'https://hl7.example.com/fhir', version: 'R4' }
+      }
+    ];
+
+    const mockReports: ImportedReport[] = [
+      {
+        id: 'report-001',
+        patientId: 'P001234',
+        patientName: 'John Smith',
+        reportType: 'X-Ray',
+        reportDate: '2024-01-15',
+        source: 'Epic MyChart',
+        status: 'analyzed',
+        riskScore: 89,
+        priority: 'critical',
+        confidence: 92,
+        createdAt: '2024-01-15T10:30:00Z'
+      },
+      {
+        id: 'report-002',
+        patientId: 'P001235',
+        patientName: 'Jane Doe',
+        reportType: 'CT Scan',
+        reportDate: '2024-01-15',
+        source: 'PACS System',
+        status: 'processing',
+        riskScore: 76,
+        priority: 'high',
+        confidence: 85,
+        createdAt: '2024-01-15T10:25:00Z'
+      },
+      {
+        id: 'report-003',
+        patientId: 'P001236',
+        patientName: 'Bob Johnson',
+        reportType: 'MRI',
+        reportDate: '2024-01-15',
+        source: 'RIS System',
+        status: 'analyzed',
+        riskScore: 62,
+        priority: 'medium',
+        confidence: 78,
+        createdAt: '2024-01-15T10:20:00Z'
+      }
+    ];
+
+    setSystemIntegrations(mockIntegrations);
+    setImportedReports(mockReports);
+    setSyncStats({
+      totalImported: 324,
+      todayImported: 23,
+      pendingAnalysis: 5,
+      errorCount: 2
+    });
+  }, []);
 
   // Handle manual input submission
   const handleManualSubmit = async (e: React.FormEvent) => {
@@ -239,6 +385,96 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
       setIsProcessing(false);
     }
   };
+
+  // 系统同步功能
+  const syncSystem = async (integrationId: string) => {
+    setSystemIntegrations(prev => prev.map(integration => 
+      integration.id === integrationId 
+        ? { ...integration, status: 'syncing', syncProgress: 0 }
+        : integration
+    ));
+
+    try {
+      // 模拟同步过程
+      for (let progress = 0; progress <= 100; progress += 20) {
+        setSystemIntegrations(prev => prev.map(integration => 
+          integration.id === integrationId 
+            ? { ...integration, syncProgress: progress }
+            : integration
+        ));
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+
+      // 模拟同步完成，添加新报告
+      const integration = systemIntegrations.find(i => i.id === integrationId);
+      if (integration) {
+        const newReports: ImportedReport[] = Array.from({ length: Math.floor(Math.random() * 5) + 1 }, (_, index) => ({
+          id: `report-${Date.now()}-${index}`,
+          patientId: `P${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`,
+          patientName: `Patient ${Math.floor(Math.random() * 1000)}`,
+          reportType: ['X-Ray', 'CT Scan', 'MRI', 'Ultrasound'][Math.floor(Math.random() * 4)],
+          reportDate: new Date().toISOString().split('T')[0],
+          source: integration.name,
+          status: 'imported',
+          riskScore: Math.floor(Math.random() * 100),
+          priority: ['critical', 'high', 'medium', 'low'][Math.floor(Math.random() * 4)] as any,
+          confidence: Math.floor(Math.random() * 40) + 60,
+          createdAt: new Date().toISOString()
+        }));
+
+        setImportedReports(prev => [...newReports, ...prev]);
+        setSyncStats(prev => ({
+          ...prev,
+          totalImported: prev.totalImported + newReports.length,
+          todayImported: prev.todayImported + newReports.length
+        }));
+      }
+
+      setSystemIntegrations(prev => prev.map(integration => 
+        integration.id === integrationId 
+          ? { 
+              ...integration, 
+              status: 'connected', 
+              lastSync: 'Just now',
+              reports: integration.reports + Math.floor(Math.random() * 5) + 1,
+              syncProgress: undefined
+            }
+          : integration
+      ));
+
+    } catch (error) {
+      setSystemIntegrations(prev => prev.map(integration => 
+        integration.id === integrationId 
+          ? { 
+              ...integration, 
+              status: 'error', 
+              error: 'Sync failed',
+              syncProgress: undefined
+            }
+          : integration
+      ));
+    }
+  };
+
+  // 自动同步功能
+  const toggleAutoSync = () => {
+    setIsAutoSync(!isAutoSync);
+  };
+
+  // 模拟自动同步
+  useEffect(() => {
+    if (!isAutoSync) return;
+
+    const interval = setInterval(() => {
+      const connectedSystems = systemIntegrations.filter(s => s.status === 'connected');
+      if (connectedSystems.length > 0) {
+        const randomSystem = connectedSystems[Math.floor(Math.random() * connectedSystems.length)];
+        syncSystem(randomSystem.id);
+      }
+    }, 30000); // 每30秒自动同步一次
+
+    return () => clearInterval(interval);
+  }, [isAutoSync, systemIntegrations]);
 
   return (
     <div className="space-y-6">
@@ -489,7 +725,14 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
 
             {/* 系统集成 */}
             <TabsContent value="integration" className="space-y-4">
-              <SystemIntegrationTab />
+              <SystemIntegrationTab 
+                integrations={systemIntegrations}
+                reports={importedReports}
+                syncStats={syncStats}
+                isAutoSync={isAutoSync}
+                onSync={syncSystem}
+                onToggleAutoSync={toggleAutoSync}
+              />
             </TabsContent>
 
             {/* 邮件导入 */}
@@ -504,42 +747,226 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
 }
 
 // 系统集成标签页
-function SystemIntegrationTab() {
-  const [integrations] = useState([
-    { name: 'Epic MyChart', status: 'connected', lastSync: '2小时前', reports: 145 },
-    { name: 'Cerner PowerChart', status: 'disconnected', lastSync: '从未', reports: 0 },
-    { name: 'PACS System', status: 'connected', lastSync: '1小时前', reports: 67 },
-    { name: 'RIS System', status: 'connected', lastSync: '30分钟前', reports: 23 },
-  ]);
+interface SystemIntegrationTabProps {
+  integrations: SystemIntegration[];
+  reports: ImportedReport[];
+  syncStats: any;
+  isAutoSync: boolean;
+  onSync: (integrationId: string) => void;
+  onToggleAutoSync: () => void;
+}
+
+function SystemIntegrationTab({ 
+  integrations, 
+  reports, 
+  syncStats, 
+  isAutoSync, 
+  onSync, 
+  onToggleAutoSync 
+}: SystemIntegrationTabProps) {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'connected': return 'bg-green-100 text-green-800';
+      case 'syncing': return 'bg-blue-100 text-blue-800';
+      case 'error': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'connected': return 'Connected';
+      case 'syncing': return 'Syncing...';
+      case 'error': return 'Error';
+      default: return 'Disconnected';
+    }
+  };
+
+  const getSystemIcon = (type: string) => {
+    switch (type) {
+      case 'epic': return '🏥';
+      case 'cerner': return '💊';
+      case 'pacs': return '📷';
+      case 'ris': return '📋';
+      case 'hl7': return '🔗';
+      default: return '💻';
+    }
+  };
 
   return (
-    <div className="space-y-4">
-      <h4 className="font-medium">已连接的系统</h4>
-      {integrations.map((integration, index) => (
-        <Card key={index}>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Database className="h-8 w-8 text-blue-600" />
+    <div className="space-y-6">
+      {/* 统计概览 */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: 'Total Imported', value: syncStats.totalImported, icon: Download, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+          { label: 'Today Imported', value: syncStats.todayImported, icon: Activity, color: 'text-green-600', bgColor: 'bg-green-50' },
+          { label: 'Pending Analysis', value: syncStats.pendingAnalysis, icon: Clock, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+          { label: 'Errors', value: syncStats.errorCount, icon: AlertTriangle, color: 'text-red-600', bgColor: 'bg-red-50' }
+        ].map((stat, index) => (
+          <Card key={index} className="hover:shadow-md transition-shadow">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-medium">{integration.name}</div>
-                  <div className="text-sm text-gray-500">
-                    最后同步: {integration.lastSync} | 报告数: {integration.reports}
-                  </div>
+                  <p className="text-sm text-gray-600 font-medium">{stat.label}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                </div>
+                <div className={`w-10 h-10 ${stat.bgColor} rounded-lg flex items-center justify-center`}>
+                  <stat.icon className={`w-5 h-5 ${stat.color}`} />
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Badge variant={integration.status === 'connected' ? 'default' : 'secondary'}>
-                  {integration.status === 'connected' ? '已连接' : '未连接'}
-                </Badge>
-                <Button size="sm" variant="outline">
-                  {integration.status === 'connected' ? '立即同步' : '连接'}
-                </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* 自动同步控制 */}
+      <Card className="border-2 border-dashed border-gray-200">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 ${isAutoSync ? 'bg-green-100' : 'bg-gray-100'} rounded-lg flex items-center justify-center`}>
+                <Zap className={`w-5 h-5 ${isAutoSync ? 'text-green-600' : 'text-gray-600'}`} />
               </div>
+              <div>
+                <h4 className="font-semibold text-gray-900">Auto Sync</h4>
+                <p className="text-sm text-gray-600">
+                  {isAutoSync ? 'Automatically syncing every 30 seconds' : 'Manual sync only'}
+                </p>
+              </div>
+            </div>
+            <Button
+              onClick={onToggleAutoSync}
+              variant={isAutoSync ? 'destructive' : 'default'}
+              className={isAutoSync ? 'animate-pulse' : ''}
+            >
+              {isAutoSync ? 'Stop Auto Sync' : 'Enable Auto Sync'}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 系统列表 */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h4 className="text-lg font-semibold text-gray-900">Connected Systems</h4>
+          <Button size="sm" variant="outline" className="text-gray-600">
+            <Settings className="w-4 h-4 mr-2" />
+            Manage
+          </Button>
+        </div>
+        
+        {integrations.map((integration, index) => (
+          <Card key={integration.id} className={`sync-card animate-slide-in-up ${
+            integration.status === 'syncing' ? 'ring-2 ring-blue-200 animate-sync-pulse' : ''
+          }`} style={{ animationDelay: `${index * 100}ms` }}>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4 flex-1">
+                  <div className="text-2xl">{getSystemIcon(integration.type)}</div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h5 className="font-semibold text-gray-900">{integration.name}</h5>
+                      <Badge className={getStatusColor(integration.status)}>
+                        {getStatusText(integration.status)}
+                      </Badge>
+                    </div>
+                    <div className="text-sm text-gray-600 space-y-1">
+                      <div>Last sync: {integration.lastSync} | Reports: {integration.reports}</div>
+                      {integration.config && (
+                        <div className="text-xs text-gray-500">
+                          {integration.config.endpoint} • {integration.config.version}
+                        </div>
+                      )}
+                      {integration.status === 'syncing' && integration.syncProgress !== undefined && (
+                        <div className="w-full">
+                          <Progress value={integration.syncProgress} className="h-2" />
+                        </div>
+                      )}
+                      {integration.status === 'error' && integration.error && (
+                        <div className="text-red-600 text-xs">{integration.error}</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onSync(integration.id)}
+                    disabled={integration.status === 'syncing'}
+                    className="text-gray-600 hover:text-gray-900"
+                  >
+                    {integration.status === 'syncing' ? (
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <RefreshCw className="w-4 h-4" />
+                    )}
+                  </Button>
+                  <Button size="sm" variant="outline" className="text-gray-600">
+                    <Eye className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* 最近导入的报告 */}
+      {reports.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center">
+              <FileText className="w-4 h-4 mr-2" />
+              Recently Imported Reports ({reports.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {reports.slice(0, 5).map((report, index) => (
+                <div key={report.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors animate-report-import" style={{ animationDelay: `${index * 150}ms` }}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <FileText className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-gray-900">{report.patientName} ({report.patientId})</div>
+                      <div className="text-sm text-gray-600">
+                        {report.reportType} • {report.source} • {new Date(report.createdAt).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {report.riskScore && (
+                      <Badge variant={
+                        report.priority === 'critical' ? 'destructive' :
+                        report.priority === 'high' ? 'default' :
+                        report.priority === 'medium' ? 'secondary' : 'outline'
+                      }>
+                        {report.riskScore}/100
+                      </Badge>
+                    )}
+                    <Badge variant={
+                      report.status === 'analyzed' ? 'default' :
+                      report.status === 'processing' ? 'secondary' : 'outline'
+                    }>
+                      {report.status}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+              {reports.length > 5 && (
+                <div className="text-center pt-2">
+                  <Button variant="outline" size="sm" className="text-gray-600">
+                    View All Reports
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
-      ))}
+      )}
     </div>
   );
 }

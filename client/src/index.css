@@ -374,4 +374,61 @@
   .animate-pulse-glow {
     animation: pulse-glow 2s infinite;
   }
+
+  /* Report Import Hub animations */
+  @keyframes slide-in-up {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes sync-pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+    }
+  }
+
+  @keyframes report-import {
+    0% {
+      opacity: 0;
+      transform: translateX(-20px) scale(0.95);
+    }
+    50% {
+      opacity: 0.8;
+      transform: translateX(0) scale(1.02);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  .animate-slide-in-up {
+    animation: slide-in-up 0.5s ease-out;
+  }
+
+  .animate-sync-pulse {
+    animation: sync-pulse 2s infinite;
+  }
+
+  .animate-report-import {
+    animation: report-import 0.6s ease-out;
+  }
+
+  .sync-card {
+    transition: all 0.3s ease;
+  }
+
+  .sync-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
 }
