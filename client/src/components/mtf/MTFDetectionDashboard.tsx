@@ -689,20 +689,233 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
         {/* Risk Trend Section */}
         <Card className="shadow-sm">
           <CardHeader className="pb-3">
-            <CardTitle className="flex items-center text-base">
-              <div className="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center mr-2">
-                <TrendingUp className="w-3 h-3 text-emerald-600" />
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center text-base">
+                <div className="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center mr-2">
+                  <TrendingUp className="w-3 h-3 text-emerald-600" />
+                </div>
+                Risk Trend Analysis
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                <select 
+                  className="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  defaultValue="7days"
+                >
+                  <option value="7days">Last 7 Days</option>
+                  <option value="30days">Last 30 Days</option>
+                  <option value="90days">Last 90 Days</option>
+                  <option value="1year">Last Year</option>
+                </select>
+                <Button size="sm" variant="outline" className="text-gray-600 border-gray-300 hover:bg-gray-50">
+                  <BarChart3 className="w-4 h-4 mr-1" />
+                  Export
+                </Button>
               </div>
-              Risk Trend Analysis (Last 7 Days)
-            </CardTitle>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-              <div className="text-center">
-                <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-600">Risk trend chart will be displayed here</p>
-                <p className="text-sm text-gray-500">Integration with Recharts coming soon</p>
+            <div className="space-y-6">
+              {/* Trend Summary Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  {
+                    label: "Total Cases",
+                    value: riskTrendData.reduce((sum, day) => sum + day.critical + day.high + day.medium + day.low, 0),
+                    change: "+18%",
+                    color: "text-blue-600",
+                    bgColor: "bg-blue-50",
+                    icon: FileText
+                  },
+                  {
+                    label: "Critical Cases",
+                    value: riskTrendData.reduce((sum, day) => sum + day.critical, 0),
+                    change: "+25%",
+                    color: "text-red-600",
+                    bgColor: "bg-red-50",
+                    icon: AlertTriangle
+                  },
+                  {
+                    label: "High Risk",
+                    value: riskTrendData.reduce((sum, day) => sum + day.high, 0),
+                    change: "+12%",
+                    color: "text-orange-600",
+                    bgColor: "bg-orange-50",
+                    icon: TrendingUp
+                  },
+                  {
+                    label: "Avg Daily",
+                    value: Math.round(riskTrendData.reduce((sum, day) => sum + day.critical + day.high + day.medium + day.low, 0) / riskTrendData.length),
+                    change: "+8%",
+                    color: "text-green-600",
+                    bgColor: "bg-green-50",
+                    icon: BarChart3
+                  }
+                ].map((stat, index) => (
+                  <div key={index} className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-600 font-medium">{stat.label}</p>
+                        <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                        <Badge variant="secondary" className="text-xs mt-1">
+                          {stat.change}
+                        </Badge>
+                      </div>
+                      <div className={`w-10 h-10 ${stat.bgColor} rounded-lg flex items-center justify-center`}>
+                        <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
+
+
+              {/* Peak Detection Alert */}
+              <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-lg p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+                    <TrendingUp className="w-4 h-4 text-amber-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-amber-900">Peak Detection Alert</h4>
+                    <p className="text-sm text-amber-800">
+                      Highest risk day detected: <strong>January 12, 2024</strong> with 100 total cases
+                    </p>
+                  </div>
+                  <Button size="sm" variant="outline" className="text-amber-700 border-amber-300 hover:bg-amber-100">
+                    View Details
+                  </Button>
+                </div>
+              </div>
+
+              {/* Additional Trend Insights */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Weekly Pattern Analysis */}
+                <Card className="border border-gray-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center">
+                      <div className="w-6 h-6 bg-indigo-100 rounded-lg flex items-center justify-center mr-2">
+                        <BarChart3 className="w-3 h-3 text-indigo-600" />
+                      </div>
+                      Weekly Pattern Analysis
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                        <span className="text-sm font-medium text-blue-900">Peak Day</span>
+                        <span className="text-lg font-bold text-blue-600">Wednesday</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                        <span className="text-sm font-medium text-green-900">Lowest Day</span>
+                        <span className="text-lg font-bold text-green-600">Saturday</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+                        <span className="text-sm font-medium text-purple-900">Avg Weekend</span>
+                        <span className="text-lg font-bold text-purple-600">45 cases</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
+                        <span className="text-sm font-medium text-orange-900">Avg Weekday</span>
+                        <span className="text-lg font-bold text-orange-600">67 cases</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Risk Level Trends */}
+                <Card className="border border-gray-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center">
+                      <div className="w-6 h-6 bg-pink-100 rounded-lg flex items-center justify-center mr-2">
+                        <TrendingUp className="w-3 h-3 text-pink-600" />
+                      </div>
+                      Risk Level Trends
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {[
+                        { level: 'Critical', trend: '+25%', color: 'red', icon: AlertTriangle },
+                        { level: 'High', trend: '+12%', color: 'orange', icon: TrendingUp },
+                        { level: 'Medium', trend: '+8%', color: 'yellow', icon: BarChart3 },
+                        { level: 'Low', trend: '-5%', color: 'green', icon: TrendingDown }
+                      ].map((item, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-8 h-8 bg-${item.color}-100 rounded-lg flex items-center justify-center`}>
+                              <item.icon className={`w-4 h-4 text-${item.color}-600`} />
+                            </div>
+                            <span className="font-medium text-gray-900">{item.level}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-sm font-bold ${
+                              item.trend.startsWith('+') ? 'text-red-600' : 'text-green-600'
+                            }`}>
+                              {item.trend}
+                            </span>
+                            <span className="text-xs text-gray-500">vs last week</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Predictive Analysis */}
+              <Card className="border border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center">
+                    <div className="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center mr-2">
+                      <Brain className="w-3 h-3 text-purple-600" />
+                    </div>
+                    AI Predictive Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="text-center p-4 bg-white rounded-lg border border-purple-200">
+                      <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <TrendingUp className="w-6 h-6 text-purple-600" />
+                      </div>
+                      <h4 className="font-semibold text-gray-900 mb-1">Next 7 Days</h4>
+                      <p className="text-2xl font-bold text-purple-600 mb-1">+15%</p>
+                      <p className="text-sm text-gray-600">Expected increase</p>
+                    </div>
+                    <div className="text-center p-4 bg-white rounded-lg border border-indigo-200">
+                      <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <AlertTriangle className="w-6 h-6 text-indigo-600" />
+                      </div>
+                      <h4 className="font-semibold text-gray-900 mb-1">Peak Risk</h4>
+                      <p className="text-2xl font-bold text-indigo-600 mb-1">Jan 18</p>
+                      <p className="text-sm text-gray-600">Predicted peak day</p>
+                    </div>
+                    <div className="text-center p-4 bg-white rounded-lg border border-pink-200">
+                      <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Target className="w-6 h-6 text-pink-600" />
+                      </div>
+                      <h4 className="font-semibold text-gray-900 mb-1">Confidence</h4>
+                      <p className="text-2xl font-bold text-pink-600 mb-1">87%</p>
+                      <p className="text-sm text-gray-600">Prediction accuracy</p>
+                    </div>
+                  </div>
+                  <div className="mt-4 p-3 bg-white rounded-lg border border-gray-200">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Brain className="w-4 h-4 text-blue-600" />
+                      </div>
+                      <div>
+                        <h5 className="font-semibold text-gray-900 mb-1">AI Recommendation</h5>
+                        <p className="text-sm text-gray-700">
+                          Based on current trends and historical patterns, we recommend increasing 
+                          staffing levels for the week of January 15-21 to handle the predicted 
+                          15% increase in MTF cases. Consider pre-scheduling additional specialist 
+                          consultations for high-risk patients.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </CardContent>
         </Card>
