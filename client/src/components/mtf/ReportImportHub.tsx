@@ -819,29 +819,127 @@ function SystemIntegrationTab({
         ))}
       </div>
 
-      {/* 自动同步控制 */}
-      <Card className="border-2 border-dashed border-gray-200">
-        <CardContent className="p-4">
+      {/* 自动同步控制 - 优化版本 */}
+      <Card className={`relative overflow-hidden transition-all duration-500 ${
+        isAutoSync 
+          ? 'border-2 border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 shadow-lg' 
+          : 'border-2 border-dashed border-gray-200 bg-white'
+      }`}>
+        {/* 动态背景效果 */}
+        {isAutoSync && (
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-200 to-transparent animate-workflow-flow"></div>
+          </div>
+        )}
+        
+        <CardContent className="p-6 relative z-10">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 ${isAutoSync ? 'bg-green-100' : 'bg-gray-100'} rounded-lg flex items-center justify-center`}>
-                <Zap className={`w-5 h-5 ${isAutoSync ? 'text-green-600' : 'text-gray-600'}`} />
+            <div className="flex items-center gap-4">
+              {/* 增强的图标区域 */}
+              <div className={`relative w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                isAutoSync 
+                  ? 'bg-gradient-to-br from-green-100 to-emerald-100 shadow-md' 
+                  : 'bg-gray-100'
+              }`}>
+                <Zap className={`w-7 h-7 transition-all duration-300 ${
+                  isAutoSync ? 'text-green-600' : 'text-gray-600'
+                } ${isAutoSync ? 'animate-pulse' : ''}`} />
+                
+                {/* 活跃状态指示器 */}
+                {isAutoSync && (
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full animate-ping"></div>
+                )}
               </div>
-              <div>
-                <h4 className="font-semibold text-gray-900">Auto Sync</h4>
-                <p className="text-sm text-gray-600">
+              
+              {/* 文本信息区域 */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <h4 className="text-lg font-bold text-gray-900">Auto Sync</h4>
+                  <Badge 
+                    variant={isAutoSync ? "default" : "secondary"}
+                    className={`text-xs ${
+                      isAutoSync 
+                        ? 'bg-green-600 text-white animate-pulse' 
+                        : 'bg-gray-200 text-gray-600'
+                    }`}
+                  >
+                    {isAutoSync ? 'ACTIVE' : 'INACTIVE'}
+                  </Badge>
+                </div>
+                <p className={`text-sm font-medium ${
+                  isAutoSync ? 'text-green-700' : 'text-gray-600'
+                }`}>
                   {isAutoSync ? 'Automatically syncing every 30 seconds' : 'Manual sync only'}
                 </p>
+                
+                {/* 实时同步计数器和进度环 */}
+                {isAutoSync && (
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1 text-xs text-green-600">
+                      <Clock className="w-3 h-3" />
+                      <span>Next sync in: </span>
+                      <SyncCountdown />
+                    </div>
+                    <SyncProgressRing />
+                  </div>
+                )}
               </div>
             </div>
-            <Button
-              onClick={onToggleAutoSync}
-              variant={isAutoSync ? 'destructive' : 'default'}
-              className={isAutoSync ? 'animate-pulse' : ''}
-            >
-              {isAutoSync ? 'Stop Auto Sync' : 'Enable Auto Sync'}
-            </Button>
+            
+            {/* 增强的按钮区域 */}
+            <div className="flex items-center gap-3">
+              {/* 同步状态指示 */}
+              {isAutoSync && (
+                <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border border-green-200">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
+                  <span className="text-xs font-medium text-green-700">Live</span>
+                </div>
+              )}
+              
+              <Button
+                onClick={onToggleAutoSync}
+                variant={isAutoSync ? 'destructive' : 'default'}
+                size="lg"
+                className={`font-semibold transition-all duration-300 ${
+                  isAutoSync 
+                    ? 'bg-red-600 hover:bg-red-700 shadow-lg' 
+                    : 'bg-green-600 hover:bg-green-700 shadow-lg'
+                }`}
+              >
+                {isAutoSync ? (
+                  <>
+                    <X className="w-4 h-4 mr-2" />
+                    Stop Auto Sync
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-4 h-4 mr-2" />
+                    Enable Auto Sync
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
+          
+          {/* 同步统计信息 */}
+          {isAutoSync && (
+            <div className="mt-4 pt-4 border-t border-green-200">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-green-600">847</div>
+                  <div className="text-xs text-green-700">Reports Synced</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-green-600">99.2%</div>
+                  <div className="text-xs text-green-700">Success Rate</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-green-600">2.3s</div>
+                  <div className="text-xs text-green-700">Avg Response</div>
+                </div>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -1027,6 +1125,94 @@ function EmailImportTab() {
           <p>5. 支持的格式：PDF、DOC、DOCX、纯文本</p>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+// Sync Countdown Component
+function SyncCountdown() {
+  const [countdown, setCountdown] = useState(30);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          return 30; // Reset to 30 seconds
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <span className={`font-bold transition-all duration-300 ${
+      countdown <= 5 
+        ? 'text-red-600 animate-countdown-warning' 
+        : countdown <= 10 
+          ? 'text-orange-600 animate-pulse' 
+          : 'text-green-600'
+    }`}>
+      {countdown}s
+    </span>
+  );
+}
+
+// Sync Progress Ring Component
+function SyncProgressRing() {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          return 0; // Reset to 0
+        }
+        return prev + (100 / 30); // Increment every second for 30 seconds
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const circumference = 2 * Math.PI * 8; // radius = 8
+  const strokeDasharray = circumference;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+  return (
+    <div className="relative w-5 h-5">
+      <svg className="w-5 h-5 transform -rotate-90" viewBox="0 0 20 20">
+        {/* Background circle */}
+        <circle
+          cx="10"
+          cy="10"
+          r="8"
+          stroke="currentColor"
+          strokeWidth="2"
+          fill="none"
+          className="text-green-200"
+        />
+        {/* Progress circle */}
+        <circle
+          cx="10"
+          cy="10"
+          r="8"
+          stroke="currentColor"
+          strokeWidth="2"
+          fill="none"
+          strokeLinecap="round"
+          className="text-green-600 transition-all duration-1000 ease-linear"
+          style={{
+            strokeDasharray,
+            strokeDashoffset
+          }}
+        />
+      </svg>
+      {/* Center dot */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-1 h-1 bg-green-600 rounded-full animate-pulse"></div>
+      </div>
     </div>
   );
 }

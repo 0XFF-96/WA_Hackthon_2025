@@ -596,4 +596,48 @@
     border-radius: 50%;
     animation: data-flow 4s linear infinite;
   }
+
+  /* Auto Sync specific animations */
+  @keyframes sync-glow {
+    0%, 100% {
+      box-shadow: 0 0 5px rgba(34, 197, 94, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.6), 0 0 30px rgba(34, 197, 94, 0.4);
+    }
+  }
+
+  @keyframes status-pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes countdown-warning {
+    0%, 100% {
+      color: rgb(220, 38, 38);
+      transform: scale(1);
+    }
+    50% {
+      color: rgb(185, 28, 28);
+      transform: scale(1.1);
+    }
+  }
+
+  .animate-sync-glow {
+    animation: sync-glow 2s ease-in-out infinite;
+  }
+
+  .animate-status-pulse {
+    animation: status-pulse 1.5s ease-in-out infinite;
+  }
+
+  .animate-countdown-warning {
+    animation: countdown-warning 0.8s ease-in-out infinite;
+  }
 }
