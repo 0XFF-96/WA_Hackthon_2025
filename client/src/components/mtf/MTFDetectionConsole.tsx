@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Separator } from '@/components/ui/separator';
 import { 
   Shield, 
   Activity, 
@@ -19,7 +21,32 @@ import {
   ChevronRight,
   FileText,
   Bot,
-  UserCheck
+  UserCheck,
+  Clock,
+  Star,
+  CheckCircle,
+  Eye,
+  Send,
+  Timer,
+  Stethoscope,
+  FlaskConical,
+  MousePointer2,
+  Check,
+  X,
+  Filter,
+  MoreHorizontal,
+  ChevronDown,
+  User,
+  Calendar,
+  MapPin,
+  Heart,
+  MessageSquare,
+  Phone,
+  Edit,
+  RefreshCw,
+  Copy,
+  ExternalLink,
+  Info
 } from 'lucide-react';
 
 // Import the workflow visualization component
@@ -408,109 +435,8 @@ function ScanningTab() {
         ))}
       </div>
 
-      {/* Report Table */}
-      <Card className="shadow-sm">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center text-lg">
-            <div className="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center mr-2">
-              <Scan className="w-3 h-3 text-purple-600" />
-            </div>
-            Recent Scan Results
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">Patient ID</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">Scan Type</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">Scan Time</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">AI Priority</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">Risk Score</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  {
-                    id: 'scan_001',
-                    patientId: 'P001234',
-                    scanType: 'X-Ray',
-                    scanTime: '10:30 AM',
-                    aiPriority: 'critical',
-                    riskScore: 89,
-                    status: 'pending_review'
-                  },
-                  {
-                    id: 'scan_002',
-                    patientId: 'P001235',
-                    scanType: 'CT Scan',
-                    scanTime: '10:25 AM',
-                    aiPriority: 'high',
-                    riskScore: 76,
-                    status: 'outreach_sent'
-                  },
-                  {
-                    id: 'scan_003',
-                    patientId: 'P001236',
-                    scanType: 'MRI',
-                    scanTime: '10:20 AM',
-                    aiPriority: 'medium',
-                    riskScore: 62,
-                    status: 'completed'
-                  }
-                ].map((report) => (
-                  <tr key={report.id} className="border-b hover:bg-gray-50 transition-colors">
-                    <td className="py-3 px-4 font-medium text-gray-900">{report.patientId}</td>
-                    <td className="py-3 px-4">
-                      <Badge variant="outline" className="uppercase">
-                        {report.scanType}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-4 text-sm text-gray-600">{report.scanTime}</td>
-                    <td className="py-3 px-4">
-                      <Badge className={
-                        report.aiPriority === 'critical' ? 'bg-red-100 text-red-800' :
-                        report.aiPriority === 'high' ? 'bg-orange-100 text-orange-800' :
-                        report.aiPriority === 'medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
-                      }>
-                        {report.aiPriority.toUpperCase()}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-16 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className={`h-2 rounded-full ${
-                              report.riskScore >= 80 ? 'bg-red-500' :
-                              report.riskScore >= 60 ? 'bg-orange-500' :
-                              report.riskScore >= 40 ? 'bg-yellow-500' : 'bg-green-500'
-                            }`}
-                            style={{ width: `${report.riskScore}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-sm font-medium">{report.riskScore}</span>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <Badge className={
-                        report.status === 'outreach_sent' ? 'bg-green-100 text-green-800' :
-                        report.status === 'pending_review' ? 'bg-yellow-100 text-yellow-800' :
-                        report.status === 'processing' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
-                      }>
-                        {report.status === 'outreach_sent' ? 'Outreach Sent' :
-                         report.status === 'pending_review' ? 'Pending Review' :
-                         report.status === 'processing' ? 'Processing' : 'Completed'}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Enhanced Interactive Report Table */}
+      <EnhancedReportTable />
     </div>
   );
 }
@@ -1045,3 +971,814 @@ function MiniSankeyDiagram() {
     </Card>
   );
 }
+
+// Enhanced Interactive Report Table Component
+function EnhancedReportTable() {
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [selectedReport, setSelectedReport] = useState<any>(null);
+  const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
+  const [reports, setReports] = useState([
+    {
+      id: 'scan_001',
+      patientId: 'P001234',
+      patientName: 'Sarah Johnson',
+      age: 72,
+      gender: 'Female',
+      scanType: 'X-Ray',
+      scanTime: new Date('2024-01-20T10:30:00'),
+      aiPriority: 'critical',
+      riskScore: 89,
+      status: 'pending_review',
+      isNew: true,
+      // Detailed information
+      reportSummary: 'Acute fracture of the distal radius with dorsal angulation. No evidence of comminution. Soft tissue swelling present.',
+      fractureLocation: 'Distal Radius',
+      injuryMechanism: 'Fall from standing height',
+      aiConfidence: 0.94,
+      riskFactors: ['Age >70', 'Female gender', 'Low trauma mechanism', 'Previous fracture history'],
+      aiExplanation: [
+        { type: 'positive', text: 'Age >70 years increases MTF likelihood' },
+        { type: 'positive', text: 'Fall from standing height indicates minimal trauma' },
+        { type: 'positive', text: 'Distal radius is common MTF location' },
+        { type: 'negative', text: 'No vertebral or hip involvement detected' }
+      ],
+      emailStatus: 'pending',
+      emailContent: null
+    },
+    {
+      id: 'scan_002', 
+      patientId: 'P001235',
+      patientName: 'Michael Chen',
+      age: 45,
+      gender: 'Male',
+      scanType: 'CT Scan',
+      scanTime: new Date('2024-01-20T10:25:00'),
+      aiPriority: 'high',
+      riskScore: 76,
+      status: 'outreach_sent',
+      isNew: false,
+      reportSummary: 'Multiple rib fractures (ribs 4-6) on the left side. Pneumothorax not present. Associated soft tissue contusion.',
+      fractureLocation: 'Multiple Ribs (4-6)',
+      injuryMechanism: 'Motor vehicle collision',
+      aiConfidence: 0.82,
+      riskFactors: ['Male gender', 'High-energy trauma', 'Age <50'],
+      aiExplanation: [
+        { type: 'negative', text: 'Motor vehicle collision indicates high-energy trauma' },
+        { type: 'negative', text: 'Age <50 reduces MTF probability' },
+        { type: 'negative', text: 'Rib fractures less commonly associated with osteoporosis' },
+        { type: 'positive', text: 'Multiple fractures warrant bone density evaluation' }
+      ],
+      emailStatus: 'sent',
+      emailSentTime: new Date('2024-01-20T11:15:00'),
+      emailContent: {
+        subject: 'Your recent scan results – Bone Health Information',
+        body: `Dear Michael Chen,
+
+Our system has reviewed your recent imaging report following your motor vehicle collision. While the findings suggest a moderate likelihood of requiring bone health evaluation, the high-energy nature of your injury makes this less likely to be related to osteoporosis.
+
+However, we encourage you to:
+• Follow up with your primary care physician regarding the rib fractures
+• Discuss bone health during your recovery period
+• Maintain healthy lifestyle and bone care (calcium/vitamin D, regular exercise)
+
+If you experience persistent pain or new symptoms, please seek medical review promptly.
+
+Regards,
+Bone Health Care Team`
+      }
+    },
+    {
+      id: 'scan_003',
+      patientId: 'P001236',
+      patientName: 'Emma Rodriguez',
+      age: 35,
+      gender: 'Female',
+      scanType: 'MRI',
+      scanTime: new Date('2024-01-20T10:20:00'),
+      aiPriority: 'medium',
+      riskScore: 62,
+      status: 'completed',
+      isNew: false,
+      reportSummary: 'No acute fracture identified. Mild bone marrow edema in the distal tibia consistent with stress reaction.',
+      fractureLocation: 'None (Stress reaction)',
+      injuryMechanism: 'Running/Athletic activity',
+      aiConfidence: 0.71,
+      riskFactors: ['Female gender', 'Athletic activity', 'Age <40'],
+      aiExplanation: [
+        { type: 'negative', text: 'No acute fracture detected' },
+        { type: 'negative', text: 'Age <40 significantly reduces MTF risk' },
+        { type: 'negative', text: 'Athletic stress reaction, not traumatic injury' },
+        { type: 'positive', text: 'Female gender warrants monitoring' }
+      ],
+      emailStatus: 'not_required',
+      emailContent: null
+    }
+  ]);
+
+  // Simulate new reports arriving
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newReport = {
+        id: `scan_${Date.now()}`,
+        patientId: `P00${Math.floor(Math.random() * 9999)}`,
+        patientName: ['John Doe', 'Jane Smith', 'Bob Wilson', 'Alice Brown'][Math.floor(Math.random() * 4)],
+        age: Math.floor(Math.random() * 60) + 20,
+        gender: ['Male', 'Female'][Math.floor(Math.random() * 2)],
+        scanType: ['X-Ray', 'CT Scan', 'MRI'][Math.floor(Math.random() * 3)],
+        scanTime: new Date(),
+        aiPriority: ['critical', 'high', 'medium', 'low'][Math.floor(Math.random() * 4)],
+        riskScore: Math.floor(Math.random() * 100),
+        status: 'pending_review',
+        isNew: true,
+        reportSummary: 'Automated scan result generated for demo purposes.',
+        fractureLocation: 'To be determined',
+        injuryMechanism: 'Unknown',
+        aiConfidence: 0.75,
+        riskFactors: ['Age factor', 'Gender factor'],
+        aiExplanation: [
+          { type: 'positive', text: 'Initial assessment positive' },
+          { type: 'negative', text: 'Requires further review' }
+        ],
+        emailStatus: 'pending',
+        emailContent: null
+      };
+
+      setReports(prev => [newReport, ...prev.slice(0, 9)]);
+      
+      // Remove new flag after animation
+      setTimeout(() => {
+        setReports(prev => prev.map(r => r.id === newReport.id ? { ...r, isNew: false } : r));
+      }, 3000);
+    }, 15000); // New report every 15 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const getRelativeTime = (date: Date) => {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return date.toLocaleDateString();
+  };
+
+  const getScanTypeIcon = (type: string) => {
+    switch (type) {
+      case 'X-Ray': return <Monitor className="w-4 h-4" />;
+      case 'CT Scan': return <Scan className="w-4 h-4" />;
+      case 'MRI': return <Brain className="w-4 h-4" />;
+      default: return <FileText className="w-4 h-4" />;
+    }
+  };
+
+  const getPriorityConfig = (priority: string) => {
+    switch (priority) {
+      case 'critical':
+        return {
+          icon: <AlertCircle className="w-3 h-3" />,
+          bgClass: 'bg-red-100',
+          textClass: 'text-red-800',
+        };
+      case 'high':
+        return {
+          icon: <Star className="w-3 h-3" />,
+          bgClass: 'bg-orange-100',
+          textClass: 'text-orange-800',
+        };
+      case 'medium':
+        return {
+          icon: <Timer className="w-3 h-3" />,
+          bgClass: 'bg-yellow-100',
+          textClass: 'text-yellow-800',
+        };
+      default:
+        return {
+          icon: <CheckCircle className="w-3 h-3" />,
+          bgClass: 'bg-green-100',
+          textClass: 'text-green-800',
+        };
+    }
+  };
+
+  const getStatusConfig = (status: string) => {
+    switch (status) {
+      case 'pending_review':
+        return {
+          icon: <Eye className="w-3 h-3" />,
+          bgClass: 'bg-yellow-100',
+          textClass: 'text-yellow-800',
+          label: 'Pending Review'
+        };
+      case 'outreach_sent':
+        return {
+          icon: <Send className="w-3 h-3" />,
+          bgClass: 'bg-blue-100',
+          textClass: 'text-blue-800',
+          label: 'Outreach Sent'
+        };
+      case 'completed':
+        return {
+          icon: <CheckCircle className="w-3 h-3" />,
+          bgClass: 'bg-green-100',
+          textClass: 'text-green-800',
+          label: 'Completed'
+        };
+      default:
+        return {
+          icon: <Clock className="w-3 h-3" />,
+          bgClass: 'bg-gray-100',
+          textClass: 'text-gray-800',
+          label: 'Processing'
+        };
+    }
+  };
+
+  const handleRowClick = (reportId: string) => {
+    const report = reports.find(r => r.id === reportId);
+    if (report) {
+      setSelectedReport(report);
+      setIsDetailPanelOpen(true);
+    }
+  };
+
+  const handleRowSelect = (reportId: string) => {
+    setSelectedRows(prev => 
+      prev.includes(reportId) 
+        ? prev.filter(id => id !== reportId)
+        : [...prev, reportId]
+    );
+  };
+
+  return (
+    <Card className="shadow-sm overflow-hidden">
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center text-lg">
+            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+              <Scan className="w-4 h-4 text-purple-600" />
+            </div>
+            Recent Scan Results
+            <Badge className="ml-3 bg-green-100 text-green-700">
+              Live
+            </Badge>
+          </CardTitle>
+          
+          {selectedRows.length > 0 && (
+            <div className="flex items-center gap-2">
+              <Badge className="bg-blue-100 text-blue-800">
+                {selectedRows.length} selected
+              </Badge>
+              <Button size="sm" variant="outline">
+                <Eye className="w-3 h-3 mr-1" />
+                Review
+              </Button>
+              <Button size="sm" variant="outline">
+                <Send className="w-3 h-3 mr-1" />
+                Send Outreach
+              </Button>
+            </div>
+          )}
+        </div>
+      </CardHeader>
+
+      <CardContent className="p-0">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-4 px-4 font-semibold text-gray-700">
+                  <input 
+                    type="checkbox" 
+                    className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedRows(reports.map(r => r.id));
+                      } else {
+                        setSelectedRows([]);
+                      }
+                    }}
+                    checked={selectedRows.length === reports.length}
+                  />
+                </th>
+                <th className="text-left py-4 px-4 font-semibold text-gray-700">
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    Patient ID
+                  </div>
+                </th>
+                <th className="text-left py-4 px-4 font-semibold text-gray-700">
+                  <div className="flex items-center gap-2">
+                    <Stethoscope className="w-4 h-4" />
+                    Scan Type
+                  </div>
+                </th>
+                <th className="text-left py-4 px-4 font-semibold text-gray-700">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    Scan Time
+                  </div>
+                </th>
+                <th className="text-left py-4 px-4 font-semibold text-gray-700">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4" />
+                    AI Priority
+                  </div>
+                </th>
+                <th className="text-left py-4 px-4 font-semibold text-gray-700">
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4" />
+                    Risk Score
+                  </div>
+                </th>
+                <th className="text-left py-4 px-4 font-semibold text-gray-700">
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-4 h-4" />
+                    Status
+                  </div>
+                </th>
+                <th className="text-left py-4 px-4 font-semibold text-gray-700">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reports.map((report, index) => {
+                const priorityConfig = getPriorityConfig(report.aiPriority);
+                const statusConfig = getStatusConfig(report.status);
+                const isSelected = selectedRows.includes(report.id);
+                
+                return (
+                  <tr 
+                    key={report.id}
+                    className={`border-b border-gray-100 transition-all duration-200 cursor-pointer
+                      ${report.isNew ? 'animate-slide-in-up bg-blue-50' : ''}
+                      ${isSelected ? 'bg-purple-50 border-purple-200' : 'hover:bg-gray-50'}
+                      ${report.aiPriority === 'critical' ? 'border-l-4 border-l-red-500' : ''}
+                      group
+                    `}
+                    onClick={() => handleRowClick(report.id)}
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <td className="py-4 px-4" onClick={(e) => e.stopPropagation()}>
+                      <input 
+                        type="checkbox"
+                        className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                        checked={isSelected}
+                        onChange={() => handleRowSelect(report.id)}
+                      />
+                    </td>
+                    
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <User className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-900">{report.patientId}</div>
+                          {report.isNew && (
+                            <div className="text-xs text-blue-600 font-medium">New Case</div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                          {getScanTypeIcon(report.scanType)}
+                        </div>
+                        <Badge variant="outline" className="font-medium">
+                          {report.scanType}
+                        </Badge>
+                      </div>
+                    </td>
+                    
+                    <td className="py-4 px-4">
+                      <div className="space-y-1">
+                        <div className="text-sm font-medium text-gray-900">
+                          {report.scanTime.toLocaleTimeString('en-US', { 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                          })}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {getRelativeTime(report.scanTime)}
+                        </div>
+                      </div>
+                    </td>
+                    
+                    <td className="py-4 px-4">
+                      <Badge 
+                        className={`${priorityConfig.bgClass} ${priorityConfig.textClass} font-medium`}
+                      >
+                        <span className="flex items-center gap-1">
+                          {priorityConfig.icon}
+                          {report.aiPriority.toUpperCase()}
+                        </span>
+                      </Badge>
+                    </td>
+                    
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full transition-all duration-500 ${
+                              report.riskScore >= 80 ? 'bg-red-500' :
+                              report.riskScore >= 60 ? 'bg-orange-500' :
+                              report.riskScore >= 40 ? 'bg-yellow-500' : 'bg-green-500'
+                            }`}
+                            style={{ 
+                              width: `${report.riskScore}%`
+                            }}
+                          />
+                        </div>
+                        <span className={`text-sm font-bold ${
+                          report.riskScore >= 80 ? 'text-red-600' :
+                          report.riskScore >= 60 ? 'text-orange-600' :
+                          report.riskScore >= 40 ? 'text-yellow-600' : 'text-green-600'
+                        }`}>
+                          {report.riskScore}
+                        </span>
+                      </div>
+                    </td>
+                    
+                    <td className="py-4 px-4">
+                      <Badge 
+                        className={`${statusConfig.bgClass} ${statusConfig.textClass} font-medium`}
+                      >
+                        <span className="flex items-center gap-1">
+                          {statusConfig.icon}
+                          {statusConfig.label}
+                        </span>
+                      </Badge>
+                    </td>
+                    
+                    <td className="py-4 px-4" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                          <Send className="w-4 h-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </CardContent>
+
+      {/* Detail Panel */}
+      <Sheet open={isDetailPanelOpen} onOpenChange={setIsDetailPanelOpen}>
+        <SheetContent side="right" className="w-[600px] sm:w-[700px] overflow-y-auto">
+          {selectedReport && (
+            <CaseDetailPanel 
+              report={selectedReport} 
+              onClose={() => setIsDetailPanelOpen(false)}
+            />
+          )}
+        </SheetContent>
+      </Sheet>
+    </Card>
+  );
+}
+
+// Case Detail Panel Component
+function CaseDetailPanel({ report, onClose }: { report: any; onClose: () => void }) {
+  const [isEmailExpanded, setIsEmailExpanded] = useState(false);
+
+  const getRiskColor = (score: number) => {
+    if (score >= 80) return 'text-red-600 bg-red-50 border-red-200';
+    if (score >= 60) return 'text-orange-600 bg-orange-50 border-orange-200';
+    if (score >= 40) return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+    return 'text-green-600 bg-green-50 border-green-200';
+  };
+
+  const getEmailStatusConfig = (status: string) => {
+    switch (status) {
+      case 'sent':
+        return { 
+          color: 'bg-green-100 text-green-800', 
+          icon: <CheckCircle className="w-4 h-4" />, 
+          label: 'Email Sent' 
+        };
+      case 'pending':
+        return { 
+          color: 'bg-yellow-100 text-yellow-800', 
+          icon: <Clock className="w-4 h-4" />, 
+          label: 'Pending Send' 
+        };
+      case 'failed':
+        return { 
+          color: 'bg-red-100 text-red-800', 
+          icon: <X className="w-4 h-4" />, 
+          label: 'Send Failed' 
+        };
+      default:
+        return { 
+          color: 'bg-gray-100 text-gray-800', 
+          icon: <Info className="w-4 h-4" />, 
+          label: 'Not Required' 
+        };
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <SheetHeader>
+        <div className="flex items-center justify-between">
+          <SheetTitle className="text-xl font-bold text-gray-900">
+            Case Details - {report.patientId}
+          </SheetTitle>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+      </SheetHeader>
+
+      {/* 1. Patient Report Summary */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <User className="w-5 h-5 text-blue-600" />
+          <h3 className="text-lg font-semibold text-gray-900">Patient Report Summary</h3>
+        </div>
+
+        {/* Basic Info */}
+        <Card className="border-blue-100">
+          <CardContent className="p-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-gray-500" />
+                  <div>
+                    <div className="text-sm text-gray-500">Patient</div>
+                    <div className="font-semibold">{report.patientName || 'Unknown'}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Heart className="w-4 h-4 text-gray-500" />
+                  <div>
+                    <div className="text-sm text-gray-500">Age / Gender</div>
+                    <div className="font-semibold">{report.age} / {report.gender}</div>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-gray-500" />
+                  <div>
+                    <div className="text-sm text-gray-500">Scan Time</div>
+                    <div className="font-semibold">
+                      {report.scanTime.toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Scan className="w-4 h-4 text-gray-500" />
+                  <div>
+                    <div className="text-sm text-gray-500">Scan Type</div>
+                    <div className="font-semibold">{report.scanType}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Report Extract */}
+        <Card>
+          <CardHeader className="pb-3">
+            <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Radiology Report Extract
+            </h4>
+          </CardHeader>
+          <CardContent>
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <p className="text-sm text-gray-700 italic">"{report.reportSummary}"</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <div>
+                <div className="text-sm text-gray-500">Fracture Location</div>
+                <div className="font-medium">{report.fractureLocation}</div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-500">Injury Mechanism</div>
+                <div className="font-medium">{report.injuryMechanism}</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Separator />
+
+      {/* 2. AI Risk Explanation */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Brain className="w-5 h-5 text-purple-600" />
+          <h3 className="text-lg font-semibold text-gray-900">AI Risk Assessment</h3>
+        </div>
+
+        {/* Risk Score */}
+        <Card className={`border-2 ${getRiskColor(report.riskScore)}`}>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-sm font-medium text-gray-600">Risk Score</div>
+                <div className="text-2xl font-bold">{report.riskScore}/100</div>
+                <div className="text-sm font-medium">
+                  {report.riskScore >= 80 ? 'High Risk' : 
+                   report.riskScore >= 60 ? 'Moderate Risk' : 
+                   report.riskScore >= 40 ? 'Low-Moderate Risk' : 'Low Risk'}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm text-gray-500">AI Confidence</div>
+                <div className="text-lg font-semibold">{Math.round(report.aiConfidence * 100)}%</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Risk Factors */}
+        <Card>
+          <CardHeader className="pb-3">
+            <h4 className="font-semibold text-gray-900">Risk Factors Identified</h4>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {report.riskFactors.map((factor: string, index: number) => (
+                <div key={index} className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg">
+                  <AlertCircle className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-800">{factor}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* AI Explanation */}
+        <Card>
+          <CardHeader className="pb-3">
+            <h4 className="font-semibold text-gray-900">Explainable AI Analysis</h4>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {report.aiExplanation.map((explanation: any, index: number) => (
+                <div 
+                  key={index} 
+                  className={`flex items-start gap-3 p-3 rounded-lg transition-all duration-300 ${
+                    explanation.type === 'positive' 
+                      ? 'bg-green-50 border border-green-200' 
+                      : 'bg-red-50 border border-red-200'
+                  }`}
+                  style={{ animationDelay: `${index * 150}ms` }}
+                >
+                  {explanation.type === 'positive' ? (
+                    <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 animate-fade-in-right" />
+                  ) : (
+                    <X className="w-5 h-5 text-red-600 mt-0.5 animate-fade-in-right" />
+                  )}
+                  <span className={`text-sm font-medium ${
+                    explanation.type === 'positive' ? 'text-green-800' : 'text-red-800'
+                  }`}>
+                    {explanation.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Separator />
+
+      {/* 3. Email Outreach */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <MessageSquare className="w-5 h-5 text-green-600" />
+          <h3 className="text-lg font-semibold text-gray-900">Patient Outreach</h3>
+        </div>
+
+        {/* Email Status */}
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <Badge className={getEmailStatusConfig(report.emailStatus).color}>
+                  <span className="flex items-center gap-1">
+                    {getEmailStatusConfig(report.emailStatus).icon}
+                    {getEmailStatusConfig(report.emailStatus).label}
+                  </span>
+                </Badge>
+                {report.emailSentTime && (
+                  <div className="text-sm text-gray-500">
+                    Sent: {report.emailSentTime.toLocaleString()}
+                  </div>
+                )}
+              </div>
+              
+              {report.emailStatus === 'sent' && (
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline">
+                    <RefreshCw className="w-3 h-3 mr-1" />
+                    Resend
+                  </Button>
+                  <Button size="sm" variant="outline">
+                    <Edit className="w-3 h-3 mr-1" />
+                    Edit
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* Email Content Preview */}
+            {report.emailContent && (
+              <div className="space-y-3">
+                <div 
+                  className="border rounded-lg p-3 cursor-pointer transition-all duration-200 hover:bg-gray-50"
+                  onClick={() => setIsEmailExpanded(!isEmailExpanded)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">
+                        Subject: {report.emailContent.subject}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        Click to {isEmailExpanded ? 'collapse' : 'expand'} email content
+                      </div>
+                    </div>
+                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
+                      isEmailExpanded ? 'rotate-180' : ''
+                    }`} />
+                  </div>
+                </div>
+
+                {isEmailExpanded && (
+                  <div className="border rounded-lg p-4 bg-gray-50 animate-slide-in-up">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h5 className="font-semibold text-gray-900">Email Content</h5>
+                        <Button size="sm" variant="ghost">
+                          <Copy className="w-3 h-3 mr-1" />
+                          Copy
+                        </Button>
+                      </div>
+                      <div className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+                        {report.emailContent.body}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {report.emailStatus === 'pending' && (
+              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="w-4 h-4 text-yellow-600" />
+                  <span className="text-sm font-medium text-yellow-800">Email Pending</span>
+                </div>
+                <p className="text-sm text-yellow-700">
+                  This case requires review before automated outreach can be sent.
+                </p>
+                <div className="flex gap-2 mt-3">
+                  <Button size="sm" className="bg-yellow-600 hover:bg-yellow-700">
+                    Generate & Send Email
+                  </Button>
+                  <Button size="sm" variant="outline">
+                    Mark as No Contact Required
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {report.emailStatus === 'not_required' && (
+              <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Info className="w-4 h-4 text-gray-600" />
+                  <span className="text-sm font-medium text-gray-800">No Outreach Required</span>
+                </div>
+                <p className="text-sm text-gray-600 mt-1">
+                  Based on the AI assessment, this case does not require patient outreach.
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+export default MTFDetectionConsole;
