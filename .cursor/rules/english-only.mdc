@@ -1,0 +1,217 @@
+# English-Only Code and Documentation Rule
+
+## Code Language Standards
+
+### Code Comments and Documentation
+- **All code comments MUST be written in English**
+- **All variable names, function names, and class names MUST use English terminology**
+- **All JSDoc comments and inline documentation MUST be in English**
+- **All error messages and user-facing strings MUST be in English**
+
+### Variable and Function Naming
+```typescript
+// ✅ GOOD - English naming
+const patientData = { name: 'John Doe', age: 45 };
+const generateMedicalReport = () => { /* ... */ };
+const isPatientEligible = (patient: Patient) => { /* ... */ };
+
+// ❌ BAD - Non-English naming
+const 患者数据 = { name: 'John Doe', age: 45 };
+const 生成医疗报告 = () => { /* ... */ };
+const 是否符合条件 = (patient: Patient) => { /* ... */ };
+```
+
+### User Interface Text
+- **All UI labels, buttons, and messages MUST be in English**
+- **All form field labels and placeholders MUST be in English**
+- **All error messages and notifications MUST be in English**
+- **All tooltips and help text MUST be in English**
+
+### Code Examples
+```typescript
+// ✅ GOOD - English UI text
+const PatientForm = () => {
+  return (
+    <div>
+      <label>Patient Name</label>
+      <input placeholder="Enter patient name" />
+      <button>Save Patient Data</button>
+    </div>
+  );
+};
+
+// ❌ BAD - Non-English UI text
+const PatientForm = () => {
+  return (
+    <div>
+      <label>患者姓名</label>
+      <input placeholder="输入患者姓名" />
+      <button>保存患者数据</button>
+    </div>
+  );
+};
+```
+
+### Medical Terminology
+- **Use standard English medical terminology**
+- **Follow international medical coding standards (ICD-10, SNOMED CT)**
+- **Use English abbreviations for medical terms (e.g., MTF, DEXA, CT, MRI)**
+
+```typescript
+// ✅ GOOD - English medical terms
+interface MedicalReport {
+  reportType: 'xray' | 'mri' | 'ct' | 'ultrasound';
+  findings: string;
+  diagnosis: string;
+  recommendations: string[];
+}
+
+// ❌ BAD - Mixed language medical terms
+interface MedicalReport {
+  报告类型: 'x光' | 'mri' | 'ct' | '超声';
+  findings: string;
+  diagnosis: string;
+  recommendations: string[];
+}
+```
+
+### API and Database Fields
+- **All API endpoint names MUST be in English**
+- **All database field names MUST be in English**
+- **All GraphQL schema definitions MUST use English**
+
+```typescript
+// ✅ GOOD - English API design
+app.post('/api/patients', createPatient);
+app.get('/api/medical-reports', getMedicalReports);
+
+// Database schema
+const PatientSchema = {
+  patientId: String,
+  firstName: String,
+  lastName: String,
+  dateOfBirth: Date,
+  medicalHistory: Array
+};
+
+// ❌ BAD - Non-English API design
+app.post('/api/患者', createPatient);
+app.get('/api/医疗报告', getMedicalReports);
+```
+
+### Constants and Enums
+```typescript
+// ✅ GOOD - English constants
+export const PATIENT_STATUS = {
+  ACTIVE: 'active',
+  INACTIVE: 'inactive',
+  PENDING: 'pending',
+  DISCHARGED: 'discharged'
+} as const;
+
+export enum RiskLevel {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+  CRITICAL = 'critical'
+}
+
+// ❌ BAD - Non-English constants
+export const 患者状态 = {
+  激活: 'active',
+  非激活: 'inactive',
+  等待中: 'pending',
+  已出院: 'discharged'
+} as const;
+```
+
+### Exception Handling
+```typescript
+// ✅ GOOD - English error messages
+try {
+  await processPatientData(patient);
+} catch (error) {
+  throw new Error('Failed to process patient data: Invalid patient ID');
+}
+
+// ❌ BAD - Non-English error messages
+try {
+  await processPatientData(patient);
+} catch (error) {
+  throw new Error('处理患者数据失败: 无效的患者ID');
+}
+```
+
+## Documentation Standards
+
+### README Files
+- **All README files MUST be written in English**
+- **Technical documentation MUST be in English**
+- **API documentation MUST be in English**
+
+### Code Comments
+```typescript
+// ✅ GOOD - English comments
+/**
+ * Calculates the risk score for minimal trauma fractures
+ * @param patientAge - Patient's age in years
+ * @param boneHistory - Previous bone fracture history
+ * @returns Risk score between 0-100
+ */
+function calculateMTFRisk(patientAge: number, boneHistory: boolean): number {
+  // Higher risk for patients over 65
+  if (patientAge > 65) {
+    return boneHistory ? 85 : 70;
+  }
+  return boneHistory ? 60 : 30;
+}
+
+// ❌ BAD - Non-English comments
+/**
+ * 计算微创骨折的风险评分
+ * @param patientAge - 患者年龄
+ * @param boneHistory - 既往骨折史
+ * @returns 0-100之间的风险评分
+ */
+function calculateMTFRisk(patientAge: number, boneHistory: boolean): number {
+  // 65岁以上患者风险更高
+  if (patientAge > 65) {
+    return boneHistory ? 85 : 70;
+  }
+  return boneHistory ? 60 : 30;
+}
+```
+
+## Enforcement
+
+### Code Review Checklist
+- [ ] All variable and function names are in English
+- [ ] All UI text and labels are in English
+- [ ] All comments and documentation are in English
+- [ ] All error messages are in English
+- [ ] All API endpoints use English naming
+- [ ] All database fields use English naming
+
+### Tools and Automation
+- Use ESLint rules to enforce English naming conventions
+- Configure spell checkers to flag non-English text in code
+- Set up automated checks in CI/CD pipeline
+
+### Exceptions
+- **Configuration files may contain localized content for specific regions**
+- **Test data may include non-English content for internationalization testing**
+- **External API responses may contain non-English content (should be documented)**
+
+## Medical Domain Specific Guidelines
+
+### Healthcare Terminology
+- Use internationally recognized medical terminology
+- Follow WHO and medical standards organizations
+- Use standard medical abbreviations (SNOMED CT, ICD-10)
+
+### Patient Data
+- Use English field names even when handling international patient data
+- Document any localization requirements clearly
+- Maintain English internal data structure regardless of display language
+
+This rule ensures consistency, maintainability, and international compatibility of the healthcare AI platform codebase.
