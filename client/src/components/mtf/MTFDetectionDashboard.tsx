@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { 
   Shield, 
   AlertTriangle, 
@@ -19,7 +20,14 @@ import {
   CheckCircle,
   XCircle,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Upload,
+  Target,
+  ArrowRight,
+  Plus,
+  Filter,
+  Search,
+  AlertCircle
 } from 'lucide-react';
 
 interface MTFDetectionDashboardProps {
@@ -52,8 +60,19 @@ interface SystemStats {
   qualityScore: number;
 }
 
+interface WorkflowStep {
+  id: number;
+  title: string;
+  description: string;
+  icon: any;
+  status: 'pending' | 'in_progress' | 'completed' | 'disabled';
+  color: string;
+}
+
 export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardProps) {
   const [activeTab, setActiveTab] = useState('overview');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentWorkflowStep, setCurrentWorkflowStep] = useState(1);
   const [systemStats, setSystemStats] = useState<SystemStats>({
     totalProcessed: 0,
     mtfDetected: 0,
@@ -176,30 +195,172 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
     return <ArrowDown className="h-4 w-4 text-green-600" />;
   };
 
-  const criticalCases = mtfCases.filter(c => c.riskLevel === 'critical' || c.mtfSuspected);
-  const pendingCases = mtfCases.filter(c => c.status === 'pending');
+  // Workflow steps definition
+  const workflowSteps: WorkflowStep[] = [
+    {
+      id: 1,
+      title: 'Report Import',
+      description: 'Upload or input radiology reports',
+      icon: Upload,
+      status: currentWorkflowStep >= 1 ? 'completed' : 'pending',
+      color: 'blue'
+    },
+    {
+      id: 2,
+      title: 'AI Analysis',
+      description: 'AI-powered MTF detection & risk assessment',
+      icon: Brain,
+      status: currentWorkflowStep >= 2 ? 'completed' : currentWorkflowStep === 1 ? 'in_progress' : 'pending',
+      color: 'purple'
+    },
+    {
+      id: 3,
+      title: 'Risk Assessment',
+      description: 'Generate personalized risk evaluation',
+      icon: Target,
+      status: currentWorkflowStep >= 3 ? 'completed' : currentWorkflowStep === 2 ? 'in_progress' : 'pending',
+      color: 'orange'
+    },
+    {
+      id: 4,
+      title: 'Patient Outreach',
+      description: 'Automated personalized communication',
+      icon: Phone,
+      status: currentWorkflowStep >= 4 ? 'completed' : currentWorkflowStep === 3 ? 'in_progress' : 'disabled',
+      color: 'green'
+    }
+  ];
+
+  // Filter cases based on search query
+  const filteredCases = mtfCases.filter(case_ => 
+    case_.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    case_.patientId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    case_.reportType.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const criticalCases = filteredCases.filter(c => c.riskLevel === 'critical' || c.mtfSuspected);
+  const pendingCases = filteredCases.filter(c => c.status === 'pending');
+
+  const handleWorkflowStepClick = (stepId: number) => {
+    if (stepId <= currentWorkflowStep + 1) {
+      setCurrentWorkflowStep(stepId);
+      console.log('Workflow step clicked:', stepId);
+    }
+  };
+
+  const handleNewCase = () => {
+    console.log('New case clicked');
+  };
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="p-6 space-y-6" data-testid="mtf-detection-dashboard">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">MTF Detection Console</h1>
-          <p className="text-gray-600">Minimal trauma fracture detection and patient outreach management system</p>
+          <h1 className="text-2xl font-bold" data-testid="text-page-title">MTF Detection Console</h1>
+          <p className="text-muted-foreground">Minimal trauma fracture detection and patient outreach management system</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
+        <div className="flex items-center space-x-2">
+          <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+            <Shield className="w-3 h-3 mr-1" />
+            AI Detection Active
+          </Badge>
+          <Button variant="outline" onClick={handleNewCase} data-testid="button-import-reports">
             <FileText className="w-4 h-4 mr-2" />
             Import Reports
           </Button>
-          <Button size="sm">
+          <Button onClick={handleNewCase} data-testid="button-batch-scan">
             <Shield className="w-4 h-4 mr-2" />
             Batch Scan
           </Button>
         </div>
       </div>
 
-      {/* Critical Alerts */}
+      {/* Workflow Progress */}
+      <Card className="border-t-4 border-t-blue-500 shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <BarChart3 className="h-5 w-5 text-blue-600" />
+            MTF Detection Workflow
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center">
+            <div className="flex items-center space-x-4">
+              {workflowSteps.map((step, index) => (
+                <div key={step.id} className="flex items-center">
+                  <div className="flex flex-col items-center">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div 
+                            className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 cursor-pointer ${
+                              step.status === 'completed' 
+                                ? 'bg-green-100 text-green-600 shadow-md border-2 border-green-200 hover:bg-green-200' :
+                              step.status === 'in_progress' 
+                                ? 'bg-blue-100 text-blue-600 shadow-md border-2 border-blue-200 animate-pulse' :
+                              step.status === 'disabled'
+                                ? 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed' :
+                                `bg-gray-50 text-gray-400 border-2 border-gray-200 hover:bg-${step.color}-50 hover:text-${step.color}-500 cursor-pointer`
+                            }`}
+                            onClick={() => step.status !== 'disabled' && handleWorkflowStepClick(step.id)}
+                          >
+                            <step.icon className="w-5 h-5" />
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{step.title}: {step.description}</p>
+                          {step.status === 'disabled' && (
+                            <p className="text-xs text-gray-500 mt-1">Complete previous steps first</p>
+                          )}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <div className="text-center mt-2 max-w-20">
+                      <div className="font-semibold text-xs text-gray-900">{step.title}</div>
+                      <div className="text-xs text-gray-600 mt-1 leading-tight">{step.description}</div>
+                    </div>
+                  </div>
+                  {index < workflowSteps.length - 1 && (
+                    <div className="flex items-center mx-4">
+                      <ArrowRight className="w-4 h-4 text-gray-300" />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* System Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { icon: FileText, label: "Reports Processed", value: systemStats.totalProcessed.toString(), change: "+12%", color: "text-blue-600" },
+          { icon: Shield, label: "MTF Detected", value: systemStats.mtfDetected.toString(), change: "+8%", color: "text-red-600" },
+          { icon: Clock, label: "Pending Review", value: pendingCases.length.toString(), change: "-5%", color: "text-orange-600" },
+          { icon: Brain, label: "Avg Confidence", value: `${systemStats.averageConfidence.toFixed(1)}%`, change: "+2%", color: "text-purple-600" },
+        ].map((stat, index) => (
+          <Card key={index} data-testid={`stat-card-${index}`}>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">{stat.label}</p>
+                  <p className="text-2xl font-bold" data-testid={`stat-value-${index}`}>{stat.value}</p>
+                </div>
+                <div className="text-right">
+                  <stat.icon className={`w-5 h-5 ${stat.color} mb-1`} />
+                  <Badge variant="secondary" className="text-xs">
+                    {stat.change}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Critical Cases Alert */}
       {criticalCases.length > 0 && (
         <Alert className="border-red-200 bg-red-50">
           <AlertTriangle className="h-4 w-4 text-red-600" />
@@ -209,108 +370,64 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
         </Alert>
       )}
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Reports Processed</p>
-                <p className="text-2xl font-bold text-gray-900">{systemStats.totalProcessed}</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Critical Cases List */}
+        <div className="lg:col-span-2 space-y-4">
+          <Card>
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center">
+                  <AlertTriangle className="w-5 h-5 mr-2 text-red-600" />
+                  Critical Cases ({criticalCases.length})
+                </CardTitle>
+                <div className="flex items-center space-x-2">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      placeholder="Search cases..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9 w-48 h-9 px-3 py-1 text-sm border border-input bg-background rounded-md"
+                      data-testid="input-search-cases"
+                    />
+                  </div>
+                  <Button variant="outline" size="icon">
+                    <Filter className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <FileText className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {criticalCases.length === 0 ? (
+                <p className="text-center text-muted-foreground py-4">No critical cases found</p>
+              ) : (
+                criticalCases.map((case_) => (
+                  <CriticalCaseCard 
+                    key={case_.id} 
+                    case_={case_} 
+                    onSelect={() => onCaseSelect?.(case_.id)}
+                    getRiskLevelColor={getRiskLevelColor}
+                    getStatusColor={getStatusColor}
+                    getUrgencyIcon={getUrgencyIcon}
+                  />
+                ))
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">MTF Detected</p>
-                <p className="text-2xl font-bold text-gray-900">{systemStats.mtfDetected}</p>
-              </div>
-              <Shield className="h-8 w-8 text-red-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Pending Review</p>
-                <p className="text-2xl font-bold text-gray-900">{pendingCases.length}</p>
-              </div>
-              <Clock className="h-8 w-8 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Avg Confidence</p>
-                <p className="text-2xl font-bold text-gray-900">{systemStats.averageConfidence.toFixed(1)}%</p>
-              </div>
-              <Brain className="h-8 w-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Quality Score</p>
-                <p className="text-2xl font-bold text-gray-900">{systemStats.qualityScore.toFixed(1)}</p>
-              </div>
-              <BarChart3 className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Avg Processing Time</p>
-                <p className="text-2xl font-bold text-gray-900">{systemStats.averageProcessingTime.toFixed(1)}s</p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-indigo-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Content */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="critical">Critical Cases ({criticalCases.length})</TabsTrigger>
-          <TabsTrigger value="pending">Pending ({pendingCases.length})</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4">
-            <h3 className="text-lg font-semibold">Latest MTF Detection Results</h3>
-            {isLoading ? (
-              <div className="space-y-4">
-                {[1, 2, 3].map(i => (
-                  <Card key={i}>
-                    <CardContent className="p-6">
-                      <div className="animate-pulse">
-                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              mtfCases.slice(0, 5).map((case_) => (
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Recent Cases */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <User className="w-5 h-5 mr-2" />
+                Recent Cases
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {filteredCases.slice(0, 3).map((case_) => (
                 <MTFCaseCard 
                   key={case_.id} 
                   case_={case_} 
@@ -318,50 +435,121 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
                   getRiskLevelColor={getRiskLevelColor}
                   getStatusColor={getStatusColor}
                   getUrgencyIcon={getUrgencyIcon}
+                  compact={true}
                 />
-              ))
-            )}
-          </div>
-        </TabsContent>
+              ))}
+            </CardContent>
+          </Card>
 
-        <TabsContent value="critical" className="space-y-4">
-          <div className="grid gap-4">
-            <h3 className="text-lg font-semibold text-red-700">Critical MTF Cases</h3>
-            {criticalCases.map((case_) => (
-              <MTFCaseCard 
-                key={case_.id} 
-                case_={case_} 
-                onSelect={() => onCaseSelect?.(case_.id)}
-                getRiskLevelColor={getRiskLevelColor}
-                getStatusColor={getStatusColor}
-                getUrgencyIcon={getUrgencyIcon}
-                variant="critical"
-              />
-            ))}
-          </div>
-        </TabsContent>
+          {/* System Alerts */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center text-orange-600">
+                <AlertCircle className="w-5 h-5 mr-2" />
+                System Alerts
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-start space-x-3 p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
+                <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-medium">High case volume</p>
+                  <p className="text-xs text-muted-foreground">Processing queue at 85% capacity</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                <Brain className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-medium">AI Model Updated</p>
+                  <p className="text-xs text-muted-foreground">New MTF detection model deployed</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
 
-        <TabsContent value="pending" className="space-y-4">
-          <div className="grid gap-4">
-            <h3 className="text-lg font-semibold">Pending Cases</h3>
-            {pendingCases.map((case_) => (
-              <MTFCaseCard 
-                key={case_.id} 
-                case_={case_} 
-                onSelect={() => onCaseSelect?.(case_.id)}
-                getRiskLevelColor={getRiskLevelColor}
-                getStatusColor={getStatusColor}
-                getUrgencyIcon={getUrgencyIcon}
-              />
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="analytics" className="space-y-4">
-          <AnalyticsSection stats={systemStats} cases={mtfCases} />
-        </TabsContent>
-      </Tabs>
     </div>
+  );
+}
+
+// Critical Case Card Component
+interface CriticalCaseCardProps {
+  case_: MTFCase;
+  onSelect: () => void;
+  getRiskLevelColor: (level: string) => string;
+  getStatusColor: (status: string) => string;
+  getUrgencyIcon: (urgency: number) => React.ReactNode;
+}
+
+function CriticalCaseCard({ case_, onSelect, getRiskLevelColor, getStatusColor, getUrgencyIcon }: CriticalCaseCardProps) {
+  return (
+    <Card className="border-l-4 border-l-red-500 bg-red-50 hover:bg-red-100 transition-colors">
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2 flex-1">
+            <div className="flex items-center gap-3">
+              <User className="h-4 w-4 text-gray-500" />
+              <span className="font-medium text-lg">{case_.patientName}</span>
+              <Badge variant="outline">{case_.age}y {case_.gender === 'female' ? 'F' : 'M'}</Badge>
+              <Badge className={getRiskLevelColor(case_.riskLevel)}>
+                {case_.riskLevel.toUpperCase()}
+              </Badge>
+              {case_.mtfSuspected && (
+                <Badge variant="destructive">MTF Suspected</Badge>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div>
+                <span className="text-gray-500">Patient ID:</span>
+                <span className="ml-2 font-medium">{case_.patientId}</span>
+              </div>
+              <div>
+                <span className="text-gray-500">Risk Score:</span>
+                <span className="ml-2 font-medium text-red-600">{case_.riskScore}/100</span>
+              </div>
+              <div>
+                <span className="text-gray-500">Upload Time:</span>
+                <span className="ml-2 font-medium">{case_.createdAt.toLocaleString('en-US')}</span>
+              </div>
+              <div className="flex items-center">
+                <span className="text-gray-500">Urgency:</span>
+                <span className="ml-2 flex items-center gap-1">
+                  {getUrgencyIcon(case_.urgency)}
+                  {case_.urgency}h
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Badge className={getStatusColor(case_.status)}>
+                {case_.status === 'pending' ? 'Pending' : 
+                 case_.status === 'reviewed' ? 'Reviewed' :
+                 case_.status === 'contacted' ? 'Contacted' : 'Completed'}
+              </Badge>
+              {case_.specialistReferral && (
+                <Badge variant="outline">Specialist Referral Required</Badge>
+              )}
+            </div>
+          </div>
+
+          <div className="flex gap-2 ml-4">
+            <Button size="sm" variant="outline" onClick={onSelect}>
+              View Details
+            </Button>
+            <Button size="sm" variant="outline">
+              <Phone className="w-4 h-4 mr-1" />
+              Contact Patient
+            </Button>
+            <Button size="sm">
+              <Mail className="w-4 h-4 mr-1" />
+              Send Outreach
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -372,17 +560,41 @@ interface MTFCaseCardProps {
   getRiskLevelColor: (level: string) => string;
   getStatusColor: (status: string) => string;
   getUrgencyIcon: (urgency: number) => React.ReactNode;
-  variant?: 'default' | 'critical';
+  compact?: boolean;
 }
 
-function MTFCaseCard({ case_, onSelect, getRiskLevelColor, getStatusColor, getUrgencyIcon, variant = 'default' }: MTFCaseCardProps) {
-  const cardClass = variant === 'critical' 
-    ? 'border-l-4 border-l-red-500 bg-red-50' 
-    : 'border-l-4 border-l-blue-500';
+function MTFCaseCard({ case_, onSelect, getRiskLevelColor, getStatusColor, getUrgencyIcon, compact = false }: MTFCaseCardProps) {
+  if (compact) {
+    return (
+      <Card className="hover:bg-gray-50 transition-colors cursor-pointer" onClick={onSelect}>
+        <CardContent className="p-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <User className="h-4 w-4 text-gray-500" />
+              <div>
+                <div className="font-medium">{case_.patientName}</div>
+                <div className="text-sm text-gray-500">{case_.age}y {case_.gender === 'female' ? 'F' : 'M'}</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge className={getRiskLevelColor(case_.riskLevel)}>
+                {case_.riskLevel.toUpperCase()}
+              </Badge>
+              <Badge className={getStatusColor(case_.status)}>
+                {case_.status === 'pending' ? 'Pending' : 
+                 case_.status === 'reviewed' ? 'Reviewed' :
+                 case_.status === 'contacted' ? 'Contacted' : 'Completed'}
+              </Badge>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Card className={cardClass}>
-      <CardContent className="p-6">
+    <Card className="border-l-4 border-l-blue-500 hover:bg-gray-50 transition-colors">
+      <CardContent className="p-4">
         <div className="flex items-start justify-between">
           <div className="space-y-2 flex-1">
             <div className="flex items-center gap-3">
@@ -457,119 +669,3 @@ function MTFCaseCard({ case_, onSelect, getRiskLevelColor, getStatusColor, getUr
   );
 }
 
-// 分析统计组件
-interface AnalyticsSectionProps {
-  stats: SystemStats;
-  cases: MTFCase[];
-}
-
-function AnalyticsSection({ stats, cases }: AnalyticsSectionProps) {
-  const riskDistribution = cases.reduce((acc, case_) => {
-    acc[case_.riskLevel] = (acc[case_.riskLevel] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const statusDistribution = cases.reduce((acc, case_) => {
-    acc[case_.status] = (acc[case_.status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-semibold">System Analytics</h3>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Risk Level Distribution */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Risk Level Distribution</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {Object.entries(riskDistribution).map(([level, count]) => (
-                <div key={level} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-3 h-3 rounded-full ${
-                      level === 'critical' ? 'bg-red-500' :
-                      level === 'high' ? 'bg-orange-500' :
-                      level === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
-                    }`}></div>
-                    <span className="capitalize">{level}</span>
-                  </div>
-                  <span className="font-medium">{count}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Processing Status Distribution */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Processing Status Distribution</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {Object.entries(statusDistribution).map(([status, count]) => (
-                <div key={status} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    {status === 'pending' ? <Clock className="w-4 h-4 text-red-500" /> :
-                     status === 'reviewed' ? <Brain className="w-4 h-4 text-yellow-500" /> :
-                     status === 'contacted' ? <Phone className="w-4 h-4 text-blue-500" /> :
-                     <CheckCircle className="w-4 h-4 text-green-500" />}
-                    <span>
-                      {status === 'pending' ? 'Pending' :
-                       status === 'reviewed' ? 'Reviewed' :
-                       status === 'contacted' ? 'Contacted' : 'Completed'}
-                    </span>
-                  </div>
-                  <span className="font-medium">{count}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* System Performance Metrics */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">System Performance Metrics</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">AI Confidence</span>
-                <span className="text-sm font-medium">{stats.averageConfidence.toFixed(1)}%</span>
-              </div>
-              <Progress value={stats.averageConfidence} className="h-2" />
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Quality Score</span>
-                <span className="text-sm font-medium">{stats.qualityScore.toFixed(1)}</span>
-              </div>
-              <Progress value={stats.qualityScore} className="h-2" />
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Processing Efficiency</span>
-                <span className="text-sm font-medium">
-                  {stats.averageProcessingTime < 3 ? 'Excellent' : 
-                   stats.averageProcessingTime < 5 ? 'Good' : 'Needs Improvement'}
-                </span>
-              </div>
-              <Progress 
-                value={Math.max(0, 100 - (stats.averageProcessingTime * 10))} 
-                className="h-2" 
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
