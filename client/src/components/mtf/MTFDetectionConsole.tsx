@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   Shield, 
   Activity, 
@@ -46,7 +48,17 @@ import {
   RefreshCw,
   Copy,
   ExternalLink,
-  Info
+  Info,
+  HelpCircle,
+  MessageCircle,
+  UserX,
+  ArrowRight,
+  Lightbulb,
+  Target,
+  Zap,
+  ThumbsUp,
+  ThumbsDown,
+  Flag
 } from 'lucide-react';
 
 // Import the workflow visualization component
@@ -1454,6 +1466,9 @@ Bone Health Care Team`
 // Case Detail Panel Component
 function CaseDetailPanel({ report, onClose }: { report: any; onClose: () => void }) {
   const [isEmailExpanded, setIsEmailExpanded] = useState(false);
+  const [clinicianComment, setClinicianComment] = useState('');
+  const [aiOverride, setAiOverride] = useState<'agree' | 'disagree' | null>(null);
+  const [showNextSteps, setShowNextSteps] = useState(true);
 
   const getRiskColor = (score: number) => {
     if (score >= 80) return 'text-red-600 bg-red-50 border-red-200';
@@ -1461,6 +1476,91 @@ function CaseDetailPanel({ report, onClose }: { report: any; onClose: () => void
     if (score >= 40) return 'text-yellow-600 bg-yellow-50 border-yellow-200';
     return 'text-green-600 bg-green-50 border-green-200';
   };
+
+  const getMTFClassification = (score: number) => {
+    return score >= 60 ? {
+      isMTF: true,
+      label: 'MTF Suspected',
+      icon: <CheckCircle className="w-4 h-4" />,
+      color: 'bg-red-600 text-white',
+      description: 'High likelihood of minimal trauma fracture requiring intervention'
+    } : {
+      isMTF: false,
+      label: 'Not MTF',
+      icon: <X className="w-4 h-4" />,
+      color: 'bg-green-600 text-white',
+      description: 'Low likelihood of minimal trauma fracture, routine monitoring sufficient'
+    };
+  };
+
+  const getProgressBarColor = (score: number) => {
+    if (score >= 80) return 'from-red-500 to-red-600';
+    if (score >= 60) return 'from-orange-500 to-orange-600';
+    if (score >= 40) return 'from-yellow-500 to-yellow-600';
+    return 'from-green-500 to-green-600';
+  };
+
+  const highlightClinicalKeywords = (text: string) => {
+    const keywords = [
+      'high-energy trauma', 'low-energy trauma', 'minimal trauma',
+      'vertebral fracture', 'hip fracture', 'distal radius',
+      'osteoporosis', 'bone density', 'DEXA scan',
+      'fall from height', 'motor vehicle', 'bicycle accident'
+    ];
+    
+    let highlightedText = text;
+    keywords.forEach(keyword => {
+      const regex = new RegExp(`(${keyword})`, 'gi');
+      highlightedText = highlightedText.replace(regex, '<mark class="bg-yellow-200 px-1 rounded">$1</mark>');
+    });
+    
+    return highlightedText;
+  };
+
+  const getNextStepRecommendation = (score: number, aiPriority: string) => {
+    if (score >= 80) {
+      return {
+        action: 'refer_specialist',
+        icon: <AlertCircle className="w-5 h-5 text-red-600" />,
+        title: 'Refer to Specialist',
+        description: 'High MTF risk requires specialist evaluation',
+        color: 'border-red-200 bg-red-50'
+      };
+    } else if (score >= 60) {
+      return {
+        action: 'send_gp',
+        icon: <Send className="w-5 h-5 text-orange-600" />,
+        title: 'Send to GP',
+        description: 'Moderate risk, GP follow-up recommended',
+        color: 'border-orange-200 bg-orange-50'
+      };
+    } else {
+      return {
+        action: 'no_action',
+        icon: <CheckCircle className="w-5 h-5 text-green-600" />,
+        title: 'No Action Required',
+        description: 'Low risk, routine monitoring sufficient',
+        color: 'border-green-200 bg-green-50'
+      };
+    }
+  };
+
+  const getRiskFactorDefinition = (factor: string) => {
+    const definitions: Record<string, string> = {
+      'Age >70': 'Advanced age increases bone fragility and fracture risk',
+      'Female gender': 'Post-menopausal women have higher osteoporosis risk',
+      'Low trauma mechanism': 'Fractures from minimal force suggest bone weakness',
+      'Previous fracture history': 'Past fractures indicate ongoing bone health issues',
+      'Male gender': 'While less common, male osteoporosis is underdiagnosed',
+      'High-energy trauma': 'Severe force injuries less likely related to bone fragility',
+      'Age <50': 'Younger patients typically have stronger bones',
+      'Athletic activity': 'Regular exercise usually strengthens bones'
+    };
+    return definitions[factor] || 'Clinical risk factor for bone health assessment';
+  };
+
+  const mtfClassification = getMTFClassification(report.riskScore);
+  const nextStepRecommendation = getNextStepRecommendation(report.riskScore, report.aiPriority);
 
   const getEmailStatusConfig = (status: string) => {
     switch (status) {
@@ -1492,9 +1592,24 @@ function CaseDetailPanel({ report, onClose }: { report: any; onClose: () => void
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <SheetHeader>
+    <TooltipProvider>
+      <div className="space-y-6">
+        {/* MTF Classification Banner */}
+        <div className={`p-4 rounded-lg border-2 ${mtfClassification.color} flex items-center justify-between`}>
+          <div className="flex items-center gap-3">
+            {mtfClassification.icon}
+            <div>
+              <div className="font-bold text-lg">{mtfClassification.label}</div>
+              <div className="text-sm opacity-90">{mtfClassification.description}</div>
+            </div>
+          </div>
+          <Badge className="bg-white text-gray-800 border border-gray-300">
+            Triage: {mtfClassification.isMTF ? 'Eligible' : 'Not Eligible'}
+          </Badge>
+        </div>
+
+        {/* Header */}
+        <SheetHeader>
         <div className="flex items-center justify-between">
           <SheetTitle className="text-xl font-bold text-gray-900">
             Case Details - {report.patientId}
@@ -1564,7 +1679,16 @@ function CaseDetailPanel({ report, onClose }: { report: any; onClose: () => void
           </CardHeader>
           <CardContent>
             <div className="bg-gray-50 p-3 rounded-lg">
-              <p className="text-sm text-gray-700 italic">"{report.reportSummary}"</p>
+              <p 
+                className="text-sm text-gray-700 italic"
+                dangerouslySetInnerHTML={{ 
+                  __html: `"${highlightClinicalKeywords(report.reportSummary)}"` 
+                }}
+              />
+            </div>
+            <div className="mt-2 text-xs text-gray-500 flex items-center gap-1">
+              <Lightbulb className="w-3 h-3" />
+              Clinical keywords are highlighted for rapid assessment
             </div>
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div>
@@ -1589,22 +1713,68 @@ function CaseDetailPanel({ report, onClose }: { report: any; onClose: () => void
           <h3 className="text-lg font-semibold text-gray-900">AI Risk Assessment</h3>
         </div>
 
-        {/* Risk Score */}
+        {/* Enhanced Risk Score with Gradient Progress Bar */}
         <Card className={`border-2 ${getRiskColor(report.riskScore)}`}>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm font-medium text-gray-600">Risk Score</div>
-                <div className="text-2xl font-bold">{report.riskScore}/100</div>
-                <div className="text-sm font-medium">
-                  {report.riskScore >= 80 ? 'High Risk' : 
-                   report.riskScore >= 60 ? 'Moderate Risk' : 
-                   report.riskScore >= 40 ? 'Low-Moderate Risk' : 'Low Risk'}
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              {/* Risk Score Header */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-medium text-gray-600">MTF Risk Score</div>
+                  <div className="text-3xl font-bold">{report.riskScore}/100</div>
+                  <div className="text-sm font-medium">
+                    {report.riskScore >= 80 ? 'High Risk' : 
+                     report.riskScore >= 60 ? 'Moderate Risk' : 
+                     report.riskScore >= 40 ? 'Low-Moderate Risk' : 'Low Risk'}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500">AI Confidence</span>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <HelpCircle className="w-4 h-4 text-gray-400" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-xs">
+                          AI confidence indicates how certain the model is about this prediction. 
+                          Higher confidence (&gt;90%) suggests more reliable assessment.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div className="text-2xl font-bold text-purple-600">
+                    {Math.round(report.aiConfidence * 100)}%
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {report.aiConfidence >= 0.9 ? 'Very High' :
+                     report.aiConfidence >= 0.8 ? 'High' :
+                     report.aiConfidence >= 0.7 ? 'Moderate' : 'Low'} Confidence
+                  </div>
                 </div>
               </div>
-              <div className="text-right">
-                <div className="text-sm text-gray-500">AI Confidence</div>
-                <div className="text-lg font-semibold">{Math.round(report.aiConfidence * 100)}%</div>
+
+              {/* Gradient Progress Bar */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>Low Risk</span>
+                  <span>High Risk</span>
+                </div>
+                <div className="relative h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full bg-gradient-to-r ${getProgressBarColor(report.riskScore)} transition-all duration-1000 ease-out`}
+                    style={{ width: `${report.riskScore}%` }}
+                  />
+                  {/* Risk threshold markers */}
+                  <div className="absolute top-0 left-[60%] w-0.5 h-3 bg-white opacity-70" />
+                  <div className="absolute top-0 left-[80%] w-0.5 h-3 bg-white opacity-70" />
+                </div>
+                <div className="flex justify-between text-xs text-gray-400">
+                  <span>0</span>
+                  <span className="absolute left-[60%] transform -translate-x-1/2">60</span>
+                  <span className="absolute left-[80%] transform -translate-x-1/2">80</span>
+                  <span>100</span>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -1618,11 +1788,23 @@ function CaseDetailPanel({ report, onClose }: { report: any; onClose: () => void
           <CardContent>
             <div className="space-y-2">
               {report.riskFactors.map((factor: string, index: number) => (
-                <div key={index} className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg">
-                  <AlertCircle className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-800">{factor}</span>
-                </div>
+                <Tooltip key={index}>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center gap-2 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg cursor-pointer transition-colors border border-blue-200">
+                      <AlertCircle className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-800">{factor}</span>
+                      <HelpCircle className="w-3 h-3 text-blue-500 ml-auto" />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs">{getRiskFactorDefinition(factor)}</p>
+                  </TooltipContent>
+                </Tooltip>
               ))}
+            </div>
+            <div className="mt-3 text-xs text-gray-500 flex items-center gap-1">
+              <Target className="w-3 h-3" />
+              Hover over risk factors for detailed explanations
             </div>
           </CardContent>
         </Card>
@@ -1656,6 +1838,127 @@ function CaseDetailPanel({ report, onClose }: { report: any; onClose: () => void
                   </span>
                 </div>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Next Steps Recommendation */}
+        {showNextSteps && (
+          <Card className={`border-2 ${nextStepRecommendation.color}`}>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5 text-yellow-600" />
+                  Recommended Next Steps
+                </h4>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowNextSteps(false)}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  {nextStepRecommendation.icon}
+                </div>
+                <div className="flex-1">
+                  <div className="font-semibold text-lg text-gray-900 mb-1">
+                    {nextStepRecommendation.title}
+                  </div>
+                  <div className="text-sm text-gray-600 mb-3">
+                    {nextStepRecommendation.description}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" className="flex items-center gap-2">
+                      <ArrowRight className="w-4 h-4" />
+                      Take Action
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      Schedule Later
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Human Override Controls */}
+        <Card className="border-purple-200 bg-purple-50">
+          <CardHeader className="pb-3">
+            <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+              <MessageCircle className="w-5 h-5 text-purple-600" />
+              Clinical Review & Override
+            </h4>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* AI Agreement Controls */}
+            <div>
+              <div className="text-sm font-medium text-gray-700 mb-2">
+                Do you agree with the AI assessment?
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant={aiOverride === 'agree' ? 'default' : 'outline'}
+                  onClick={() => setAiOverride('agree')}
+                  className="flex items-center gap-2"
+                >
+                  <ThumbsUp className="w-4 h-4" />
+                  Agree
+                </Button>
+                <Button
+                  size="sm"
+                  variant={aiOverride === 'disagree' ? 'destructive' : 'outline'}
+                  onClick={() => setAiOverride('disagree')}
+                  className="flex items-center gap-2"
+                >
+                  <ThumbsDown className="w-4 h-4" />
+                  Disagree
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setAiOverride(null)}
+                >
+                  Reset
+                </Button>
+              </div>
+            </div>
+
+            {/* Clinician Comment */}
+            <div>
+              <div className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <Edit className="w-4 h-4" />
+                Clinical Notes & Comments
+              </div>
+              <Textarea
+                placeholder="Add your clinical observations, concerns, or override rationale..."
+                value={clinicianComment}
+                onChange={(e) => setClinicianComment(e.target.value)}
+                className="min-h-[80px]"
+              />
+            </div>
+
+            {/* Override Actions */}
+            <div className="flex items-center justify-between pt-2 border-t border-purple-200">
+              <div className="text-xs text-gray-500">
+                All overrides are logged for quality assurance
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" className="flex items-center gap-2">
+                  <Flag className="w-4 h-4" />
+                  Flag for Review
+                </Button>
+                <Button size="sm" className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Save Assessment
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -1777,7 +2080,8 @@ function CaseDetailPanel({ report, onClose }: { report: any; onClose: () => void
           </CardContent>
         </Card>
       </div>
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }
 
