@@ -69,6 +69,12 @@ This healthcare AI platform focuses on minimal trauma fracture (MTF) detection a
 - Medical terminology and clinical standards
 - HIPAA compliance and patient safety
 
+### 🌐 **English-Only Development** ([english-only.mdc](mdc:.cursor/rules/english-only.mdc))
+- All code, comments, and documentation must be in English
+- English naming conventions for variables, functions, and classes
+- English UI text and error messages
+- International medical terminology standards
+
 ## Key Files to Reference
 
 - **Design Guidelines**: [design_guidelines.md](mdc:design_guidelines.md)
