@@ -22,7 +22,8 @@ import {
   Activity,
   Stethoscope,
   MessageCircle,
-  GitBranch
+  GitBranch,
+  Shield
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
@@ -31,6 +32,11 @@ const navigationItems = [
     title: "Dashboard",
     url: "/dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    title: "MTF Detection",
+    url: "/mtf-detection",
+    icon: Shield,
   },
   {
     title: "Patient Cases", 

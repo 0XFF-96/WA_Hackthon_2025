@@ -1,0 +1,107 @@
+---
+globs: client/src/components/workflow/**/*.tsx,client/src/components/assessment/**/*.tsx,client/src/components/monitoring/**/*.tsx
+description: Medical workflow and assessment component guidelines
+---
+
+# Medical Workflow Guidelines
+
+## Workflow Components
+This platform implements complex medical workflows for patient assessment, monitoring, and treatment planning.
+
+## Assessment Workflow
+Based on [client/src/components/assessment/](mdc:client/src/components/assessment/):
+
+### Assessment Steps
+1. **Symptom Scoring**: Pain location, severity, and onset
+2. **Functional Check**: Mobility and daily activity impact
+3. **Risk Factors**: Age, medical history, lifestyle factors
+4. **Recent Events**: Fall history and impact mechanisms
+
+### Assessment Data Structure
+```typescript
+interface AssessmentData {
+  // Symptom Scoring
+  painLocation: string[];
+  painSeverity: number; // 0-10
+  painStartDate: string;
+  
+  // Functional Check
+  painWhenWalking: boolean;
+  painWhenClimbing: boolean;
+  limpingOrImbalance: boolean;
+  
+  // Risk Factors
+  ageGroup: 'under-30' | '30-50' | '50-70' | 'over-70';
+  osteoporosisHistory: boolean;
+  previousFractures: boolean;
+  smoking: boolean;
+  lowCalciumIntake: boolean;
+  
+  // Recent Events
+  recentFall: boolean;
+  recentJump: boolean;
+  recentImpact: boolean;
+}
+```
+
+## Monitoring Workflow
+Based on [client/src/components/monitoring/](mdc:client/src/components/monitoring/):
+
+### Daily Monitoring
+- Patient vitals tracking
+- Pain level monitoring
+- Activity level assessment
+- Medication adherence tracking
+
+### Monitoring Components
+- **DailyInput**: Patient self-reporting interface
+- **MonitoringDashboard**: Healthcare provider overview
+- **MonitoringVisualization**: Data visualization and trends
+
+## Workflow Visualization
+Based on [client/src/components/workflow/](mdc:client/src/components/workflow/):
+
+### Workflow Management
+- Step-by-step progression tracking
+- Status indicators for each workflow step
+- Automated workflow routing based on medical criteria
+- Integration with AI agent recommendations
+
+## Medical Workflow Patterns
+
+### Step Progression
+```tsx
+// Good: Medical workflow step with proper status
+interface WorkflowStep {
+  id: string;
+  name: string;
+  status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+  timestamp: Date;
+  description: string;
+  medicalCriteria?: MedicalCriteria;
+}
+```
+
+### Risk Assessment
+- Implement proper medical risk scoring algorithms
+- Use evidence-based medical criteria
+- Provide clear risk level indicators
+- Generate appropriate medical recommendations
+
+### Patient Communication
+- Use clear, medical-appropriate language
+- Implement proper patient education materials
+- Provide accessible interfaces for elderly patients
+- Use multiple communication channels (phone, email, SMS)
+
+## Medical Data Validation
+- Validate all medical inputs against clinical standards
+- Implement proper error handling for medical data
+- Use appropriate medical terminology
+- Ensure data integrity for medical records
+
+## Accessibility for Medical Workflows
+- Implement proper keyboard navigation
+- Use high contrast for critical medical information
+- Provide clear visual indicators for workflow status
+- Ensure screen reader compatibility for medical data

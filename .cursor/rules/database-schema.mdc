@@ -1,0 +1,79 @@
+---
+globs: shared/schema.ts,server/db.ts,server/**/*.ts
+description: Database schema and data management guidelines
+---
+
+# Database Schema Guidelines
+
+## Schema Design
+The database schema is defined in [shared/schema.ts](mdc:shared/schema.ts) using Drizzle ORM with Zod validation.
+
+## Key Entities
+
+### Core Medical Entities
+- **Patients**: Core patient demographics and medical history
+- **Cases**: Medical cases linked to patients with status tracking and AI analysis
+- **Vitals**: Time-series vital signs data for patient monitoring
+- **Imaging**: Medical imaging data with AI analysis results
+
+### AI System Entities
+- **AI Agents**: Agent configurations and performance tracking
+- **Notes and Orders**: Clinical documentation and treatment orders
+- **Workflows**: Medical workflow management and status tracking
+
+## Database Patterns
+
+### Type Safety
+- Use Drizzle ORM for type-safe database queries
+- Implement Zod schemas for runtime validation
+- Use proper TypeScript types for all database entities
+- Follow medical data standards for patient information
+
+### Medical Data Handling
+- Implement proper patient data privacy controls
+- Use secure data transmission and storage
+- Follow HIPAA compliance patterns
+- Implement proper access controls for medical data
+
+### Schema Relationships
+- Maintain proper foreign key relationships
+- Use appropriate indexing for medical queries
+- Implement soft deletes for medical records
+- Use proper data types for medical measurements
+
+## Example Schema Pattern
+```typescript
+// Good: Medical entity with proper typing
+export const patients = pgTable('patients', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  dateOfBirth: date('date_of_birth').notNull(),
+  medicalHistory: text('medical_history'),
+  riskFactors: json('risk_factors').$type<OsteoporosisRiskFactor[]>(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+// Good: Medical case with AI analysis
+export const cases = pgTable('cases', {
+  id: text('id').primaryKey(),
+  patientId: text('patient_id').references(() => patients.id),
+  status: text('status').$type<CaseStatus>().notNull(),
+  aiAnalysis: json('ai_analysis').$type<AgentResponse[]>(),
+  mtfSuspected: boolean('mtf_suspected').default(false),
+  confidence: real('confidence'),
+  createdAt: timestamp('created_at').defaultNow()
+});
+```
+
+## Data Validation
+- Use Zod schemas for all data validation
+- Implement proper error handling for database operations
+- Use proper data types for medical measurements
+- Validate medical data before database operations
+
+## Performance Considerations
+- Use proper indexing for medical queries
+- Implement efficient pagination for large datasets
+- Use connection pooling for database connections
+- Optimize queries for medical data retrieval

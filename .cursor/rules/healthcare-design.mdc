@@ -1,0 +1,74 @@
+---
+globs: client/src/**/*.tsx,client/src/**/*.css
+description: Healthcare-specific design and UI guidelines
+---
+
+# Healthcare Design Guidelines
+
+## Design System
+Follow the comprehensive design guidelines in [design_guidelines.md](mdc:design_guidelines.md) which emphasizes professional medical interface standards.
+
+## Color Palette
+Use the healthcare-specific color scheme:
+- **Primary**: Healthcare blue (#005EB8) - `hsl(205 100% 36%)`
+- **Background**: Light grey (#F8F9FA) - `hsl(210 20% 98%)`
+- **Surface**: White (#FFFFFF) - `hsl(0 0% 100%)`
+- **Text Primary**: Dark blue-grey (#2C3E50) - `hsl(210 24% 16%)`
+- **Success**: Medical green (#28A745) - `hsl(134 61% 41%)`
+- **Error**: Medical red for alerts - `hsl(354 70% 54%)`
+
+## Typography
+- **Primary Font**: Inter via Google Fonts CDN
+- **Fallback**: Roboto, system fonts
+- **Medical Data**: Monospace for precise measurements
+- **Headers**: 600-700 weight
+- **Body**: 400-500 weight
+
+## Layout System
+Use Tailwind spacing units:
+- Card padding: `p-6` (24px)
+- Section spacing: `gap-8` (32px)
+- Component margins: `m-4` to `m-8`
+- Grid gaps: `gap-6` for dashboard layouts
+
+## Component Patterns
+
+### Medical Cards
+```tsx
+// Good: Healthcare card with proper spacing and colors
+<Card className="border-l-4 border-l-red-500 bg-red-50">
+  <CardContent className="p-6">
+    <div className="flex items-center gap-2">
+      <AlertTriangle className="h-4 w-4 text-red-600" />
+      <span className="font-bold text-red-900">Critical Case</span>
+      <Badge variant="destructive">URGENT</Badge>
+    </div>
+  </CardContent>
+</Card>
+```
+
+### Medical Status Indicators
+- Use appropriate color coding for medical status
+- Implement proper accessibility for medical data
+- Use medical-appropriate icons from Lucide React
+- Follow healthcare industry standards for data presentation
+
+## Accessibility Requirements
+- WCAG 2.1 AA compliance for medical interfaces
+- High contrast ratios for critical medical information
+- Keyboard navigation support
+- Screen reader optimization for medical data
+- Professional medical iconography
+
+## Medical UI Components
+- Clean card-based layouts with subtle shadows
+- Patient case cards with status indicators
+- AI agent visualization cards
+- Real-time data cards with progress indicators
+- Multi-step form progress indicators for medical workflows
+
+## Responsive Design
+- Seamless experience across devices for healthcare professionals
+- Tablet-optimized interfaces for medical dashboards
+- Mobile-friendly patient communication interfaces
+- Proper scaling for medical data visualization

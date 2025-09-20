@@ -1,0 +1,103 @@
+---
+globs: server/**/*.ts,client/src/lib/**/*.ts
+description: API development and backend service guidelines
+---
+
+# API Development Guidelines
+
+## Backend Architecture
+The backend is built with Express.js, TypeScript, and follows RESTful API principles.
+
+## API Structure
+Based on [server/routes.ts](mdc:server/routes.ts) and [server/index.ts](mdc:server/index.ts):
+
+### Route Organization
+- Use RESTful conventions for medical endpoints
+- Implement proper HTTP status codes
+- Use appropriate HTTP methods for medical operations
+- Implement proper error handling and validation
+
+### Medical API Endpoints
+```typescript
+// Good: Medical API endpoint structure
+app.get('/api/patients/:id/assessments', async (req, res) => {
+  // Patient assessment retrieval
+});
+
+app.post('/api/cases/:id/ai-analysis', async (req, res) => {
+  // AI analysis for medical cases
+});
+
+app.get('/api/patients/:id/vitals', async (req, res) => {
+  // Patient vital signs retrieval
+});
+```
+
+## AI Service Integration
+Based on [server/services/aiService.ts](mdc:server/services/aiService.ts):
+
+### Multi-Agent AI System
+- Implement proper error handling for AI failures
+- Use fallback responses for development
+- Implement proper medical context for AI prompts
+- Ensure medical accuracy and safety
+
+### AI Response Patterns
+```typescript
+// Good: AI service with proper medical context
+async generateMultiAgentResponse(
+  userQuery: string, 
+  patientContext?: {
+    name: string;
+    age: number;
+    symptoms: string;
+    medicalHistory?: string;
+  }
+): Promise<AgentResponse[]>
+```
+
+## Data Validation
+- Use Zod schemas for API request/response validation
+- Implement proper error handling for medical data
+- Validate medical inputs against clinical standards
+- Use proper TypeScript types for all API responses
+
+## Security and Privacy
+- Implement proper session management
+- Use secure data transmission
+- Follow HIPAA compliance patterns
+- Implement proper access controls for medical data
+
+## Database Integration
+- Use Drizzle ORM for type-safe database operations
+- Implement proper connection pooling
+- Use transactions for critical medical operations
+- Implement proper error handling for database operations
+
+## Error Handling
+```typescript
+// Good: Medical API error handling
+try {
+  const result = await aiService.generateMultiAgentResponse(query, context);
+  res.json({ success: true, data: result });
+} catch (error) {
+  console.error('AI Service Error:', error);
+  res.status(500).json({ 
+    success: false, 
+    error: 'Failed to generate AI analysis',
+    message: error instanceof Error ? error.message : 'Unknown error'
+  });
+}
+```
+
+## Medical Data Standards
+- Use proper medical terminology in API responses
+- Implement appropriate data formats for medical data
+- Use proper validation for medical measurements
+- Follow healthcare industry standards for data exchange
+
+## Performance Considerations
+- Implement proper caching for medical data
+- Use efficient database queries
+- Implement proper pagination for large datasets
+- Use appropriate timeout values for AI operations

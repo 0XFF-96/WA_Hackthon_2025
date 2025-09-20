@@ -1,0 +1,75 @@
+---
+globs: client/src/types/agentChat.ts,server/services/aiService.ts,client/src/components/**/*Agent*.tsx
+description: AI agent system development guidelines
+---
+
+# AI Agent System Guidelines
+
+## Multi-Agent Architecture
+This platform uses a coordinated multi-agent AI system for medical diagnosis and treatment planning. Each agent has specific medical expertise and collaborates through the orchestrator.
+
+## Agent Types
+Based on [client/src/types/agentChat.ts](mdc:client/src/types/agentChat.ts):
+
+### Core Agents
+- **HealthAI Orchestrator**: Coordinates multi-agent analysis and workflow management
+- **Dr. Neural (Diagnostician)**: Primary diagnostic analysis and clinical reasoning
+- **RadiologyAI**: Medical imaging interpretation and fracture detection
+- **TreatmentBot**: Treatment planning and care recommendations
+- **Clinical Rubric Evaluator**: Quality assessment and performance feedback
+
+## Agent Development Patterns
+
+### Agent Response Structure
+```typescript
+interface AgentResponse {
+  agentType: 'orchestrator' | 'diagnostician' | 'radiologist' | 'treatment_planner';
+  agentName: string;
+  content: string;
+  confidence: number;
+  reasoning?: string;
+}
+```
+
+### Agent Configuration
+Use the configuration from [client/src/types/agentChat.ts](mdc:client/src/types/agentChat.ts):
+- Each agent has specific color coding and icons
+- Evaluation weights determine agent importance
+- Specialties define medical domain expertise
+
+## Medical AI Integration
+- Use OpenAI GPT-4o for medical analysis
+- Implement proper error handling for AI failures
+- Provide fallback mock responses for development
+- Ensure medical accuracy and safety in AI responses
+
+## Agent Communication
+- Agents communicate through the orchestrator
+- Each agent provides specialized medical insights
+- Responses include confidence levels and reasoning
+- Implement proper medical terminology and standards
+
+## Rubric Evaluation System
+- Use the clinical rubric for quality assessment
+- Evaluate diagnostic accuracy, consultation logic, treatment plans
+- Implement empathy skills and ethics compliance checks
+- Provide continuous improvement feedback
+
+## Example Agent Implementation
+```typescript
+// Good: Specialized medical agent
+const diagnosticianResponse = await openai.chat.completions.create({
+  model: "gpt-4o",
+  messages: [
+    {
+      role: "system",
+      content: `You are Dr. Neural, a diagnostic AI specialist. Analyze the medical case and provide diagnostic insights. Focus on differential diagnosis and clinical reasoning.`
+    },
+    {
+      role: "user",
+      content: `Diagnostic Query: ${userQuery}\n${contextPrompt}`
+    }
+  ],
+  response_format: { type: "json_object" }
+});
+```

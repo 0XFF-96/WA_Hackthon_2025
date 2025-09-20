@@ -8,6 +8,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Home from "@/pages/Home";
 import Dashboard from "@/pages/Dashboard";
+import MTFDetection from "@/pages/MTFDetection";
 import AgentChat from "@/pages/AgentChat";
 import AIAgents from "@/pages/AIAgents";
 import Analytics from "@/pages/Analytics";
@@ -62,6 +63,11 @@ function AppRoutes() {
       <Route path="/dashboard">
         <DashboardLayout>
           <Dashboard />
+        </DashboardLayout>
+      </Route>
+      <Route path="/mtf-detection">
+        <DashboardLayout>
+          <MTFDetection />
         </DashboardLayout>
       </Route>
       <Route path="/cases" component={() => (
