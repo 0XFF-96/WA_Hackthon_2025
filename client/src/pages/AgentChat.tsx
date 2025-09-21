@@ -9,7 +9,7 @@ export default function AgentChat() {
     id: "MED-2024-0001",
     patientName: "Sarah Johnson",
     age: 34,
-    condition: "Suspected micro-fracture in wrist"
+    condition: "Suspected minimal trauma fracture in wrist",
   };
 
   return (
@@ -17,12 +17,14 @@ export default function AgentChat() {
       {/* Header */}
       <div className="flex flex-col space-y-4">
         <div>
-          <h1 className="text-2xl font-bold" data-testid="text-page-title">AI Agent Consultation</h1>
+          <h1 className="text-2xl font-bold" data-testid="text-page-title">
+            AI Agent Consultation
+          </h1>
           <p className="text-muted-foreground">
             Interactive multi-agent analysis and treatment planning
           </p>
         </div>
-        
+
         {/* Current Case Info */}
         <Card>
           <CardHeader className="pb-3">
@@ -41,9 +43,7 @@ export default function AgentChat() {
                   {activeCase.condition}
                 </p>
               </div>
-              <Badge variant="secondary">
-                Case: {activeCase.id}
-              </Badge>
+              <Badge variant="secondary">Case: {activeCase.id}</Badge>
             </div>
           </CardContent>
         </Card>
@@ -61,7 +61,7 @@ export default function AgentChat() {
             </Badge>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-green-50 dark:bg-green-950/20">
           <CardContent className="p-4 text-center">
             <MessageCircle className="w-8 h-8 mx-auto mb-2 text-green-600" />
@@ -72,7 +72,7 @@ export default function AgentChat() {
             </Badge>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-orange-50 dark:bg-orange-950/20">
           <CardContent className="p-4 text-center">
             <Users className="w-8 h-8 mx-auto mb-2 text-orange-600" />
@@ -83,7 +83,7 @@ export default function AgentChat() {
             </Badge>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-purple-50 dark:bg-purple-950/20">
           <CardContent className="p-4 text-center">
             <Brain className="w-8 h-8 mx-auto mb-2 text-purple-600" />
@@ -97,7 +97,7 @@ export default function AgentChat() {
       </div>
 
       {/* Chat Interface */}
-      <MultiAgentChat 
+      <MultiAgentChat
         caseId={activeCase.id}
         patientName={activeCase.patientName}
       />

@@ -1,45 +1,48 @@
-# HealthAI - Advanced Micro-Fracture Diagnosis Platform
+# Bone Guardian - Advanced Minimal trauma fracture Diagnosis Platform
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Available-brightgreen)](https://your-demo-url.com)
 [![AI Accuracy](https://img.shields.io/badge/AI%20Accuracy-96.5%25-blue)](https://github.com/your-repo)
 [![Processing Time](https://img.shields.io/badge/Avg%20Processing-2.3s-green)](https://github.com/your-repo)
 
-> 一个基于多智能体AI系统的医疗微骨折诊断平台，结合动态数据系统和系统思维，为医疗专业人员提供精确的诊断和治疗规划。
+> 一个基于多智能体 AI 系统的医疗最小创伤骨折诊断平台，结合动态数据系统和系统思维，为医疗专业人员提供精确的诊断和治疗规划。
 
 ## 🏥 项目概述
 
-HealthAI 是一个革命性的医疗AI平台，专门用于微骨折诊断。该平台采用多智能体模拟技术，结合先进的AI算法和医疗数据可视化，为医生提供准确的诊断建议和治疗方案。
+Bone Guardian 是一个革命性的医疗 AI 平台，专门用于最小创伤骨折诊断。该平台采用多智能体模拟技术，结合先进的 AI 算法和医疗数据可视化，为医生提供准确的诊断建议和治疗方案。
 
 ### 🎯 核心特性
 
-- **🤖 多智能体AI系统**: 集成诊断师、放射科医生、治疗规划师等多个专业AI智能体
+- **🤖 多智能体 AI 系统**: 集成诊断师、放射科医生、治疗规划师等多个专业 AI 智能体
 - **📊 实时数据分析**: 动态数据可视化系统，实时监控患者生命体征和诊断进度
-- **🖼️ 医学影像分析**: 基于GPT-4o的医学影像智能分析，支持X光、MRI、CT等多种影像类型
+- **🖼️ 医学影像分析**: 基于 GPT-4o 的医学影像智能分析，支持 X 光、MRI、CT 等多种影像类型
 - **📋 病例管理系统**: 完整的患者病例管理，包括生命体征、医疗记录、风险评估等
-- **🎨 现代化UI**: 基于Material Design的医疗级界面设计，符合HIPAA标准
-- **⚡ 高性能**: 平均处理时间2.3秒，AI准确率96.5%
+- **🎨 现代化 UI**: 基于 Material Design 的医疗级界面设计，符合 HIPAA 标准
+- **⚡ 高性能**: 平均处理时间 2.3 秒，AI 准确率 96.5%
 
 ## 🏗️ 技术架构
 
 ### 前端技术栈
+
 - **React 18** - 现代化前端框架
-- **TypeScript** - 类型安全的JavaScript
-- **Tailwind CSS** - 实用优先的CSS框架
-- **Radix UI** - 无障碍的UI组件库
+- **TypeScript** - 类型安全的 JavaScript
+- **Tailwind CSS** - 实用优先的 CSS 框架
+- **Radix UI** - 无障碍的 UI 组件库
 - **Wouter** - 轻量级路由库
 - **React Query** - 数据获取和状态管理
 - **Framer Motion** - 动画库
 - **Recharts** - 数据可视化
 
 ### 后端技术栈
-- **Node.js** - JavaScript运行时
-- **Express.js** - Web应用框架
+
+- **Node.js** - JavaScript 运行时
+- **Express.js** - Web 应用框架
 - **TypeScript** - 类型安全的后端开发
-- **Drizzle ORM** - 类型安全的数据库ORM
+- **Drizzle ORM** - 类型安全的数据库 ORM
 - **PostgreSQL** - 关系型数据库
-- **OpenAI GPT-4o** - AI模型服务
+- **OpenAI GPT-4o** - AI 模型服务
 
 ### 开发工具
+
 - **Vite** - 快速构建工具
 - **ESBuild** - 极速打包器
 - **Drizzle Kit** - 数据库迁移工具
@@ -78,7 +81,7 @@ WA_Hackthon_2025/
 
 ### 环境要求
 
-- Node.js 18+ 
+- Node.js 18+
 - PostgreSQL 14+
 - OpenAI API Key
 
@@ -132,31 +135,36 @@ npm start
 ## 🎨 设计系统
 
 ### 色彩方案
+
 - **主色调**: 医疗蓝 (#005EB8)
-- **背景色**: 浅灰 (#F8F9FA)  
+- **背景色**: 浅灰 (#F8F9FA)
 - **表面色**: 白色 (#FFFFFF)
 - **成功色**: 医疗绿 (#28A745)
 - **错误色**: 医疗红 (用于警告)
 
 ### 组件库
-- 基于Radix UI构建的无障碍组件
-- 符合Material Design原则
+
+- 基于 Radix UI 构建的无障碍组件
+- 符合 Material Design 原则
 - 医疗级专业界面设计
 - 响应式布局支持
 
-## 🤖 AI智能体系统
+## 🤖 AI 智能体系统
 
 ### 智能体类型
 
-1. **HealthAI Orchestrator** - 协调器
+1. **Bone Guardian Orchestrator** - 协调器
+
    - 分析用户查询和患者上下文
    - 协调其他智能体的响应
 
 2. **Dr. Neural** - 诊断师
+
    - 提供诊断洞察和临床推理
    - 专注于鉴别诊断
 
 3. **RadiologyAI** - 放射科医生
+
    - 医学影像分析专家
    - 专注于影像模式和放射学发现
 
@@ -164,10 +172,10 @@ npm start
    - 提供循证治疗建议
    - 制定护理计划
 
-### AI功能
+### AI 功能
 
-- **多智能体协作**: 四个专业AI智能体协同工作
-- **医学影像分析**: 支持微骨折检测和骨密度分析
+- **多智能体协作**: 四个专业 AI 智能体协同工作
+- **医学影像分析**: 支持最小创伤骨折检测和骨密度分析
 - **置信度评估**: 每个诊断都有置信度评分
 - **推理过程**: 提供详细的诊断推理过程
 
@@ -178,12 +186,12 @@ npm start
 - **患者 (Patients)**: 患者基本信息、医疗史、过敏史等
 - **病例 (Cases)**: 诊断案例、状态、优先级、风险评估
 - **生命体征 (Vitals)**: 体温、血压、心率、呼吸频率等
-- **医学影像 (Imaging)**: X光、MRI、CT等影像数据
-- **临床记录 (Notes)**: SOAP记录、护理记录、AI摘要等
+- **医学影像 (Imaging)**: X 光、MRI、CT 等影像数据
+- **临床记录 (Notes)**: SOAP 记录、护理记录、AI 摘要等
 - **医疗指令 (Orders)**: 实验室检查、药物、转诊等
 - **风险评估 (Risk Assessments)**: 跌倒、压疮、死亡率等风险评估
 
-## 🔧 API接口
+## 🔧 API 接口
 
 ### 主要端点
 
@@ -223,10 +231,10 @@ GET /api/imaging/:caseId    # 获取病例影像
 
 ### 代码规范
 
-- 使用TypeScript进行类型安全开发
-- 遵循ESLint和Prettier配置
-- 组件使用函数式组件和Hooks
-- 使用Zod进行数据验证
+- 使用 TypeScript 进行类型安全开发
+- 遵循 ESLint 和 Prettier 配置
+- 组件使用函数式组件和 Hooks
+- 使用 Zod 进行数据验证
 
 ### 测试
 
@@ -248,15 +256,15 @@ npm run build
 
 ## 📈 性能指标
 
-- **AI准确率**: 96.5%
-- **平均处理时间**: 2.3秒
+- **AI 准确率**: 96.5%
+- **平均处理时间**: 2.3 秒
 - **已分析病例**: 12.5K+
 - **成功率**: 94.2%
 - **系统可用性**: 99.9%
 
 ## 🔒 安全与合规
 
-- **HIPAA合规**: 符合医疗数据保护标准
+- **HIPAA 合规**: 符合医疗数据保护标准
 - **数据加密**: 传输和存储数据加密
 - **访问控制**: 基于角色的访问控制
 - **审计日志**: 完整的操作审计记录
@@ -273,7 +281,7 @@ npm run build
 npm start
 ```
 
-### Docker部署
+### Docker 部署
 
 ```dockerfile
 # Dockerfile示例
@@ -299,7 +307,7 @@ CMD ["npm", "start"]
 
 ## 🙏 致谢
 
-- OpenAI 提供的GPT-4o模型支持
+- OpenAI 提供的 GPT-4o 模型支持
 - Radix UI 提供的无障碍组件库
 - 医疗行业专家提供的专业指导
 - 开源社区的技术支持

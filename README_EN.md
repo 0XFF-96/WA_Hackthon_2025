@@ -1,14 +1,14 @@
-# HealthAI - Advanced Micro-Fracture Diagnosis Platform
+# Bone Guardian - Advanced Minimal trauma fracture Diagnosis Platform
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Available-brightgreen)](https://your-demo-url.com)
 [![AI Accuracy](https://img.shields.io/badge/AI%20Accuracy-96.5%25-blue)](https://github.com/your-repo)
 [![Processing Time](https://img.shields.io/badge/Avg%20Processing-2.3s-green)](https://github.com/your-repo)
 
-> An AI-powered healthcare platform for micro-fracture diagnosis, combining multi-agent simulation, dynamic data systems, and systems thinking to provide precise diagnostic and treatment planning for medical professionals.
+> An AI-powered healthcare platform for minimal trauma fracture diagnosis, combining multi-agent simulation, dynamic data systems, and systems thinking to provide precise diagnostic and treatment planning for medical professionals.
 
 ## 🏥 Project Overview
 
-HealthAI is a revolutionary medical AI platform specifically designed for micro-fracture diagnosis. The platform employs multi-agent simulation technology, combining advanced AI algorithms with medical data visualization to provide doctors with accurate diagnostic recommendations and treatment plans.
+Bone Guardian is a revolutionary medical AI platform specifically designed for minimal trauma fracture diagnosis. The platform employs multi-agent simulation technology, combining advanced AI algorithms with medical data visualization to provide doctors with accurate diagnostic recommendations and treatment plans.
 
 ### 🎯 Core Features
 
@@ -22,6 +22,7 @@ HealthAI is a revolutionary medical AI platform specifically designed for micro-
 ## 🏗️ Technical Architecture
 
 ### Frontend Technology Stack
+
 - **React 18** - Modern frontend framework
 - **TypeScript** - Type-safe JavaScript
 - **Tailwind CSS** - Utility-first CSS framework
@@ -32,6 +33,7 @@ HealthAI is a revolutionary medical AI platform specifically designed for micro-
 - **Recharts** - Data visualization
 
 ### Backend Technology Stack
+
 - **Node.js** - JavaScript runtime
 - **Express.js** - Web application framework
 - **TypeScript** - Type-safe backend development
@@ -40,6 +42,7 @@ HealthAI is a revolutionary medical AI platform specifically designed for micro-
 - **OpenAI GPT-4o** - AI model service
 
 ### Development Tools
+
 - **Vite** - Fast build tool
 - **ESBuild** - Ultra-fast bundler
 - **Drizzle Kit** - Database migration tool
@@ -78,7 +81,7 @@ WA_Hackthon_2025/
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - PostgreSQL 14+
 - OpenAI API Key
 
@@ -132,13 +135,15 @@ Visit `http://localhost:5000` to view the application.
 ## 🎨 Design System
 
 ### Color Palette
+
 - **Primary**: Healthcare Blue (#005EB8)
-- **Background**: Light Grey (#F8F9FA)  
+- **Background**: Light Grey (#F8F9FA)
 - **Surface**: White (#FFFFFF)
 - **Success**: Medical Green (#28A745)
 - **Error**: Medical Red (for alerts)
 
 ### Component Library
+
 - Built on Radix UI for accessibility
 - Following Material Design principles
 - Medical-grade professional interface design
@@ -148,15 +153,18 @@ Visit `http://localhost:5000` to view the application.
 
 ### Agent Types
 
-1. **HealthAI Orchestrator** - Coordinator
+1. **Bone Guardian Orchestrator** - Coordinator
+
    - Analyzes user queries and patient context
    - Coordinates responses from other agents
 
 2. **Dr. Neural** - Diagnostician
+
    - Provides diagnostic insights and clinical reasoning
    - Focuses on differential diagnosis
 
 3. **RadiologyAI** - Radiologist
+
    - Medical imaging analysis specialist
    - Focuses on imaging patterns and radiological findings
 

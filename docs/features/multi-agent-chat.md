@@ -2,15 +2,16 @@
 
 ## 🎯 功能概述
 
-多智能体聊天系统是 HealthAI 平台的核心功能，通过多个专业 AI 智能体的协作，为医疗专业人员提供全面的诊断分析、治疗建议和临床决策支持。
+多智能体聊天系统是 Bone Guardian 平台的核心功能，通过多个专业 AI 智能体的协作，为医疗专业人员提供全面的诊断分析、治疗建议和临床决策支持。
 
 ## 🤖 智能体架构
 
 ### 智能体组成
 
-#### 1. HealthAI Orchestrator (协调器)
+#### 1. Bone Guardian Orchestrator (协调器)
+
 - **角色**: 系统协调和任务分配
-- **职责**: 
+- **职责**:
   - 分析用户查询和患者上下文
   - 协调其他智能体的响应
   - 整合多智能体分析结果
@@ -19,6 +20,7 @@
 - **颜色**: 蓝色 (#3B82F6)
 
 #### 2. Dr. Neural (诊断师)
+
 - **角色**: 主要诊断分析专家
 - **职责**:
   - 提供诊断洞察和临床推理
@@ -29,6 +31,7 @@
 - **颜色**: 绿色 (#10B981)
 
 #### 3. RadiologyAI (放射科医生)
+
 - **角色**: 医学影像分析专家
 - **职责**:
   - 医学影像分析专家
@@ -39,6 +42,7 @@
 - **颜色**: 紫色 (#8B5CF6)
 
 #### 4. TreatmentBot (治疗规划师)
+
 - **角色**: 治疗规划和护理建议
 - **职责**:
   - 提供循证治疗建议
@@ -49,6 +53,7 @@
 - **颜色**: 橙色 (#F59E0B)
 
 #### 5. Clinical Rubric Evaluator (临床评估器)
+
 - **角色**: 质量评估和反馈
 - **职责**:
   - 评估其他智能体的响应质量
@@ -61,6 +66,7 @@
 ## 🔄 工作流程
 
 ### 1. 对话启动流程
+
 ```mermaid
 sequenceDiagram
     participant U as 用户
@@ -69,13 +75,13 @@ sequenceDiagram
     participant R as 放射科医生
     participant T as 治疗规划师
     participant E as 评估器
-    
+
     U->>O: 输入症状描述
     O->>O: 分析查询和上下文
     O->>D: 分配诊断任务
     O->>R: 分配影像分析任务
     O->>T: 分配治疗规划任务
-    
+
     par 并行处理
         D->>O: 诊断分析结果
     and
@@ -83,7 +89,7 @@ sequenceDiagram
     and
         T->>O: 治疗建议
     end
-    
+
     O->>O: 整合分析结果
     O->>E: 请求质量评估
     E->>O: 返回评估结果
@@ -91,6 +97,7 @@ sequenceDiagram
 ```
 
 ### 2. Rubric 评估流程
+
 ```mermaid
 flowchart TD
     A[智能体响应] --> B[评估器分析]
@@ -100,13 +107,13 @@ flowchart TD
     C --> F[治疗计划 ⭐⭐⭐⭐⭐]
     C --> G[共情技能 ⭐⭐⭐☆☆]
     C --> H[伦理合规 ✅]
-    
+
     D --> I[综合评分]
     E --> I
     F --> I
     G --> I
     H --> I
-    
+
     I --> J[反馈生成]
     J --> K[改进建议]
     K --> L[学习更新]
@@ -117,6 +124,7 @@ flowchart TD
 ### Rubric 评估维度
 
 #### 1. 诊断准确性 (Diagnostic Accuracy)
+
 - **评分标准**: 1-5 星
 - **评估内容**:
   - 症状识别准确性
@@ -126,6 +134,7 @@ flowchart TD
 - **权重**: 30%
 
 #### 2. 咨询逻辑 (Consultation Logic)
+
 - **评分标准**: 1-5 星
 - **评估内容**:
   - 问题逻辑性
@@ -135,6 +144,7 @@ flowchart TD
 - **权重**: 25%
 
 #### 3. 治疗计划 (Treatment Plan)
+
 - **评分标准**: 1-5 星
 - **评估内容**:
   - 治疗方案可行性
@@ -144,6 +154,7 @@ flowchart TD
 - **权重**: 25%
 
 #### 4. 共情技能 (Empathy Skills)
+
 - **评分标准**: 1-5 星
 - **评估内容**:
   - 沟通清晰度
@@ -153,6 +164,7 @@ flowchart TD
 - **权重**: 15%
 
 #### 5. 伦理合规 (Ethics Compliance)
+
 - **评分标准**: ✅ 合规 / ⚠️ 警告 / ❌ 风险
 - **评估内容**:
   - 医疗安全合规
@@ -162,16 +174,17 @@ flowchart TD
 - **权重**: 5%
 
 ### 评分计算
+
 ```typescript
 interface RubricEvaluation {
   scores: {
-    diagnosticAccuracy: number;    // 1-5 stars
-    consultationLogic: number;     // 1-5 stars
-    treatmentPlan: number;         // 1-5 stars
-    empathySkills: number;         // 1-5 stars
-    ethicsCompliance: 'compliant' | 'warning' | 'risk';
+    diagnosticAccuracy: number; // 1-5 stars
+    consultationLogic: number; // 1-5 stars
+    treatmentPlan: number; // 1-5 stars
+    empathySkills: number; // 1-5 stars
+    ethicsCompliance: "compliant" | "warning" | "risk";
   };
-  totalScore: number;              // 0-100
+  totalScore: number; // 0-100
   feedback: {
     strengths: string[];
     improvements: string[];
@@ -183,6 +196,7 @@ interface RubricEvaluation {
 ## 🎨 用户界面设计
 
 ### 聊天界面布局
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ 🤖 Enhanced Multi-Agent Consultation        [Performance] │
@@ -191,7 +205,7 @@ interface RubricEvaluation {
 │ 👤 You                                    [时间戳]        │
 │ 患者症状描述...                                           │
 │                                                         │
-│ 🤖 HealthAI Orchestrator                [95%] [时间戳]    │
+│ 🤖 Bone Guardian Orchestrator                [95%] [时间戳]    │
 │ 正在协调专业团队进行综合分析...                           │
 │                                                         │
 │ 🧠 Dr. Neural                           [92%] [时间戳]    │
@@ -218,11 +232,12 @@ interface RubricEvaluation {
 ```
 
 ### 性能面板
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ 📊 Agent Performance Panel                              │
 ├─────────────────────────────────────────────────────────┤
-│ 🤖 HealthAI Orchestrator                               │
+│ 🤖 Bone Guardian Orchestrator                               │
 │ 成功率: 98.5% ████████████████████ 98.5%               │
 │ 响应时间: 1.2s ████████████████████ 1.2s               │
 │ 置信度: 95% ████████████████████ 95%                    │
@@ -259,6 +274,7 @@ interface RubricEvaluation {
 ### 核心组件
 
 #### 1. MultiAgentChat 组件
+
 ```typescript
 interface MultiAgentChatProps {
   caseId?: string;
@@ -269,14 +285,14 @@ export function MultiAgentChat({ caseId, patientName }: MultiAgentChatProps) {
   const [messages, setMessages] = useState<EnhancedMessage[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPerformancePanel, setShowPerformancePanel] = useState(false);
-  
+
   // 消息处理逻辑
   const handleSendMessage = async () => {
     // 发送用户消息
     // 触发多智能体分析
     // 更新消息状态
   };
-  
+
   // 智能体响应模拟
   const simulateAgentResponse = async (userQuery: string) => {
     // 协调器响应
@@ -288,17 +304,20 @@ export function MultiAgentChat({ caseId, patientName }: MultiAgentChatProps) {
 ```
 
 #### 2. RubricScoreDisplay 组件
+
 ```typescript
 function RubricScoreDisplay({ evaluation }: { evaluation: RubricEvaluation }) {
   const renderStars = (score: number) => {
     return Array.from({ length: 5 }, (_, i) => (
-      <Star 
-        key={i} 
-        className={`w-3 h-3 ${i < score ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+      <Star
+        key={i}
+        className={`w-3 h-3 ${
+          i < score ? "text-yellow-400 fill-current" : "text-gray-300"
+        }`}
       />
     ));
   };
-  
+
   return (
     <div className="mt-2 p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
       <div className="flex items-center justify-between mb-2">
@@ -314,8 +333,13 @@ function RubricScoreDisplay({ evaluation }: { evaluation: RubricEvaluation }) {
 ```
 
 #### 3. AgentPerformancePanel 组件
+
 ```typescript
-function AgentPerformancePanel({ performances }: { performances: AgentPerformance[] }) {
+function AgentPerformancePanel({
+  performances,
+}: {
+  performances: AgentPerformance[];
+}) {
   return (
     <Card>
       <CardHeader>
@@ -339,6 +363,7 @@ function AgentPerformancePanel({ performances }: { performances: AgentPerformanc
 ### 数据流管理
 
 #### 1. 消息状态管理
+
 ```typescript
 interface EnhancedMessage extends Message {
   evaluation?: RubricEvaluation;
@@ -349,15 +374,16 @@ const [messages, setMessages] = useState<EnhancedMessage[]>([]);
 ```
 
 #### 2. 智能体配置
+
 ```typescript
 export const ENHANCED_AGENT_CONFIG: Record<string, AgentConfig> = {
   orchestrator: {
-    name: 'HealthAI Orchestrator',
-    icon: 'Bot',
-    color: 'bg-blue-100 text-blue-800',
-    role: 'System Coordinator',
-    specialty: 'Multi-Agent Orchestration',
-    evaluationWeight: 0.2
+    name: "Bone Guardian Orchestrator",
+    icon: "Bot",
+    color: "bg-blue-100 text-blue-800",
+    role: "System Coordinator",
+    specialty: "Multi-Agent Orchestration",
+    evaluationWeight: 0.2,
   },
   // ... 其他智能体配置
 };
@@ -366,18 +392,21 @@ export const ENHANCED_AGENT_CONFIG: Record<string, AgentConfig> = {
 ## 📈 性能优化
 
 ### 1. 响应时间优化
+
 - **并行处理**: 多个智能体并行分析
 - **缓存机制**: 常见查询结果缓存
 - **异步处理**: 非阻塞式消息处理
 - **流式响应**: 实时响应更新
 
 ### 2. 用户体验优化
+
 - **加载状态**: 清晰的加载指示器
 - **错误处理**: 友好的错误提示
 - **响应式设计**: 多设备适配
 - **无障碍支持**: 键盘导航和屏幕阅读器
 
 ### 3. 系统稳定性
+
 - **错误恢复**: 自动错误恢复机制
 - **降级策略**: 服务降级处理
 - **监控告警**: 实时性能监控
@@ -386,18 +415,21 @@ export const ENHANCED_AGENT_CONFIG: Record<string, AgentConfig> = {
 ## 🔮 未来发展方向
 
 ### 短期优化 (1-3 个月)
+
 - **实时协作**: WebSocket 实时通信
 - **语音交互**: 语音输入和输出
 - **多语言支持**: 国际化支持
 - **移动端优化**: 移动设备适配
 
 ### 中期发展 (3-6 个月)
+
 - **个性化学习**: 基于用户偏好的个性化
 - **知识图谱**: 医疗知识图谱集成
 - **预测分析**: 疾病预测和风险评估
 - **协作功能**: 多医生协作诊断
 
 ### 长期愿景 (6-12 个月)
+
 - **边缘计算**: 本地 AI 推理
 - **联邦学习**: 分布式 AI 训练
 - **量子计算**: 量子 AI 算法
@@ -405,4 +437,4 @@ export const ENHANCED_AGENT_CONFIG: Record<string, AgentConfig> = {
 
 ---
 
-**HealthAI 多智能体聊天系统** - 让 AI 医生团队为您的诊断保驾护航 🏥🤖
+**Bone Guardian 多智能体聊天系统** - 让 AI 医生团队为您的诊断保驾护航 🏥🤖

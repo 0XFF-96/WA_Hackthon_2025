@@ -1,4 +1,4 @@
-import { AiAgentCard } from '../AiAgentCard';
+import { AiAgentCard } from "../AiAgentCard";
 
 export default function AiAgentCardExample() {
   //todo: remove mock functionality
@@ -18,7 +18,7 @@ export default function AiAgentCardExample() {
         role="radiologist"
         status="active"
         confidence={89}
-        currentTask="Processing micro-fracture detection algorithms"
+        currentTask="Processing minimal trauma fracture detection algorithms"
       />
       <AiAgentCard
         id="3"

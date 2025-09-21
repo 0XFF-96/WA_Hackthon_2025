@@ -10,9 +10,9 @@ import { DiagnosisWorkflow } from "@/components/DiagnosisWorkflow";
 import { DataVisualization } from "@/components/DataVisualization";
 import { MTFDetectionDashboard } from "@/components/mtf/MTFDetectionDashboard";
 import { ReportImportHub } from "@/components/mtf/ReportImportHub";
-import { 
-  Search, 
-  Plus, 
+import {
+  Search,
+  Plus,
   Filter,
   Users,
   Brain,
@@ -23,7 +23,7 @@ import {
   Upload,
   TrendingUp,
   FileText,
-  LayoutDashboard
+  LayoutDashboard,
 } from "lucide-react";
 
 export default function EnhancedDashboard() {
@@ -38,17 +38,17 @@ export default function EnhancedDashboard() {
       age: 34,
       gender: "Female",
       medicalId: "MED-2024-0001",
-      caseTitle: "Suspected micro-fracture in wrist",
+      caseTitle: "Suspected minimal trauma fracture in wrist",
       status: "analyzing" as const,
       priority: "high" as const,
       lastUpdate: "2 mins ago",
     },
     {
-      id: "2", 
+      id: "2",
       name: "Michael Chen",
       age: 28,
       gender: "Male",
-      medicalId: "MED-2024-0002", 
+      medicalId: "MED-2024-0002",
       caseTitle: "Post-workout ankle pain assessment",
       status: "diagnosed" as const,
       priority: "medium" as const,
@@ -56,7 +56,7 @@ export default function EnhancedDashboard() {
     },
     {
       id: "3",
-      name: "Emma Rodriguez", 
+      name: "Emma Rodriguez",
       age: 42,
       gender: "Female",
       medicalId: "MED-2024-0003",
@@ -82,7 +82,7 @@ export default function EnhancedDashboard() {
       role: "radiologist" as const,
       status: "active" as const,
       confidence: 89,
-      currentTask: "Processing micro-fracture detection algorithms",
+      currentTask: "Processing minimal trauma fracture detection algorithms",
     },
     {
       id: "3",
@@ -102,40 +102,77 @@ export default function EnhancedDashboard() {
   ];
 
   const systemStats = [
-    { icon: Users, label: "Active Cases", value: "23", change: "+12%", color: "text-blue-600" },
-    { icon: Shield, label: "MTF Detected", value: "8", change: "+25%", color: "text-red-600" },
-    { icon: Brain, label: "AI Agents", value: "8", change: "0%", color: "text-purple-600" },
-    { icon: Activity, label: "Diagnoses Today", value: "47", change: "+8%", color: "text-green-600" },
-    { icon: Clock, label: "Avg. Processing", value: "2.3s", change: "-15%", color: "text-orange-600" },
-    { icon: TrendingUp, label: "Quality Score", value: "94.5", change: "+3%", color: "text-indigo-600" },
+    {
+      icon: Users,
+      label: "Active Cases",
+      value: "23",
+      change: "+12%",
+      color: "text-blue-600",
+    },
+    {
+      icon: Shield,
+      label: "MTF Detected",
+      value: "8",
+      change: "+25%",
+      color: "text-red-600",
+    },
+    {
+      icon: Brain,
+      label: "AI Agents",
+      value: "8",
+      change: "0%",
+      color: "text-purple-600",
+    },
+    {
+      icon: Activity,
+      label: "Diagnoses Today",
+      value: "47",
+      change: "+8%",
+      color: "text-green-600",
+    },
+    {
+      icon: Clock,
+      label: "Avg. Processing",
+      value: "2.3s",
+      change: "-15%",
+      color: "text-orange-600",
+    },
+    {
+      icon: TrendingUp,
+      label: "Quality Score",
+      value: "94.5",
+      change: "+3%",
+      color: "text-indigo-600",
+    },
   ];
 
   const handleViewCase = (id: string) => {
-    console.log('View case:', id);
+    console.log("View case:", id);
   };
 
   const handleStepClick = (stepId: string) => {
-    console.log('Step clicked:', stepId);
+    console.log("Step clicked:", stepId);
   };
 
   const handleNewCase = () => {
-    console.log('New case clicked');
+    console.log("New case clicked");
   };
 
   const handleMTFCaseSelect = (caseId: string) => {
-    console.log('MTF case selected:', caseId);
+    console.log("MTF case selected:", caseId);
     // 这里可以切换到详细视图或其他操作
   };
 
   const handleImportComplete = (result: any) => {
-    console.log('Import completed:', result);
+    console.log("Import completed:", result);
     // 这里可以更新状态或显示成功消息
   };
 
-  const filteredCases = recentCases.filter(case_ => 
-    case_.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    case_.caseTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    case_.medicalId.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCases = recentCases.filter(
+    (case_) =>
+      case_.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      case_.caseTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      case_.medicalId.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -151,7 +188,10 @@ export default function EnhancedDashboard() {
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+          <Badge
+            variant="secondary"
+            className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+          >
             <Activity className="w-3 h-3 mr-1" />
             All Systems Operational
           </Badge>
@@ -170,7 +210,12 @@ export default function EnhancedDashboard() {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">{stat.label}</p>
-                  <p className="text-2xl font-bold" data-testid={`stat-value-${index}`}>{stat.value}</p>
+                  <p
+                    className="text-2xl font-bold"
+                    data-testid={`stat-value-${index}`}
+                  >
+                    {stat.value}
+                  </p>
                 </div>
                 <div className="text-right">
                   <stat.icon className={`w-5 h-5 ${stat.color} mb-1`} />
@@ -191,11 +236,17 @@ export default function EnhancedDashboard() {
             <LayoutDashboard className="w-4 h-4" />
             Overview
           </TabsTrigger>
-          <TabsTrigger value="mtf-detection" className="flex items-center gap-2">
+          <TabsTrigger
+            value="mtf-detection"
+            className="flex items-center gap-2"
+          >
             <Shield className="w-4 h-4" />
             MTF Detection
           </TabsTrigger>
-          <TabsTrigger value="report-import" className="flex items-center gap-2">
+          <TabsTrigger
+            value="report-import"
+            className="flex items-center gap-2"
+          >
             <Upload className="w-4 h-4" />
             Report Import
           </TabsTrigger>
@@ -236,10 +287,16 @@ export default function EnhancedDashboard() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {filteredCases.length === 0 ? (
-                    <p className="text-center text-muted-foreground py-4">No cases found</p>
+                    <p className="text-center text-muted-foreground py-4">
+                      No cases found
+                    </p>
                   ) : (
                     filteredCases.map((case_) => (
-                      <PatientCard key={case_.id} {...case_} onViewCase={handleViewCase} />
+                      <PatientCard
+                        key={case_.id}
+                        {...case_}
+                        onViewCase={handleViewCase}
+                      />
                     ))
                   )}
                 </CardContent>
@@ -285,21 +342,27 @@ export default function EnhancedDashboard() {
                     <Shield className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-sm font-medium">MTF Cases Detected</p>
-                      <p className="text-xs text-muted-foreground">3 critical cases require immediate attention</p>
+                      <p className="text-xs text-muted-foreground">
+                        3 critical cases require immediate attention
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-3 p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
                     <AlertCircle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-sm font-medium">High case volume</p>
-                      <p className="text-xs text-muted-foreground">Processing queue at 85% capacity</p>
+                      <p className="text-xs text-muted-foreground">
+                        Processing queue at 85% capacity
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-3 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
                     <Activity className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-sm font-medium">Model update</p>
-                      <p className="text-xs text-muted-foreground">New AI model deployed successfully</p>
+                      <p className="text-xs text-muted-foreground">
+                        New AI model deployed successfully
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -328,29 +391,39 @@ export default function EnhancedDashboard() {
               <DataVisualization />
             </CardContent>
           </Card>
-          
+
           {/* MTF-specific analytics */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">MTF Detection Performance</CardTitle>
+                <CardTitle className="text-base">
+                  MTF Detection Performance
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Detection Accuracy</span>
+                    <span className="text-sm text-gray-600">
+                      Detection Accuracy
+                    </span>
                     <span className="font-medium">94.2%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Processing Speed</span>
+                    <span className="text-sm text-gray-600">
+                      Processing Speed
+                    </span>
                     <span className="font-medium">2.3s avg</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">False Positives</span>
+                    <span className="text-sm text-gray-600">
+                      False Positives
+                    </span>
                     <span className="font-medium">5.8%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Cases Processed Today</span>
+                    <span className="text-sm text-gray-600">
+                      Cases Processed Today
+                    </span>
                     <span className="font-medium">47</span>
                   </div>
                 </div>
@@ -359,7 +432,9 @@ export default function EnhancedDashboard() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Patient Outreach Metrics</CardTitle>
+                <CardTitle className="text-base">
+                  Patient Outreach Metrics
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -372,11 +447,15 @@ export default function EnhancedDashboard() {
                     <span className="font-medium">78%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">SMS Notifications</span>
+                    <span className="text-sm text-gray-600">
+                      SMS Notifications
+                    </span>
                     <span className="font-medium">12</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Phone Calls Made</span>
+                    <span className="text-sm text-gray-600">
+                      Phone Calls Made
+                    </span>
                     <span className="font-medium">8</span>
                   </div>
                 </div>

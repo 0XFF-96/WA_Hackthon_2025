@@ -12,18 +12,18 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { 
-  LayoutDashboard, 
-  Users, 
-  Brain, 
-  FileText, 
-  BarChart3, 
+import {
+  LayoutDashboard,
+  Users,
+  Brain,
+  FileText,
+  BarChart3,
   Settings,
   Activity,
   Stethoscope,
   MessageCircle,
   GitBranch,
-  Shield
+  Shield,
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
@@ -39,7 +39,7 @@ const navigationItems = [
     icon: Shield,
   },
   {
-    title: "Patient Cases", 
+    title: "Patient Cases",
     url: "/cases",
     icon: Users,
   },
@@ -60,7 +60,7 @@ const navigationItems = [
   },
   {
     title: "Analytics",
-    url: "/analytics", 
+    url: "/analytics",
     icon: BarChart3,
   },
 ];
@@ -89,12 +89,16 @@ export function AppSidebar() {
             <Stethoscope className="w-4 h-4 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="font-bold text-sm" data-testid="text-app-title">HealthAI</h1>
-            <p className="text-xs text-muted-foreground">Micro-fracture Diagnosis</p>
+            <h1 className="font-bold text-sm" data-testid="text-app-title">
+              Bone Guardian
+            </h1>
+            <p className="text-xs text-muted-foreground">
+              Minimal trauma fracture Diagnosis
+            </p>
           </div>
         </div>
       </SidebarHeader>
-      
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Main Navigation</SidebarGroupLabel>
@@ -103,7 +107,12 @@ export function AppSidebar() {
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={location === item.url}>
-                    <Link href={item.url} data-testid={`nav-${item.title.toLowerCase().replace(' ', '-')}`}>
+                    <Link
+                      href={item.url}
+                      data-testid={`nav-${item.title
+                        .toLowerCase()
+                        .replace(" ", "-")}`}
+                    >
                       <item.icon className="w-4 h-4" />
                       <span>{item.title}</span>
                     </Link>
@@ -121,10 +130,15 @@ export function AppSidebar() {
               {systemItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={location === item.url}>
-                    <Link href={item.url} data-testid={`nav-${item.title.toLowerCase().replace(' ', '-')}`}>
+                    <Link
+                      href={item.url}
+                      data-testid={`nav-${item.title
+                        .toLowerCase()
+                        .replace(" ", "-")}`}
+                    >
                       <item.icon className="w-4 h-4" />
                       <span>{item.title}</span>
-                      {item.title === 'System Health' && (
+                      {item.title === "System Health" && (
                         <Badge variant="secondary" className="ml-auto">
                           99%
                         </Badge>
@@ -147,7 +161,9 @@ export function AppSidebar() {
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-xs" data-testid="text-user-name">Dr. Smith</p>
+            <p className="font-medium text-xs" data-testid="text-user-name">
+              Dr. Smith
+            </p>
             <p className="text-xs text-muted-foreground">Healthcare Admin</p>
           </div>
           <Badge variant="secondary" className="text-xs">

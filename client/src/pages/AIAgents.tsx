@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Brain, 
-  Activity, 
-  TrendingUp, 
-  TrendingDown, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Brain,
+  Activity,
+  TrendingUp,
+  TrendingDown,
+  Clock,
+  CheckCircle,
+  XCircle,
   AlertTriangle,
   BarChart3,
   Users,
@@ -25,17 +25,21 @@ import {
   Heart,
   FileText,
   Stethoscope,
-  Bot
-} from 'lucide-react';
-import { ExtendedAgentStatus, SystemOverview, ENHANCED_AGENT_CONFIG } from '@/types/agentChat';
+  Bot,
+} from "lucide-react";
+import {
+  ExtendedAgentStatus,
+  SystemOverview,
+  ENHANCED_AGENT_CONFIG,
+} from "@/types/agentChat";
 
 // 模拟数据
 const mockAgents: ExtendedAgentStatus[] = [
   {
-    id: 'orchestrator',
-    name: 'HealthAI Orchestrator',
-    type: 'orchestrator',
-    status: 'idle',
+    id: "orchestrator",
+    name: "Bone Guardian Orchestrator",
+    type: "orchestrator",
+    status: "idle",
     lastActivity: new Date(Date.now() - 2 * 60 * 1000), // 2 minutes ago
     performance: {
       totalTasks: 156,
@@ -43,12 +47,12 @@ const mockAgents: ExtendedAgentStatus[] = [
       averageResponseTime: 1.2,
       confidence: 95,
       rubricScore: 92.3,
-      improvementTrend: 'improving'
+      improvementTrend: "improving",
     },
     health: {
       cpu: 15,
       memory: 45,
-      uptime: 99.8
+      uptime: 99.8,
     },
     recentEvaluations: [
       {
@@ -56,17 +60,18 @@ const mockAgents: ExtendedAgentStatus[] = [
         consultationLogic: 4,
         treatmentPlan: 5,
         empathySkills: 4,
-        ethicsCompliance: 'compliant',
-        timestamp: new Date(Date.now() - 30 * 60 * 1000)
-      }
-    ]
+        ethicsCompliance: "compliant",
+        timestamp: new Date(Date.now() - 30 * 60 * 1000),
+      },
+    ],
   },
   {
-    id: 'diagnostician',
-    name: 'Dr. Neural',
-    type: 'diagnostician',
-    status: 'busy',
-    currentTask: 'Analyzing micro-fracture patterns in Case MED-2024-0001',
+    id: "diagnostician",
+    name: "Dr. Neural",
+    type: "diagnostician",
+    status: "busy",
+    currentTask:
+      "Analyzing minimal trauma fracture patterns in Case MED-2024-0001",
     lastActivity: new Date(Date.now() - 30 * 1000), // 30 seconds ago
     performance: {
       totalTasks: 89,
@@ -74,12 +79,12 @@ const mockAgents: ExtendedAgentStatus[] = [
       averageResponseTime: 2.1,
       confidence: 92,
       rubricScore: 87.5,
-      improvementTrend: 'improving'
+      improvementTrend: "improving",
     },
     health: {
       cpu: 65,
       memory: 78,
-      uptime: 99.5
+      uptime: 99.5,
     },
     recentEvaluations: [
       {
@@ -87,16 +92,16 @@ const mockAgents: ExtendedAgentStatus[] = [
         consultationLogic: 4,
         treatmentPlan: 4,
         empathySkills: 3,
-        ethicsCompliance: 'compliant',
-        timestamp: new Date(Date.now() - 15 * 60 * 1000)
-      }
-    ]
+        ethicsCompliance: "compliant",
+        timestamp: new Date(Date.now() - 15 * 60 * 1000),
+      },
+    ],
   },
   {
-    id: 'radiologist',
-    name: 'RadiologyAI',
-    type: 'radiologist',
-    status: 'idle',
+    id: "radiologist",
+    name: "RadiologyAI",
+    type: "radiologist",
+    status: "idle",
     lastActivity: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
     performance: {
       totalTasks: 67,
@@ -104,12 +109,12 @@ const mockAgents: ExtendedAgentStatus[] = [
       averageResponseTime: 1.8,
       confidence: 88,
       rubricScore: 92.3,
-      improvementTrend: 'stable'
+      improvementTrend: "stable",
     },
     health: {
       cpu: 25,
       memory: 52,
-      uptime: 99.9
+      uptime: 99.9,
     },
     recentEvaluations: [
       {
@@ -117,16 +122,16 @@ const mockAgents: ExtendedAgentStatus[] = [
         consultationLogic: 5,
         treatmentPlan: 4,
         empathySkills: 4,
-        ethicsCompliance: 'compliant',
-        timestamp: new Date(Date.now() - 45 * 60 * 1000)
-      }
-    ]
+        ethicsCompliance: "compliant",
+        timestamp: new Date(Date.now() - 45 * 60 * 1000),
+      },
+    ],
   },
   {
-    id: 'treatment_planner',
-    name: 'TreatmentBot',
-    type: 'treatment_planner',
-    status: 'idle',
+    id: "treatment_planner",
+    name: "TreatmentBot",
+    type: "treatment_planner",
+    status: "idle",
     lastActivity: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago
     performance: {
       totalTasks: 45,
@@ -134,12 +139,12 @@ const mockAgents: ExtendedAgentStatus[] = [
       averageResponseTime: 1.5,
       confidence: 90,
       rubricScore: 89.1,
-      improvementTrend: 'improving'
+      improvementTrend: "improving",
     },
     health: {
       cpu: 20,
       memory: 38,
-      uptime: 99.7
+      uptime: 99.7,
     },
     recentEvaluations: [
       {
@@ -147,16 +152,16 @@ const mockAgents: ExtendedAgentStatus[] = [
         consultationLogic: 4,
         treatmentPlan: 5,
         empathySkills: 4,
-        ethicsCompliance: 'compliant',
-        timestamp: new Date(Date.now() - 20 * 60 * 1000)
-      }
-    ]
+        ethicsCompliance: "compliant",
+        timestamp: new Date(Date.now() - 20 * 60 * 1000),
+      },
+    ],
   },
   {
-    id: 'rubric_evaluator',
-    name: 'Clinical Rubric Evaluator',
-    type: 'rubric_evaluator',
-    status: 'idle',
+    id: "rubric_evaluator",
+    name: "Clinical Rubric Evaluator",
+    type: "rubric_evaluator",
+    status: "idle",
     lastActivity: new Date(Date.now() - 1 * 60 * 1000), // 1 minute ago
     performance: {
       totalTasks: 234,
@@ -164,55 +169,74 @@ const mockAgents: ExtendedAgentStatus[] = [
       averageResponseTime: 0.8,
       confidence: 98,
       rubricScore: 95.7,
-      improvementTrend: 'stable'
+      improvementTrend: "stable",
     },
     health: {
       cpu: 10,
       memory: 25,
-      uptime: 99.9
+      uptime: 99.9,
     },
-    recentEvaluations: []
-  }
+    recentEvaluations: [],
+  },
 ];
 
 // Agent状态卡片组件
 function AgentStatusCard({ agent }: { agent: ExtendedAgentStatus }) {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'idle': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
-      case 'busy': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
-      case 'error': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-      case 'maintenance': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+      case "idle":
+        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
+      case "busy":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
+      case "error":
+        return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
+      case "maintenance":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'idle': return <CheckCircle className="w-4 h-4" />;
-      case 'busy': return <Activity className="w-4 h-4" />;
-      case 'error': return <XCircle className="w-4 h-4" />;
-      case 'maintenance': return <AlertTriangle className="w-4 h-4" />;
-      default: return <Clock className="w-4 h-4" />;
+      case "idle":
+        return <CheckCircle className="w-4 h-4" />;
+      case "busy":
+        return <Activity className="w-4 h-4" />;
+      case "error":
+        return <XCircle className="w-4 h-4" />;
+      case "maintenance":
+        return <AlertTriangle className="w-4 h-4" />;
+      default:
+        return <Clock className="w-4 h-4" />;
     }
   };
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'improving': return <TrendingUp className="w-4 h-4 text-green-500" />;
-      case 'declining': return <TrendingDown className="w-4 h-4 text-red-500" />;
-      default: return <Activity className="w-4 h-4 text-gray-500" />;
+      case "improving":
+        return <TrendingUp className="w-4 h-4 text-green-500" />;
+      case "declining":
+        return <TrendingDown className="w-4 h-4 text-red-500" />;
+      default:
+        return <Activity className="w-4 h-4 text-gray-500" />;
     }
   };
 
   const getAgentIcon = (type: string) => {
     switch (type) {
-      case 'orchestrator': return <Bot className="w-5 h-5" />;
-      case 'diagnostician': return <Brain className="w-5 h-5" />;
-      case 'radiologist': return <FileText className="w-5 h-5" />;
-      case 'treatment_planner': return <Stethoscope className="w-5 h-5" />;
-      case 'rubric_evaluator': return <Target className="w-5 h-5" />;
-      default: return <Brain className="w-5 h-5" />;
+      case "orchestrator":
+        return <Bot className="w-5 h-5" />;
+      case "diagnostician":
+        return <Brain className="w-5 h-5" />;
+      case "radiologist":
+        return <FileText className="w-5 h-5" />;
+      case "treatment_planner":
+        return <Stethoscope className="w-5 h-5" />;
+      case "rubric_evaluator":
+        return <Target className="w-5 h-5" />;
+      default:
+        return <Brain className="w-5 h-5" />;
     }
   };
 
@@ -226,7 +250,9 @@ function AgentStatusCard({ agent }: { agent: ExtendedAgentStatus }) {
             </div>
             <div>
               <CardTitle className="text-lg">{agent.name}</CardTitle>
-              <p className="text-sm text-muted-foreground capitalize">{agent.type}</p>
+              <p className="text-sm text-muted-foreground capitalize">
+                {agent.type}
+              </p>
             </div>
           </div>
           <Badge className={getStatusColor(agent.status)}>
@@ -241,8 +267,12 @@ function AgentStatusCard({ agent }: { agent: ExtendedAgentStatus }) {
         {/* 当前任务 */}
         {agent.currentTask && (
           <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-            <p className="text-sm font-medium text-blue-900 dark:text-blue-100">Current Task</p>
-            <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">{agent.currentTask}</p>
+            <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+              Current Task
+            </p>
+            <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+              {agent.currentTask}
+            </p>
           </div>
         )}
 
@@ -251,14 +281,18 @@ function AgentStatusCard({ agent }: { agent: ExtendedAgentStatus }) {
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span>Success Rate</span>
-              <span className="font-medium">{agent.performance.successRate.toFixed(1)}%</span>
+              <span className="font-medium">
+                {agent.performance.successRate.toFixed(1)}%
+              </span>
             </div>
             <Progress value={agent.performance.successRate} className="h-2" />
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span>Rubric Score</span>
-              <span className="font-medium">{agent.performance.rubricScore.toFixed(1)}/100</span>
+              <span className="font-medium">
+                {agent.performance.rubricScore.toFixed(1)}/100
+              </span>
             </div>
             <Progress value={agent.performance.rubricScore} className="h-2" />
           </div>
@@ -271,7 +305,9 @@ function AgentStatusCard({ agent }: { agent: ExtendedAgentStatus }) {
             <div className="text-muted-foreground">Tasks</div>
           </div>
           <div className="text-center p-2 bg-gray-50 dark:bg-gray-900/50 rounded">
-            <div className="font-medium">{agent.performance.averageResponseTime}s</div>
+            <div className="font-medium">
+              {agent.performance.averageResponseTime}s
+            </div>
             <div className="text-muted-foreground">Avg Time</div>
           </div>
           <div className="text-center p-2 bg-gray-50 dark:bg-gray-900/50 rounded">
@@ -282,10 +318,14 @@ function AgentStatusCard({ agent }: { agent: ExtendedAgentStatus }) {
 
         {/* 改进趋势 */}
         <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Improvement Trend</span>
+          <span className="text-sm text-muted-foreground">
+            Improvement Trend
+          </span>
           <div className="flex items-center space-x-1">
             {getTrendIcon(agent.performance.improvementTrend)}
-            <span className="text-sm capitalize">{agent.performance.improvementTrend}</span>
+            <span className="text-sm capitalize">
+              {agent.performance.improvementTrend}
+            </span>
           </div>
         </div>
 
@@ -293,7 +333,9 @@ function AgentStatusCard({ agent }: { agent: ExtendedAgentStatus }) {
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span>System Health</span>
-            <span className="text-green-600 font-medium">{agent.health.uptime.toFixed(1)}%</span>
+            <span className="text-green-600 font-medium">
+              {agent.health.uptime.toFixed(1)}%
+            </span>
           </div>
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div>CPU: {agent.health.cpu}%</div>
@@ -320,9 +362,11 @@ function AgentStatusCard({ agent }: { agent: ExtendedAgentStatus }) {
 function RubricTrendChart({ agent }: { agent: ExtendedAgentStatus }) {
   const renderStars = (score: number) => {
     return Array.from({ length: 5 }, (_, i) => (
-      <Star 
-        key={i} 
-        className={`w-3 h-3 ${i < score ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+      <Star
+        key={i}
+        className={`w-3 h-3 ${
+          i < score ? "text-yellow-400 fill-current" : "text-gray-300"
+        }`}
       />
     ));
   };
@@ -364,9 +408,15 @@ function RubricTrendChart({ agent }: { agent: ExtendedAgentStatus }) {
           <div className="flex items-center justify-between">
             <span>Ethics</span>
             <div className="flex items-center">
-              {latest.ethicsCompliance === 'compliant' && <CheckCircle className="w-3 h-3 text-green-500" />}
-              {latest.ethicsCompliance === 'warning' && <AlertTriangle className="w-3 h-3 text-yellow-500" />}
-              {latest.ethicsCompliance === 'risk' && <XCircle className="w-3 h-3 text-red-500" />}
+              {latest.ethicsCompliance === "compliant" && (
+                <CheckCircle className="w-3 h-3 text-green-500" />
+              )}
+              {latest.ethicsCompliance === "warning" && (
+                <AlertTriangle className="w-3 h-3 text-yellow-500" />
+              )}
+              {latest.ethicsCompliance === "risk" && (
+                <XCircle className="w-3 h-3 text-red-500" />
+              )}
             </div>
           </div>
         </div>
@@ -386,29 +436,34 @@ export default function AIAgents() {
   const refreshData = async () => {
     setIsRefreshing(true);
     // 模拟数据刷新
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsRefreshing(false);
   };
 
-  const selectedAgentData = agents.find(agent => agent.id === selectedAgent);
+  const selectedAgentData = agents.find((agent) => agent.id === selectedAgent);
 
   return (
     <div className="p-6 space-y-6" data-testid="page-ai-agents">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold" data-testid="text-page-title">AI Agents</h1>
+          <h1 className="text-3xl font-bold" data-testid="text-page-title">
+            AI Agents
+          </h1>
           <p className="text-muted-foreground">
-            Monitor AI agent performance, status, and clinical rubric evaluations
+            Monitor AI agent performance, status, and clinical rubric
+            evaluations
           </p>
         </div>
         <div className="flex space-x-2">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={refreshData}
             disabled={isRefreshing}
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
           <Button>
@@ -437,7 +492,11 @@ export default function AIAgents() {
               <CheckCircle className="w-5 h-5 text-green-600" />
               <div>
                 <p className="text-2xl font-bold">
-                  {agents.filter(a => a.status === 'idle' || a.status === 'busy').length}
+                  {
+                    agents.filter(
+                      (a) => a.status === "idle" || a.status === "busy"
+                    ).length
+                  }
                 </p>
                 <p className="text-sm text-muted-foreground">Healthy</p>
               </div>
@@ -450,7 +509,11 @@ export default function AIAgents() {
               <TrendingUp className="w-5 h-5 text-green-600" />
               <div>
                 <p className="text-2xl font-bold">
-                  {agents.filter(a => a.performance.improvementTrend === 'improving').length}
+                  {
+                    agents.filter(
+                      (a) => a.performance.improvementTrend === "improving"
+                    ).length
+                  }
                 </p>
                 <p className="text-sm text-muted-foreground">Improving</p>
               </div>
@@ -463,7 +526,12 @@ export default function AIAgents() {
               <BarChart3 className="w-5 h-5 text-purple-600" />
               <div>
                 <p className="text-2xl font-bold">
-                  {(agents.reduce((sum, a) => sum + a.performance.rubricScore, 0) / agents.length).toFixed(1)}
+                  {(
+                    agents.reduce(
+                      (sum, a) => sum + a.performance.rubricScore,
+                      0
+                    ) / agents.length
+                  ).toFixed(1)}
                 </p>
                 <p className="text-sm text-muted-foreground">Avg Score</p>
               </div>
@@ -496,7 +564,9 @@ export default function AIAgents() {
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     {agent.name}
-                    <Badge variant="outline">{agent.performance.rubricScore.toFixed(1)}/100</Badge>
+                    <Badge variant="outline">
+                      {agent.performance.rubricScore.toFixed(1)}/100
+                    </Badge>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -504,14 +574,24 @@ export default function AIAgents() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm font-medium mb-2">Success Rate</p>
-                        <Progress value={agent.performance.successRate} className="h-2" />
+                        <Progress
+                          value={agent.performance.successRate}
+                          className="h-2"
+                        />
                         <p className="text-xs text-muted-foreground mt-1">
                           {agent.performance.successRate.toFixed(1)}%
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium mb-2">Response Time</p>
-                        <Progress value={100 - (agent.performance.averageResponseTime * 20)} className="h-2" />
+                        <p className="text-sm font-medium mb-2">
+                          Response Time
+                        </p>
+                        <Progress
+                          value={
+                            100 - agent.performance.averageResponseTime * 20
+                          }
+                          className="h-2"
+                        />
                         <p className="text-xs text-muted-foreground mt-1">
                           {agent.performance.averageResponseTime}s avg
                         </p>
@@ -519,15 +599,25 @@ export default function AIAgents() {
                     </div>
                     <div className="grid grid-cols-3 gap-2 text-center">
                       <div className="p-2 bg-gray-50 dark:bg-gray-900/50 rounded">
-                        <p className="font-medium">{agent.performance.totalTasks}</p>
-                        <p className="text-xs text-muted-foreground">Total Tasks</p>
+                        <p className="font-medium">
+                          {agent.performance.totalTasks}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Total Tasks
+                        </p>
                       </div>
                       <div className="p-2 bg-gray-50 dark:bg-gray-900/50 rounded">
-                        <p className="font-medium">{agent.performance.confidence}%</p>
-                        <p className="text-xs text-muted-foreground">Confidence</p>
+                        <p className="font-medium">
+                          {agent.performance.confidence}%
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Confidence
+                        </p>
                       </div>
                       <div className="p-2 bg-gray-50 dark:bg-gray-900/50 rounded">
-                        <p className="font-medium">{agent.health.uptime.toFixed(1)}%</p>
+                        <p className="font-medium">
+                          {agent.health.uptime.toFixed(1)}%
+                        </p>
                         <p className="text-xs text-muted-foreground">Uptime</p>
                       </div>
                     </div>
@@ -565,7 +655,10 @@ export default function AIAgents() {
               <div className="text-center py-8 text-muted-foreground">
                 <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p>Agent collaboration visualization coming soon...</p>
-                <p className="text-sm mt-2">This will show how agents work together in multi-agent workflows</p>
+                <p className="text-sm mt-2">
+                  This will show how agents work together in multi-agent
+                  workflows
+                </p>
               </div>
             </CardContent>
           </Card>

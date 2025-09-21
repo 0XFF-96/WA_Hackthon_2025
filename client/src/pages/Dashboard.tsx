@@ -7,15 +7,15 @@ import { PatientCard } from "@/components/PatientCard";
 import { AiAgentCard } from "@/components/AiAgentCard";
 import { DiagnosisWorkflow } from "@/components/DiagnosisWorkflow";
 import { DataVisualization } from "@/components/DataVisualization";
-import { 
-  Search, 
-  Plus, 
+import {
+  Search,
+  Plus,
   Filter,
   Users,
   Brain,
   Activity,
   Clock,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -29,17 +29,17 @@ export default function Dashboard() {
       age: 34,
       gender: "Female",
       medicalId: "MED-2024-0001",
-      caseTitle: "Suspected micro-fracture in wrist",
+      caseTitle: "Suspected minimal trauma fracture in wrist",
       status: "analyzing" as const,
       priority: "high" as const,
       lastUpdate: "2 mins ago",
     },
     {
-      id: "2", 
+      id: "2",
       name: "Michael Chen",
       age: 28,
       gender: "Male",
-      medicalId: "MED-2024-0002", 
+      medicalId: "MED-2024-0002",
       caseTitle: "Post-workout ankle pain assessment",
       status: "diagnosed" as const,
       priority: "medium" as const,
@@ -47,7 +47,7 @@ export default function Dashboard() {
     },
     {
       id: "3",
-      name: "Emma Rodriguez", 
+      name: "Emma Rodriguez",
       age: 42,
       gender: "Female",
       medicalId: "MED-2024-0003",
@@ -73,7 +73,7 @@ export default function Dashboard() {
       role: "radiologist" as const,
       status: "active" as const,
       confidence: 89,
-      currentTask: "Processing micro-fracture detection algorithms",
+      currentTask: "Processing minimal trauma fracture detection algorithms",
     },
     {
       id: "3",
@@ -85,28 +85,53 @@ export default function Dashboard() {
   ];
 
   const systemStats = [
-    { icon: Users, label: "Active Cases", value: "23", change: "+12%", color: "text-blue-600" },
-    { icon: Brain, label: "AI Agents", value: "8", change: "0%", color: "text-purple-600" },
-    { icon: Activity, label: "Diagnoses Today", value: "47", change: "+8%", color: "text-green-600" },
-    { icon: Clock, label: "Avg. Processing", value: "2.3s", change: "-15%", color: "text-orange-600" },
+    {
+      icon: Users,
+      label: "Active Cases",
+      value: "23",
+      change: "+12%",
+      color: "text-blue-600",
+    },
+    {
+      icon: Brain,
+      label: "AI Agents",
+      value: "8",
+      change: "0%",
+      color: "text-purple-600",
+    },
+    {
+      icon: Activity,
+      label: "Diagnoses Today",
+      value: "47",
+      change: "+8%",
+      color: "text-green-600",
+    },
+    {
+      icon: Clock,
+      label: "Avg. Processing",
+      value: "2.3s",
+      change: "-15%",
+      color: "text-orange-600",
+    },
   ];
 
   const handleViewCase = (id: string) => {
-    console.log('View case:', id);
+    console.log("View case:", id);
   };
 
   const handleStepClick = (stepId: string) => {
-    console.log('Step clicked:', stepId);
+    console.log("Step clicked:", stepId);
   };
 
   const handleNewCase = () => {
-    console.log('New case clicked');
+    console.log("New case clicked");
   };
 
-  const filteredCases = recentCases.filter(case_ => 
-    case_.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    case_.caseTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    case_.medicalId.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCases = recentCases.filter(
+    (case_) =>
+      case_.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      case_.caseTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      case_.medicalId.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -114,11 +139,18 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>
-          <h1 className="text-2xl font-bold" data-testid="text-page-title">Dashboard</h1>
-          <p className="text-muted-foreground">Healthcare AI Micro-fracture Diagnosis Platform</p>
+          <h1 className="text-2xl font-bold" data-testid="text-page-title">
+            Dashboard
+          </h1>
+          <p className="text-muted-foreground">
+            Healthcare AI Micro-fracture Diagnosis Platform
+          </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+          <Badge
+            variant="secondary"
+            className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+          >
             <Activity className="w-3 h-3 mr-1" />
             All Systems Operational
           </Badge>
@@ -137,7 +169,12 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">{stat.label}</p>
-                  <p className="text-2xl font-bold" data-testid={`stat-value-${index}`}>{stat.value}</p>
+                  <p
+                    className="text-2xl font-bold"
+                    data-testid={`stat-value-${index}`}
+                  >
+                    {stat.value}
+                  </p>
                 </div>
                 <div className="text-right">
                   <stat.icon className={`w-5 h-5 ${stat.color} mb-1`} />
@@ -180,10 +217,16 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="space-y-4">
               {filteredCases.length === 0 ? (
-                <p className="text-center text-muted-foreground py-4">No cases found</p>
+                <p className="text-center text-muted-foreground py-4">
+                  No cases found
+                </p>
               ) : (
                 filteredCases.map((case_) => (
-                  <PatientCard key={case_.id} {...case_} onViewCase={handleViewCase} />
+                  <PatientCard
+                    key={case_.id}
+                    {...case_}
+                    onViewCase={handleViewCase}
+                  />
                 ))
               )}
             </CardContent>
@@ -229,14 +272,18 @@ export default function Dashboard() {
                 <AlertCircle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-sm font-medium">High case volume</p>
-                  <p className="text-xs text-muted-foreground">Processing queue at 85% capacity</p>
+                  <p className="text-xs text-muted-foreground">
+                    Processing queue at 85% capacity
+                  </p>
                 </div>
               </div>
               <div className="flex items-start space-x-3 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
                 <Activity className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-sm font-medium">Model update</p>
-                  <p className="text-xs text-muted-foreground">New AI model deployed successfully</p>
+                  <p className="text-xs text-muted-foreground">
+                    New AI model deployed successfully
+                  </p>
                 </div>
               </div>
             </CardContent>

@@ -1,15 +1,15 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { 
-  ArrowRight, 
-  Shield, 
-  Clock, 
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  ArrowRight,
+  Shield,
+  Clock,
   CheckCircle,
   AlertTriangle,
-  Heart
-} from 'lucide-react';
+  Heart,
+} from "lucide-react";
 
 interface AssessmentLandingProps {
   onStart: () => void;
@@ -20,18 +20,18 @@ export function AssessmentLanding({ onStart }: AssessmentLandingProps) {
     {
       icon: Clock,
       title: "Quick Assessment",
-      description: "Takes only 3-5 minutes to complete"
+      description: "Takes only 3-5 minutes to complete",
     },
     {
       icon: Shield,
       title: "Privacy Protected",
-      description: "Your data is secure and HIPAA compliant"
+      description: "Your data is secure and HIPAA compliant",
     },
     {
       icon: CheckCircle,
       title: "AI-Powered",
-      description: "Advanced risk assessment technology"
-    }
+      description: "Advanced risk assessment technology",
+    },
   ];
 
   const riskLevels = [
@@ -39,20 +39,20 @@ export function AssessmentLanding({ onStart }: AssessmentLandingProps) {
       level: "Low Risk",
       color: "bg-green-100 text-green-800 border-green-200",
       icon: CheckCircle,
-      description: "Continue monitoring, no urgent action required"
+      description: "Continue monitoring, no urgent action required",
     },
     {
-      level: "Medium Risk", 
+      level: "Medium Risk",
       color: "bg-yellow-100 text-yellow-800 border-yellow-200",
       icon: AlertTriangle,
-      description: "Consider scheduling a GP visit or follow-up imaging"
+      description: "Consider scheduling a GP visit or follow-up imaging",
     },
     {
       level: "High Risk",
-      color: "bg-red-100 text-red-800 border-red-200", 
+      color: "bg-red-100 text-red-800 border-red-200",
       icon: Heart,
-      description: "You should seek medical attention soon"
-    }
+      description: "You should seek medical attention soon",
+    },
   ];
 
   return (
@@ -64,14 +64,15 @@ export function AssessmentLanding({ onStart }: AssessmentLandingProps) {
             <Heart className="w-8 h-8 text-primary" />
           </div>
         </div>
-        
+
         <h2 className="text-3xl font-bold text-gray-900">
           Check Your Bone Health
         </h2>
-        
+
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          If you recently experienced pain, discomfort, or a fall, you can complete 
-          this quick self-assessment to understand your risk of micro-fracture.
+          If you recently experienced pain, discomfort, or a fall, you can
+          complete this quick self-assessment to understand your risk of minimal
+          trauma fracture.
         </p>
       </div>
 
@@ -92,7 +93,9 @@ export function AssessmentLanding({ onStart }: AssessmentLandingProps) {
 
       {/* Risk Levels Preview */}
       <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-center">Assessment Results</h3>
+        <h3 className="text-xl font-semibold text-center">
+          Assessment Results
+        </h3>
         <div className="grid md:grid-cols-3 gap-4">
           {riskLevels.map((risk, index) => (
             <Card key={index} className={`border-2 ${risk.color}`}>
@@ -110,17 +113,18 @@ export function AssessmentLanding({ onStart }: AssessmentLandingProps) {
 
       {/* CTA */}
       <div className="text-center space-y-4">
-        <Button 
-          size="lg" 
+        <Button
+          size="lg"
           onClick={onStart}
           className="bg-primary hover:bg-primary/90 text-white px-8 py-3"
         >
           Start Assessment
           <ArrowRight className="w-5 h-5 ml-2" />
         </Button>
-        
+
         <p className="text-sm text-gray-500">
-          This assessment is for informational purposes only and does not replace professional medical advice.
+          This assessment is for informational purposes only and does not
+          replace professional medical advice.
         </p>
       </div>
     </div>

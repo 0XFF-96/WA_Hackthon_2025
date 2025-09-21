@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { 
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
   Upload,
   FileText,
   Search,
@@ -20,16 +20,21 @@ import {
   AlertTriangle,
   Clock,
   Brain,
-  Zap
-} from 'lucide-react';
-import { RAGDocument, RAGStats, RAGQuery, DocumentChunk } from '@/types/workflow';
+  Zap,
+} from "lucide-react";
+import {
+  RAGDocument,
+  RAGStats,
+  RAGQuery,
+  DocumentChunk,
+} from "@/types/workflow";
 
 interface RAGManagementProps {
   onClose?: () => void;
 }
 
 export function RAGManagement({ onClose }: RAGManagementProps) {
-  const [activeTab, setActiveTab] = useState('documents');
+  const [activeTab, setActiveTab] = useState("documents");
   const [documents, setDocuments] = useState<RAGDocument[]>([]);
   const [stats, setStats] = useState<RAGStats>({
     totalDocuments: 0,
@@ -37,9 +42,9 @@ export function RAGManagement({ onClose }: RAGManagementProps) {
     totalQueries: 0,
     averageResponseTime: 0,
     knowledgeBaseSize: 0,
-    lastUpdated: new Date()
+    lastUpdated: new Date(),
   });
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<RAGQuery | null>(null);
   const [isSearching, setIsSearching] = useState(false);
 
@@ -47,29 +52,31 @@ export function RAGManagement({ onClose }: RAGManagementProps) {
   useEffect(() => {
     const mockDocuments: RAGDocument[] = [
       {
-        id: 'doc-1',
-        filename: 'medical_guidelines_2024.pdf',
-        title: 'Medical Guidelines 2024',
-        content: 'Comprehensive medical guidelines for micro-fracture diagnosis and treatment...',
-        fileType: 'pdf',
+        id: "doc-1",
+        filename: "medical_guidelines_2024.pdf",
+        title: "Medical Guidelines 2024",
+        content:
+          "Comprehensive medical guidelines for minimal trauma fracture diagnosis and treatment...",
+        fileType: "pdf",
         fileSize: 2048576,
-        uploadDate: new Date('2024-01-15'),
-        status: 'indexed',
+        uploadDate: new Date("2024-01-15"),
+        status: "indexed",
         chunks: [],
-        metadata: { category: 'guidelines', version: '2024.1' }
+        metadata: { category: "guidelines", version: "2024.1" },
       },
       {
-        id: 'doc-2',
-        filename: 'case_studies.txt',
-        title: 'Micro-fracture Case Studies',
-        content: 'Collection of case studies for micro-fracture diagnosis...',
-        fileType: 'txt',
+        id: "doc-2",
+        filename: "case_studies.txt",
+        title: "Minimal trauma fracture Case Studies",
+        content:
+          "Collection of case studies for minimal trauma fracture diagnosis...",
+        fileType: "txt",
         fileSize: 512000,
-        uploadDate: new Date('2024-01-10'),
-        status: 'indexed',
+        uploadDate: new Date("2024-01-10"),
+        status: "indexed",
         chunks: [],
-        metadata: { category: 'cases', count: 150 }
-      }
+        metadata: { category: "cases", count: 150 },
+      },
     ];
 
     setDocuments(mockDocuments);
@@ -79,36 +86,36 @@ export function RAGManagement({ onClose }: RAGManagementProps) {
       totalQueries: 89,
       averageResponseTime: 1.2,
       knowledgeBaseSize: 2.5,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     });
   }, []);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      Array.from(files).forEach(file => {
+      Array.from(files).forEach((file) => {
         const newDoc: RAGDocument = {
           id: `doc-${Date.now()}`,
           filename: file.name,
           title: file.name.replace(/\.[^/.]+$/, ""),
-          content: '',
-          fileType: file.name.split('.').pop() as any || 'txt',
+          content: "",
+          fileType: (file.name.split(".").pop() as any) || "txt",
           fileSize: file.size,
           uploadDate: new Date(),
-          status: 'uploading',
+          status: "uploading",
           chunks: [],
-          metadata: {}
+          metadata: {},
         };
-        setDocuments(prev => [newDoc, ...prev]);
+        setDocuments((prev) => [newDoc, ...prev]);
       });
     }
   };
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
-    
+
     setIsSearching(true);
-    
+
     // Simulate search
     setTimeout(() => {
       const mockResults: RAGQuery = {
@@ -117,24 +124,25 @@ export function RAGManagement({ onClose }: RAGManagementProps) {
         embedding: [],
         results: [
           {
-            id: 'result-1',
-            documentId: 'doc-1',
-            chunkId: 'chunk-1',
-            content: 'Micro-fractures are small cracks in bones that can be difficult to detect...',
+            id: "result-1",
+            documentId: "doc-1",
+            chunkId: "chunk-1",
+            content:
+              "Micro-fractures are small cracks in bones that can be difficult to detect...",
             score: 0.95,
             metadata: {},
             source: {
-              filename: 'medical_guidelines_2024.pdf',
+              filename: "medical_guidelines_2024.pdf",
               pageNumber: 15,
-              section: 'Diagnosis'
-            }
-          }
+              section: "Diagnosis",
+            },
+          },
         ],
         timestamp: new Date(),
         responseTime: 1.2,
-        contextUsed: 'Medical guidelines and case studies'
+        contextUsed: "Medical guidelines and case studies",
       };
-      
+
       setSearchResults(mockResults);
       setIsSearching(false);
     }, 1000);
@@ -142,11 +150,11 @@ export function RAGManagement({ onClose }: RAGManagementProps) {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'indexed':
+      case "indexed":
         return <CheckCircle className="w-4 h-4 text-green-600" />;
-      case 'processing':
+      case "processing":
         return <RefreshCw className="w-4 h-4 text-blue-600 animate-spin" />;
-      case 'error':
+      case "error":
         return <AlertTriangle className="w-4 h-4 text-red-600" />;
       default:
         return <Clock className="w-4 h-4 text-gray-600" />;
@@ -155,23 +163,23 @@ export function RAGManagement({ onClose }: RAGManagementProps) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'indexed':
-        return 'bg-green-100 text-green-800';
-      case 'processing':
-        return 'bg-blue-100 text-blue-800';
-      case 'error':
-        return 'bg-red-100 text-red-800';
+      case "indexed":
+        return "bg-green-100 text-green-800";
+      case "processing":
+        return "bg-blue-100 text-blue-800";
+      case "error":
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   return (
@@ -180,7 +188,9 @@ export function RAGManagement({ onClose }: RAGManagementProps) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">RAG Knowledge Management</h1>
-          <p className="text-gray-600">Manage your knowledge base and search capabilities</p>
+          <p className="text-gray-600">
+            Manage your knowledge base and search capabilities
+          </p>
         </div>
         {onClose && (
           <Button variant="outline" onClick={onClose}>
@@ -202,19 +212,21 @@ export function RAGManagement({ onClose }: RAGManagementProps) {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Chunks</p>
-                <p className="text-2xl font-bold">{stats.totalChunks.toLocaleString()}</p>
+                <p className="text-2xl font-bold">
+                  {stats.totalChunks.toLocaleString()}
+                </p>
               </div>
               <Database className="w-8 h-8 text-green-600" />
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -226,13 +238,15 @@ export function RAGManagement({ onClose }: RAGManagementProps) {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Avg Response</p>
-                <p className="text-2xl font-bold">{stats.averageResponseTime}s</p>
+                <p className="text-2xl font-bold">
+                  {stats.averageResponseTime}s
+                </p>
               </div>
               <Zap className="w-8 h-8 text-orange-600" />
             </div>
@@ -276,13 +290,17 @@ export function RAGManagement({ onClose }: RAGManagementProps) {
             <CardContent>
               <div className="space-y-4">
                 {documents.map((doc) => (
-                  <div key={doc.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div
+                    key={doc.id}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
                     <div className="flex items-center gap-4">
                       <FileText className="w-8 h-8 text-gray-600" />
                       <div>
                         <h3 className="font-semibold">{doc.title}</h3>
                         <p className="text-sm text-gray-600">
-                          {formatFileSize(doc.fileSize)} • {doc.uploadDate.toLocaleDateString()}
+                          {formatFileSize(doc.fileSize)} •{" "}
+                          {doc.uploadDate.toLocaleDateString()}
                         </p>
                       </div>
                     </div>
@@ -300,7 +318,11 @@ export function RAGManagement({ onClose }: RAGManagementProps) {
                         <Button variant="ghost" size="sm">
                           <Download className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="text-red-600">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-600"
+                        >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
@@ -324,9 +346,12 @@ export function RAGManagement({ onClose }: RAGManagementProps) {
                   placeholder="Search the knowledge base..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                 />
-                <Button onClick={handleSearch} disabled={isSearching || !searchQuery.trim()}>
+                <Button
+                  onClick={handleSearch}
+                  disabled={isSearching || !searchQuery.trim()}
+                >
                   {isSearching ? (
                     <RefreshCw className="w-4 h-4 animate-spin" />
                   ) : (
@@ -340,16 +365,19 @@ export function RAGManagement({ onClose }: RAGManagementProps) {
                   <div className="flex items-center justify-between">
                     <h3 className="font-semibold">Search Results</h3>
                     <Badge variant="outline">
-                      {searchResults.results.length} results in {searchResults.responseTime}s
+                      {searchResults.results.length} results in{" "}
+                      {searchResults.responseTime}s
                     </Badge>
                   </div>
-                  
+
                   {searchResults.results.map((result) => (
                     <Card key={result.id}>
                       <CardContent className="p-4">
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <h4 className="font-medium">{result.source.filename}</h4>
+                            <h4 className="font-medium">
+                              {result.source.filename}
+                            </h4>
                             <Badge variant="outline">
                               Score: {(result.score * 100).toFixed(1)}%
                             </Badge>
@@ -397,7 +425,9 @@ export function RAGManagement({ onClose }: RAGManagementProps) {
                       <div className="text-2xl font-bold text-green-600">
                         {stats.averageResponseTime}s
                       </div>
-                      <div className="text-sm text-gray-600">Avg Response Time</div>
+                      <div className="text-sm text-gray-600">
+                        Avg Response Time
+                      </div>
                     </div>
                     <div className="text-center p-4 bg-gray-50 rounded-lg">
                       <div className="text-2xl font-bold text-blue-600">

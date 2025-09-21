@@ -2,15 +2,17 @@
 
 ## 🌐 API 概览
 
-HealthAI 平台提供完整的 RESTful API 接口，支持医疗诊断、病例管理、AI 分析、系统监控等功能。
+Bone Guardian 平台提供完整的 RESTful API 接口，支持医疗诊断、病例管理、AI 分析、系统监控等功能。
 
 ### 基础信息
+
 - **Base URL**: `http://localhost:3000/api`
 - **认证方式**: Session-based Authentication
 - **数据格式**: JSON
 - **字符编码**: UTF-8
 
 ### 通用响应格式
+
 ```typescript
 interface ApiResponse<T> {
   success: boolean;
@@ -27,6 +29,7 @@ interface ApiResponse<T> {
 ## 🔐 认证接口
 
 ### 用户登录
+
 ```http
 POST /api/auth/login
 Content-Type: application/json
@@ -38,6 +41,7 @@ Content-Type: application/json
 ```
 
 **响应示例**:
+
 ```json
 {
   "success": true,
@@ -54,11 +58,13 @@ Content-Type: application/json
 ```
 
 ### 用户登出
+
 ```http
 POST /api/auth/logout
 ```
 
 ### 获取当前用户
+
 ```http
 GET /api/auth/me
 ```
@@ -66,6 +72,7 @@ GET /api/auth/me
 ## 🤖 AI 分析接口
 
 ### 多智能体分析
+
 ```http
 POST /api/ai/analyze
 Content-Type: application/json
@@ -83,6 +90,7 @@ Content-Type: application/json
 ```
 
 **响应示例**:
+
 ```json
 {
   "success": true,
@@ -91,7 +99,7 @@ Content-Type: application/json
     "agents": [
       {
         "agentType": "orchestrator",
-        "agentName": "HealthAI Orchestrator",
+        "agentName": "Bone Guardian Orchestrator",
         "content": "正在协调专业团队进行综合分析...",
         "confidence": 95,
         "reasoning": "协调多智能体分析流程"
@@ -112,6 +120,7 @@ Content-Type: application/json
 ```
 
 ### 医学影像分析
+
 ```http
 POST /api/ai/analyze-image
 Content-Type: multipart/form-data
@@ -125,6 +134,7 @@ Content-Type: multipart/form-data
 ```
 
 **响应示例**:
+
 ```json
 {
   "success": true,
@@ -132,17 +142,13 @@ Content-Type: multipart/form-data
     "analysisId": "img_analysis_456",
     "findings": [
       {
-        "type": "micro-fracture",
+        "type": "minimal trauma fracture",
         "location": "right tibia",
         "confidence": 87,
         "description": "疑似应力性骨折，建议进一步检查"
       }
     ],
-    "recommendations": [
-      "建议 MRI 检查确认",
-      "限制负重活动",
-      "疼痛管理"
-    ],
+    "recommendations": ["建议 MRI 检查确认", "限制负重活动", "疼痛管理"],
     "processingTime": 3.2
   }
 }
@@ -151,11 +157,13 @@ Content-Type: multipart/form-data
 ## 👥 患者管理接口
 
 ### 获取患者列表
+
 ```http
 GET /api/patients?page=1&limit=20&search=张三
 ```
 
 **响应示例**:
+
 ```json
 {
   "success": true,
@@ -183,6 +191,7 @@ GET /api/patients?page=1&limit=20&search=张三
 ```
 
 ### 创建患者
+
 ```http
 POST /api/patients
 Content-Type: application/json
@@ -202,11 +211,13 @@ Content-Type: application/json
 ```
 
 ### 获取患者详情
+
 ```http
 GET /api/patients/{patientId}
 ```
 
 ### 更新患者信息
+
 ```http
 PUT /api/patients/{patientId}
 Content-Type: application/json
@@ -221,19 +232,22 @@ Content-Type: application/json
 ## 📋 病例管理接口
 
 ### 获取病例列表
+
 ```http
 GET /api/cases?status=pending&priority=high&page=1&limit=20
 ```
 
 **查询参数**:
+
 - `status`: 病例状态 (pending, analyzing, diagnosed, treated, discharged)
 - `priority`: 优先级 (low, medium, high, critical)
-- `patientId`: 患者ID
+- `patientId`: 患者 ID
 - `assignedPhysician`: 分配医生
 - `page`: 页码
 - `limit`: 每页数量
 
 ### 创建病例
+
 ```http
 POST /api/cases
 Content-Type: application/json
@@ -249,11 +263,13 @@ Content-Type: application/json
 ```
 
 ### 获取病例详情
+
 ```http
 GET /api/cases/{caseId}
 ```
 
 **响应示例**:
+
 ```json
 {
   "success": true,
@@ -285,6 +301,7 @@ GET /api/cases/{caseId}
 ```
 
 ### 更新病例状态
+
 ```http
 PUT /api/cases/{caseId}/status
 Content-Type: application/json
@@ -299,6 +316,7 @@ Content-Type: application/json
 ## 📊 生命体征接口
 
 ### 记录生命体征
+
 ```http
 POST /api/vitals
 Content-Type: application/json
@@ -325,6 +343,7 @@ Content-Type: application/json
 ```
 
 ### 获取病例生命体征
+
 ```http
 GET /api/vitals/{caseId}?startDate=2024-01-01&endDate=2024-01-31
 ```
@@ -332,6 +351,7 @@ GET /api/vitals/{caseId}?startDate=2024-01-01&endDate=2024-01-31
 ## 🖼️ 医学影像接口
 
 ### 上传医学影像
+
 ```http
 POST /api/imaging
 Content-Type: multipart/form-data
@@ -347,11 +367,13 @@ Content-Type: multipart/form-data
 ```
 
 ### 获取病例影像
+
 ```http
 GET /api/imaging/{caseId}
 ```
 
 ### 更新影像分析
+
 ```http
 PUT /api/imaging/{imageId}
 Content-Type: application/json
@@ -366,6 +388,7 @@ Content-Type: application/json
 ## 📝 临床记录接口
 
 ### 创建临床记录
+
 ```http
 POST /api/notes
 Content-Type: application/json
@@ -385,6 +408,7 @@ Content-Type: application/json
 ```
 
 ### 获取病例记录
+
 ```http
 GET /api/notes/{caseId}?type=soap&page=1&limit=10
 ```
@@ -392,11 +416,13 @@ GET /api/notes/{caseId}?type=soap&page=1&limit=10
 ## 🎯 AI 智能体接口
 
 ### 获取智能体状态
+
 ```http
 GET /api/agents
 ```
 
 **响应示例**:
+
 ```json
 {
   "success": true,
@@ -404,7 +430,7 @@ GET /api/agents
     "agents": [
       {
         "id": "orchestrator",
-        "name": "HealthAI Orchestrator",
+        "name": "Bone Guardian Orchestrator",
         "type": "orchestrator",
         "status": "idle",
         "performance": {
@@ -427,6 +453,7 @@ GET /api/agents
 ```
 
 ### 获取智能体性能
+
 ```http
 GET /api/agents/{agentId}/performance?timeRange=30d
 ```
@@ -434,16 +461,19 @@ GET /api/agents/{agentId}/performance?timeRange=30d
 ## 📈 分析接口
 
 ### 获取系统分析
+
 ```http
 GET /api/analytics/system-performance?timeRange=30d
 ```
 
 ### 获取诊断分析
+
 ```http
 GET /api/analytics/diagnostic-accuracy?timeRange=30d&groupBy=diseaseType
 ```
 
 ### 获取业务分析
+
 ```http
 GET /api/analytics/business-intelligence?timeRange=30d
 ```
@@ -451,11 +481,13 @@ GET /api/analytics/business-intelligence?timeRange=30d
 ## 🔍 搜索接口
 
 ### 全局搜索
+
 ```http
 GET /api/search?q=微骨折&type=all&page=1&limit=20
 ```
 
 **查询参数**:
+
 - `q`: 搜索关键词
 - `type`: 搜索类型 (all, patients, cases, notes, imaging)
 - `page`: 页码
@@ -464,11 +496,13 @@ GET /api/search?q=微骨折&type=all&page=1&limit=20
 ## 📊 统计接口
 
 ### 获取仪表板数据
+
 ```http
 GET /api/dashboard/stats
 ```
 
 **响应示例**:
+
 ```json
 {
   "success": true,
@@ -493,17 +527,19 @@ GET /api/dashboard/stats
 ## ⚠️ 错误处理
 
 ### 错误代码
-| 错误代码 | HTTP状态码 | 描述 |
-|---------|-----------|------|
-| `INVALID_REQUEST` | 400 | 请求参数无效 |
-| `UNAUTHORIZED` | 401 | 未授权访问 |
-| `FORBIDDEN` | 403 | 权限不足 |
-| `NOT_FOUND` | 404 | 资源不存在 |
-| `VALIDATION_ERROR` | 422 | 数据验证失败 |
-| `INTERNAL_ERROR` | 500 | 服务器内部错误 |
-| `SERVICE_UNAVAILABLE` | 503 | 服务不可用 |
+
+| 错误代码              | HTTP 状态码 | 描述           |
+| --------------------- | ----------- | -------------- |
+| `INVALID_REQUEST`     | 400         | 请求参数无效   |
+| `UNAUTHORIZED`        | 401         | 未授权访问     |
+| `FORBIDDEN`           | 403         | 权限不足       |
+| `NOT_FOUND`           | 404         | 资源不存在     |
+| `VALIDATION_ERROR`    | 422         | 数据验证失败   |
+| `INTERNAL_ERROR`      | 500         | 服务器内部错误 |
+| `SERVICE_UNAVAILABLE` | 503         | 服务不可用     |
 
 ### 错误响应示例
+
 ```json
 {
   "success": false,
@@ -522,12 +558,14 @@ GET /api/dashboard/stats
 ## 🔒 安全考虑
 
 ### 认证和授权
+
 - 所有 API 接口都需要有效的会话认证
 - 基于角色的访问控制 (RBAC)
 - API 请求频率限制
 - 敏感数据加密传输
 
 ### 数据保护
+
 - 患者数据脱敏处理
 - 审计日志记录
 - 数据备份和恢复
@@ -536,40 +574,42 @@ GET /api/dashboard/stats
 ## 📚 使用示例
 
 ### JavaScript/TypeScript 示例
+
 ```typescript
 // 创建患者
 const createPatient = async (patientData: PatientData) => {
-  const response = await fetch('/api/patients', {
-    method: 'POST',
+  const response = await fetch("/api/patients", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(patientData),
   });
-  
+
   const result = await response.json();
   if (!result.success) {
     throw new Error(result.error.message);
   }
-  
+
   return result.data;
 };
 
 // AI 分析
 const analyzeCase = async (query: string, patientContext: PatientContext) => {
-  const response = await fetch('/api/ai/analyze', {
-    method: 'POST',
+  const response = await fetch("/api/ai/analyze", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ query, patientContext }),
   });
-  
+
   return await response.json();
 };
 ```
 
 ### Python 示例
+
 ```python
 import requests
 
@@ -580,7 +620,7 @@ def get_cases(status=None, priority=None):
         params['status'] = status
     if priority:
         params['priority'] = priority
-    
+
     response = requests.get('/api/cases', params=params)
     return response.json()
 
@@ -595,4 +635,4 @@ def record_vitals(case_id, vitals_data):
 
 ---
 
-**HealthAI API** - 为医疗 AI 应用提供强大的后端支持 🏥🤖
+**Bone Guardian API** - 为医疗 AI 应用提供强大的后端支持 🏥🤖

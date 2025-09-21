@@ -1,9 +1,9 @@
-import { PatientCard } from '../PatientCard';
+import { PatientCard } from "../PatientCard";
 
 export default function PatientCardExample() {
   //todo: remove mock functionality
   const handleViewCase = (id: string) => {
-    console.log('View case triggered for:', id);
+    console.log("View case triggered for:", id);
   };
 
   return (
@@ -12,9 +12,9 @@ export default function PatientCardExample() {
         id="1"
         name="Sarah Johnson"
         age={34}
-        gender="Female" 
+        gender="Female"
         medicalId="MED-2024-0001"
-        caseTitle="Suspected micro-fracture in wrist"
+        caseTitle="Suspected minimal trauma fracture in wrist"
         status="analyzing"
         priority="high"
         lastUpdate="2 mins ago"
