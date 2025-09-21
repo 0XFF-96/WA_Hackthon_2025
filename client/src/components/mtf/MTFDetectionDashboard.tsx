@@ -3,9 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { 
   Shield, 
   AlertTriangle, 
@@ -13,518 +10,56 @@ import {
   User, 
   FileText, 
   TrendingUp,
-  Phone,
-  Mail,
   Brain,
   BarChart3,
   CheckCircle,
-  XCircle,
-  ArrowUp,
-  ArrowDown,
-  Upload,
-  Target,
-  ArrowRight,
-  Plus,
-  Filter,
   Search,
+  Filter,
+  Scan,
   AlertCircle,
-  Activity,
-  Zap,
   Eye,
   FileCheck,
-  Scan,
-  TrendingDown,
-  Cpu,
-  HardDrive,
-  Timer,
-  CheckCircle2,
-  XCircle as XCircleIcon,
-  Play,
-  Pause,
-  RotateCcw,
-  Settings,
-  Monitor
+  Mail
 } from 'lucide-react';
 
-interface MTFDetectionDashboardProps {
-  onCaseSelect?: (caseId: string) => void;
-}
+import { MTFDetectionConsoleProps } from '@/types/mtf-console';
+import { useMTFData, useKPIData, useBatchProcessing, useRiskTrendData, useReportScanData } from '@/hooks/useMTFData';
+import { filterCases, sortCasesByPriority } from '@/lib/mtf-utils';
+import { WorkflowProgress } from './dashboard/WorkflowProgress';
+import { AnimatedCounter } from './dashboard/AnimatedCounter';
+import { ReportTableRow } from './dashboard/ReportTableRow';
+import { CriticalCaseCard } from './dashboard/CriticalCaseCard';
+import { MTFCaseCard } from './dashboard/MTFCaseCard';
+import { BatchProcessingMonitor } from './dashboard/BatchProcessingMonitor';
 
-interface MTFCase {
-  id: string;
-  patientId: string;
-  patientName: string;
-  age: number;
-  gender: string;
-  riskScore: number;
-  riskLevel: 'low' | 'medium' | 'high' | 'critical';
-  mtfSuspected: boolean;
-  confidence: number;
-  reportType: string;
-  createdAt: Date;
-  status: 'pending' | 'reviewed' | 'contacted' | 'completed';
-  urgency: number;
-  specialistReferral: boolean;
-}
-
-interface SystemStats {
-  totalProcessed: number;
-  mtfDetected: number;
-  pendingReview: number;
-  averageProcessingTime: number;
-  averageConfidence: number;
-  qualityScore: number;
-}
-
-interface WorkflowStep {
-  id: number;
-  title: string;
-  description: string;
-  icon: any;
-  status: 'pending' | 'in_progress' | 'completed' | 'disabled';
-  color: string;
-}
-
-interface ReportScanData {
-  id: string;
-  patientId: string;
-  scanType: 'xray' | 'ct' | 'mri' | 'ultrasound';
-  scanTime: Date;
-  aiPriority: 'critical' | 'high' | 'medium' | 'low';
-  riskScore: number;
-  status: 'outreach_sent' | 'pending_review' | 'processing' | 'completed';
-}
-
-interface KPIData {
-  totalReportsScanned: number;
-  suspectedMTFCases: number;
-  outreachEmailsSent: number;
-  pendingDoctorReview: number;
-}
-
-interface BatchProcessingData {
-  currentBatch: number;
-  totalBatches: number;
-  priorityDistribution: {
-    critical: number;
-    high: number;
-    medium: number;
-    low: number;
-  };
-  processingStats: {
-    totalProcessed: number;
-    successRate: number;
-    averageProcessingTime: number;
-    errors: number;
-    queueSize: number;
-  };
-  batchHistory: {
-    batchId: string;
-    startTime: string;
-    endTime?: string;
-    status: 'processing' | 'completed' | 'failed';
-    processedCount: number;
-    errorCount: number;
-    duration?: number;
-  }[];
-  realTimeMetrics: {
-    currentThroughput: number;
-    peakThroughput: number;
-    averageLatency: number;
-    memoryUsage: number;
-    cpuUsage: number;
-  };
-}
-
-interface RiskTrendData {
-  date: string;
-  critical: number;
-  high: number;
-  medium: number;
-  low: number;
-}
-
-export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardProps) {
-  const [activeTab, setActiveTab] = useState('overview');
+export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionConsoleProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentWorkflowStep, setCurrentWorkflowStep] = useState(1);
-  const [systemStats, setSystemStats] = useState<SystemStats>({
-    totalProcessed: 0,
-    mtfDetected: 0,
-    pendingReview: 0,
-    averageProcessingTime: 0,
-    averageConfidence: 0,
-    qualityScore: 0
-  });
-  const [mtfCases, setMtfCases] = useState<MTFCase[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [reportScanData, setReportScanData] = useState<ReportScanData[]>([]);
-  const [kpiData, setKpiData] = useState<KPIData>({
-    totalReportsScanned: 0,
-    suspectedMTFCases: 0,
-    outreachEmailsSent: 0,
-    pendingDoctorReview: 0
-  });
-  const [batchProcessingData, setBatchProcessingData] = useState<BatchProcessingData>({
-    currentBatch: 0,
-    totalBatches: 0,
-    priorityDistribution: { critical: 0, high: 0, medium: 0, low: 0 },
-    processingStats: {
-      totalProcessed: 0,
-      successRate: 0,
-      averageProcessingTime: 0,
-      errors: 0,
-      queueSize: 0
-    },
-    batchHistory: [],
-    realTimeMetrics: {
-      currentThroughput: 0,
-      peakThroughput: 0,
-      averageLatency: 0,
-      memoryUsage: 0,
-      cpuUsage: 0
-    }
-  });
-  const [riskTrendData, setRiskTrendData] = useState<RiskTrendData[]>([]);
   const [showAlert, setShowAlert] = useState(false);
 
-  useEffect(() => {
-    fetchSystemStats();
-    fetchMTFCases();
-    fetchReportScanData();
-    fetchKPIData();
-    fetchBatchProcessingData();
-    fetchRiskTrendData();
-  }, []);
+  const { mtfCases, systemStats, isLoading } = useMTFData();
+  const { kpiData } = useKPIData();
+  const { batchProcessingData } = useBatchProcessing();
+  const { riskTrendData } = useRiskTrendData();
+  const { reportScanData } = useReportScanData();
 
-  const fetchSystemStats = async () => {
-    try {
-      const response = await fetch('/api/mtf/statistics');
-      const data = await response.json();
-      if (data.success) {
-        setSystemStats({
-          totalProcessed: data.data.totalReportsProcessed,
-          mtfDetected: data.data.mtfCasesDetected,
-          pendingReview: data.data.qualityMetrics.manualReviewRequired,
-          averageProcessingTime: data.data.averageProcessingTime,
-          averageConfidence: data.data.averageConfidence,
-          qualityScore: data.data.qualityMetrics.averageQualityScore
-        });
-      }
-    } catch (error) {
-      console.error('Failed to fetch system stats:', error);
-    }
-  };
-
-  const fetchMTFCases = async () => {
-    try {
-      setIsLoading(true);
-      // Mock data - should fetch from API in real application
-      const mockCases: MTFCase[] = [
-        {
-          id: 'case_001',
-          patientId: 'patient_001',
-          patientName: 'Margaret Johnson',
-          age: 73,
-          gender: 'female',
-          riskScore: 89,
-          riskLevel: 'critical',
-          mtfSuspected: true,
-          confidence: 94,
-          reportType: 'xray',
-          createdAt: new Date('2024-01-15T10:30:00'),
-          status: 'pending',
-          urgency: 4,
-          specialistReferral: true
-        },
-        {
-          id: 'case_002',
-          patientId: 'patient_002',
-          patientName: 'Robert Chen',
-          age: 68,
-          gender: 'male',
-          riskScore: 76,
-          riskLevel: 'high',
-          mtfSuspected: true,
-          confidence: 87,
-          reportType: 'ct',
-          createdAt: new Date('2024-01-15T09:15:00'),
-          status: 'reviewed',
-          urgency: 12,
-          specialistReferral: true
-        },
-        {
-          id: 'case_003',
-          patientId: 'patient_003',
-          patientName: 'Susan Lee',
-          age: 65,
-          gender: 'female',
-          riskScore: 62,
-          riskLevel: 'medium',
-          mtfSuspected: false,
-          confidence: 82,
-          reportType: 'mri',
-          createdAt: new Date('2024-01-15T08:45:00'),
-          status: 'contacted',
-          urgency: 48,
-          specialistReferral: false
-        }
-      ];
-      setMtfCases(mockCases);
-    } catch (error) {
-      console.error('Failed to fetch MTF cases:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const getRiskLevelColor = (level: string) => {
-    switch (level) {
-      case 'critical': return 'bg-red-100 text-red-800 border-red-200';
-      case 'high': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      default: return 'bg-green-100 text-green-800 border-green-200';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'bg-red-100 text-red-800';
-      case 'reviewed': return 'bg-yellow-100 text-yellow-800';
-      case 'contacted': return 'bg-blue-100 text-blue-800';
-      case 'completed': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getUrgencyIcon = (urgency: number) => {
-    if (urgency <= 4) return <ArrowUp className="h-4 w-4 text-red-600" />;
-    if (urgency <= 24) return <ArrowUp className="h-4 w-4 text-orange-600" />;
-    return <ArrowDown className="h-4 w-4 text-green-600" />;
-  };
-
-  // Workflow steps definition
-  const workflowSteps: WorkflowStep[] = [
-    {
-      id: 1,
-      title: 'Report Import',
-      description: 'Upload or input radiology reports',
-      icon: Upload,
-      status: currentWorkflowStep >= 1 ? 'completed' : 'pending',
-      color: 'blue'
-    },
-    {
-      id: 2,
-      title: 'AI Analysis',
-      description: 'AI-powered MTF detection & risk assessment',
-      icon: Brain,
-      status: currentWorkflowStep >= 2 ? 'completed' : currentWorkflowStep === 1 ? 'in_progress' : 'pending',
-      color: 'purple'
-    },
-    {
-      id: 3,
-      title: 'Risk Assessment',
-      description: 'Generate personalized risk evaluation',
-      icon: Target,
-      status: currentWorkflowStep >= 3 ? 'completed' : currentWorkflowStep === 2 ? 'in_progress' : 'pending',
-      color: 'orange'
-    },
-    {
-      id: 4,
-      title: 'Patient Outreach',
-      description: 'Automated personalized communication',
-      icon: Phone,
-      status: currentWorkflowStep >= 4 ? 'completed' : currentWorkflowStep === 3 ? 'in_progress' : 'disabled',
-      color: 'green'
-    }
-  ];
-
-  // Filter cases based on search query
-  const filteredCases = mtfCases.filter(case_ => 
-    case_.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    case_.patientId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    case_.reportType.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
+  // Filter and sort cases
+  const filteredCases = filterCases(mtfCases, searchQuery);
   const criticalCases = filteredCases.filter(c => c.riskLevel === 'critical' || c.mtfSuspected);
   const pendingCases = filteredCases.filter(c => c.status === 'pending');
+  const sortedCriticalCases = sortCasesByPriority(criticalCases);
+
+  useEffect(() => {
+    // Show alert after data loads
+    setTimeout(() => {
+      setShowAlert(true);
+    }, 1200);
+  }, []);
 
   const handleWorkflowStepClick = (stepId: number) => {
     if (stepId <= currentWorkflowStep + 1) {
       setCurrentWorkflowStep(stepId);
       console.log('Workflow step clicked:', stepId);
-    }
-  };
-
-  const fetchReportScanData = async () => {
-    try {
-      // Mock data - should fetch from API in real application
-      const mockData: ReportScanData[] = [
-        {
-          id: 'scan_001',
-          patientId: 'P001234',
-          scanType: 'xray',
-          scanTime: new Date('2024-01-15T10:30:00'),
-          aiPriority: 'critical',
-          riskScore: 89,
-          status: 'pending_review'
-        },
-        {
-          id: 'scan_002',
-          patientId: 'P001235',
-          scanType: 'ct',
-          scanTime: new Date('2024-01-15T10:25:00'),
-          aiPriority: 'high',
-          riskScore: 76,
-          status: 'outreach_sent'
-        },
-        {
-          id: 'scan_003',
-          patientId: 'P001236',
-          scanType: 'mri',
-          scanTime: new Date('2024-01-15T10:20:00'),
-          aiPriority: 'medium',
-          riskScore: 62,
-          status: 'completed'
-        },
-        {
-          id: 'scan_004',
-          patientId: 'P001237',
-          scanType: 'xray',
-          scanTime: new Date('2024-01-15T10:15:00'),
-          aiPriority: 'low',
-          riskScore: 34,
-          status: 'processing'
-        },
-        {
-          id: 'scan_005',
-          patientId: 'P001238',
-          scanType: 'ct',
-          scanTime: new Date('2024-01-15T10:10:00'),
-          aiPriority: 'critical',
-          riskScore: 92,
-          status: 'pending_review'
-        }
-      ];
-      setReportScanData(mockData);
-    } catch (error) {
-      console.error('Failed to fetch report scan data:', error);
-    }
-  };
-
-  const fetchKPIData = async () => {
-    try {
-      // Simulate API call with animation
-      setTimeout(() => {
-        setKpiData({
-          totalReportsScanned: 1247,
-          suspectedMTFCases: 89,
-          outreachEmailsSent: 156,
-          pendingDoctorReview: 23
-        });
-      }, 500);
-    } catch (error) {
-      console.error('Failed to fetch KPI data:', error);
-    }
-  };
-
-  const fetchBatchProcessingData = async () => {
-    try {
-      setTimeout(() => {
-        setBatchProcessingData({
-          currentBatch: 82,
-          totalBatches: 100,
-          priorityDistribution: {
-            critical: 12,
-            high: 28,
-            medium: 35,
-            low: 25
-          },
-          processingStats: {
-            totalProcessed: 1247,
-            successRate: 94.2,
-            averageProcessingTime: 2.3,
-            errors: 23,
-            queueSize: 156
-          },
-          batchHistory: [
-            {
-              batchId: 'BATCH-001',
-              startTime: '2024-01-15T10:00:00Z',
-              endTime: '2024-01-15T10:15:00Z',
-              status: 'completed',
-              processedCount: 100,
-              errorCount: 2,
-              duration: 15
-            },
-            {
-              batchId: 'BATCH-002',
-              startTime: '2024-01-15T10:15:00Z',
-              endTime: '2024-01-15T10:28:00Z',
-              status: 'completed',
-              processedCount: 95,
-              errorCount: 1,
-              duration: 13
-            },
-            {
-              batchId: 'BATCH-003',
-              startTime: '2024-01-15T10:30:00Z',
-              endTime: '2024-01-15T10:42:00Z',
-              status: 'completed',
-              processedCount: 88,
-              errorCount: 3,
-              duration: 12
-            },
-            {
-              batchId: 'BATCH-004',
-              startTime: '2024-01-15T10:45:00Z',
-              endTime: '2024-01-15T10:58:00Z',
-              status: 'completed',
-              processedCount: 92,
-              errorCount: 1,
-              duration: 13
-            },
-            {
-              batchId: 'BATCH-005',
-              startTime: '2024-01-15T11:00:00Z',
-              status: 'processing',
-              processedCount: 82,
-              errorCount: 0
-            }
-          ],
-          realTimeMetrics: {
-            currentThroughput: 6.8,
-            peakThroughput: 8.2,
-            averageLatency: 1.8,
-            memoryUsage: 67.5,
-            cpuUsage: 45.2
-          }
-        });
-      }, 800);
-    } catch (error) {
-      console.error('Failed to fetch batch processing data:', error);
-    }
-  };
-
-  const fetchRiskTrendData = async () => {
-    try {
-      const mockTrendData: RiskTrendData[] = [
-        { date: '2024-01-09', critical: 8, high: 15, medium: 22, low: 18 },
-        { date: '2024-01-10', critical: 12, high: 18, medium: 25, low: 20 },
-        { date: '2024-01-11', critical: 6, high: 12, medium: 28, low: 22 },
-        { date: '2024-01-12', critical: 15, high: 22, medium: 30, low: 25 },
-        { date: '2024-01-13', critical: 9, high: 16, medium: 26, low: 19 },
-        { date: '2024-01-14', critical: 11, high: 20, medium: 32, low: 24 },
-        { date: '2024-01-15', critical: 12, high: 25, medium: 35, low: 28 }
-      ];
-      setRiskTrendData(mockTrendData);
-      
-      // Show alert after data loads
-      setTimeout(() => {
-        setShowAlert(true);
-      }, 1200);
-    } catch (error) {
-      console.error('Failed to fetch risk trend data:', error);
     }
   };
 
@@ -557,61 +92,10 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
       </div>
 
       {/* Workflow Progress */}
-      <Card className="border-t-4 border-t-blue-500 shadow-sm">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <BarChart3 className="h-5 w-5 text-blue-600" />
-            MTF Detection Workflow
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center">
-            <div className="flex items-center space-x-4">
-              {workflowSteps.map((step, index) => (
-                <div key={step.id} className="flex items-center">
-                  <div className="flex flex-col items-center">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div 
-                            className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 cursor-pointer ${
-                              step.status === 'completed' 
-                                ? 'bg-green-100 text-green-600 shadow-md border-2 border-green-200 hover:bg-green-200' :
-                              step.status === 'in_progress' 
-                                ? 'bg-blue-100 text-blue-600 shadow-md border-2 border-blue-200 animate-pulse' :
-                              step.status === 'disabled'
-                                ? 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed' :
-                                `bg-gray-50 text-gray-400 border-2 border-gray-200 hover:bg-${step.color}-50 hover:text-${step.color}-500 cursor-pointer`
-                            }`}
-                            onClick={() => step.status !== 'disabled' && handleWorkflowStepClick(step.id)}
-                          >
-                            <step.icon className="w-5 h-5" />
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>{step.title}: {step.description}</p>
-                          {step.status === 'disabled' && (
-                            <p className="text-xs text-gray-500 mt-1">Complete previous steps first</p>
-                          )}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <div className="text-center mt-2 max-w-20">
-                      <div className="font-semibold text-xs text-gray-900">{step.title}</div>
-                      <div className="text-xs text-gray-600 mt-1 leading-tight">{step.description}</div>
-                    </div>
-                  </div>
-                  {index < workflowSteps.length - 1 && (
-                    <div className="flex items-center mx-4">
-                      <ArrowRight className="w-4 h-4 text-gray-300" />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <WorkflowProgress 
+        currentWorkflowStep={currentWorkflowStep}
+        onWorkflowStepClick={handleWorkflowStepClick}
+      />
 
       {/* AI Report Auto-Scanning Section */}
       <div className="space-y-6">
@@ -722,7 +206,6 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
                       key={report.id} 
                       report={report} 
                       index={index}
-                      getRiskLevelColor={getRiskLevelColor}
                     />
                   ))}
                 </tbody>
@@ -732,219 +215,7 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
         </Card>
 
         {/* Enhanced Batch Processing Monitor */}
-        <div className="space-y-6">
-          {/* Main Processing Status */}
-          <Card className="batch-card shadow-sm border-l-4 border-l-indigo-500 animate-slide-in-up">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center text-lg">
-                  <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
-                    <Activity className="w-4 h-4 text-indigo-600" />
-                  </div>
-                  Batch Processing Monitor
-                </CardTitle>
-                <div className="flex items-center gap-2">
-                  <Button size="sm" variant="outline" className="text-indigo-600 border-indigo-300 hover:bg-indigo-50">
-                    <Play className="w-4 h-4 mr-1" />
-                    Start
-                  </Button>
-                  <Button size="sm" variant="outline" className="text-gray-600">
-                    <Pause className="w-4 h-4 mr-1" />
-                    Pause
-                  </Button>
-                  <Button size="sm" variant="outline" className="text-gray-600">
-                    <Settings className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {/* Progress Section */}
-                <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900">Current Batch Progress</h4>
-                      <p className="text-sm text-gray-600">Processing batch {batchProcessingData.currentBatch} of {batchProcessingData.totalBatches}</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-3xl font-bold text-indigo-600">
-                        {Math.round((batchProcessingData.currentBatch / batchProcessingData.totalBatches) * 100)}%
-                      </div>
-                      <div className="text-sm text-gray-600">Complete</div>
-                    </div>
-                  </div>
-                  <Progress 
-                    value={(batchProcessingData.currentBatch / batchProcessingData.totalBatches) * 100} 
-                    className="h-3 mb-4"
-                  />
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>Started: 11:00 AM</span>
-                    <span>ETA: 11:18 AM</span>
-                  </div>
-                </div>
-
-                {/* Processing Stats Grid */}
-                <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-                  {[
-                    { label: 'Total Processed', value: batchProcessingData.processingStats.totalProcessed, icon: CheckCircle2, color: 'text-green-600', bgColor: 'bg-green-50' },
-                    { label: 'Success Rate', value: `${batchProcessingData.processingStats.successRate}%`, icon: Target, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-                    { label: 'Avg Time', value: `${batchProcessingData.processingStats.averageProcessingTime}s`, icon: Timer, color: 'text-orange-600', bgColor: 'bg-orange-50' },
-                    { label: 'Errors', value: batchProcessingData.processingStats.errors, icon: XCircleIcon, color: 'text-red-600', bgColor: 'bg-red-50' },
-                    { label: 'Queue Size', value: batchProcessingData.processingStats.queueSize, icon: Clock, color: 'text-purple-600', bgColor: 'bg-purple-50' }
-                  ].map((stat, index) => (
-                    <div key={index} className="text-center p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-                      <div className={`w-10 h-10 ${stat.bgColor} rounded-lg flex items-center justify-center mx-auto mb-2`}>
-                        <stat.icon className={`w-5 h-5 ${stat.color}`} />
-                      </div>
-                      <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-                      <div className="text-sm text-gray-600">{stat.label}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Real-time Metrics and Priority Distribution */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Real-time Metrics */}
-            <Card className="batch-card shadow-sm animate-slide-in-up" style={{ animationDelay: '100ms' }}>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center text-base">
-                  <div className="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center mr-2">
-                    <Monitor className="w-3 h-3 text-green-600" />
-                  </div>
-                  Real-time Metrics
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[
-                    { label: 'Current Throughput', value: `${batchProcessingData.realTimeMetrics.currentThroughput} req/s`, icon: Activity, color: 'text-green-600' },
-                    { label: 'Peak Throughput', value: `${batchProcessingData.realTimeMetrics.peakThroughput} req/s`, icon: TrendingUp, color: 'text-blue-600' },
-                    { label: 'Average Latency', value: `${batchProcessingData.realTimeMetrics.averageLatency}ms`, icon: Timer, color: 'text-orange-600' },
-                    { label: 'Memory Usage', value: `${batchProcessingData.realTimeMetrics.memoryUsage}%`, icon: HardDrive, color: 'text-purple-600' },
-                    { label: 'CPU Usage', value: `${batchProcessingData.realTimeMetrics.cpuUsage}%`, icon: Cpu, color: 'text-red-600' }
-                  ].map((metric, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <metric.icon className={`w-4 h-4 ${metric.color}`} />
-                        <span className="text-sm font-medium text-gray-700">{metric.label}</span>
-                      </div>
-                      <span className={`font-bold ${metric.color}`}>{metric.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Priority Distribution */}
-            <Card className="batch-card shadow-sm animate-slide-in-up" style={{ animationDelay: '200ms' }}>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center text-base">
-                  <div className="w-6 h-6 bg-pink-100 rounded-lg flex items-center justify-center mr-2">
-                    <BarChart3 className="w-3 h-3 text-pink-600" />
-                  </div>
-                  Priority Distribution
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {Object.entries(batchProcessingData.priorityDistribution).map(([priority, count]) => {
-                    const total = Object.values(batchProcessingData.priorityDistribution).reduce((sum, val) => sum + val, 0);
-                    const percentage = total > 0 ? (count / total) * 100 : 0;
-                    
-                    return (
-                      <div key={priority} className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-3 h-3 rounded-full ${
-                              priority === 'critical' ? 'bg-red-500' :
-                              priority === 'high' ? 'bg-orange-500' :
-                              priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
-                            }`}></div>
-                            <span className="capitalize text-sm font-medium text-gray-700">{priority}</span>
-                          </div>
-                          <div className="text-right">
-                            <span className="font-bold text-lg text-gray-900">{count}</span>
-                            <span className="text-sm text-gray-500 ml-1">({percentage.toFixed(1)}%)</span>
-                          </div>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className={`h-2 rounded-full ${
-                              priority === 'critical' ? 'bg-red-500' :
-                              priority === 'high' ? 'bg-orange-500' :
-                              priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
-                            }`}
-                            style={{ width: `${percentage}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Batch History */}
-          <Card className="batch-card shadow-sm animate-slide-in-up" style={{ animationDelay: '300ms' }}>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center text-base">
-                <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center mr-2">
-                  <Clock className="w-3 h-3 text-gray-600" />
-                </div>
-                Recent Batch History
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {batchProcessingData.batchHistory.map((batch, index) => (
-                  <div key={batch.batchId} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        batch.status === 'completed' ? 'bg-green-100' :
-                        batch.status === 'processing' ? 'bg-blue-100' : 'bg-red-100'
-                      }`}>
-                        {batch.status === 'completed' ? (
-                          <CheckCircle2 className="w-4 h-4 text-green-600" />
-                        ) : batch.status === 'processing' ? (
-                          <Activity className="w-4 h-4 text-blue-600 animate-pulse" />
-                        ) : (
-                          <XCircleIcon className="w-4 h-4 text-red-600" />
-                        )}
-                      </div>
-                      <div>
-                        <div className="font-medium text-gray-900">{batch.batchId}</div>
-                        <div className="text-sm text-gray-600">
-                          {new Date(batch.startTime).toLocaleString()} • 
-                          Processed: {batch.processedCount} • 
-                          Errors: {batch.errorCount}
-                          {batch.duration && ` • Duration: ${batch.duration}min`}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={
-                        batch.status === 'completed' ? 'default' :
-                        batch.status === 'processing' ? 'secondary' : 'destructive'
-                      }>
-                        {batch.status}
-                      </Badge>
-                      {batch.status === 'processing' && (
-                        <div className="w-16 bg-gray-200 rounded-full h-1">
-                          <div className="bg-blue-500 h-1 rounded-full animate-pulse" style={{ width: '75%' }}></div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <BatchProcessingMonitor batchProcessingData={batchProcessingData} />
 
         {/* Risk Trend Section */}
         <Card className="shadow-sm">
@@ -1028,7 +299,6 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
                 ))}
               </div>
 
-
               {/* Peak Detection Alert */}
               <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-lg p-4">
                 <div className="flex items-center gap-3">
@@ -1047,81 +317,7 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
                 </div>
               </div>
 
-              {/* Additional Trend Insights */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Weekly Pattern Analysis */}
-                <Card className="border border-gray-200">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base flex items-center">
-                      <div className="w-6 h-6 bg-indigo-100 rounded-lg flex items-center justify-center mr-2">
-                        <BarChart3 className="w-3 h-3 text-indigo-600" />
-                      </div>
-                      Weekly Pattern Analysis
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                        <span className="text-sm font-medium text-blue-900">Peak Day</span>
-                        <span className="text-lg font-bold text-blue-600">Wednesday</span>
-                      </div>
-                      <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                        <span className="text-sm font-medium text-green-900">Lowest Day</span>
-                        <span className="text-lg font-bold text-green-600">Saturday</span>
-                      </div>
-                      <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
-                        <span className="text-sm font-medium text-purple-900">Avg Weekend</span>
-                        <span className="text-lg font-bold text-purple-600">45 cases</span>
-                      </div>
-                      <div className="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
-                        <span className="text-sm font-medium text-orange-900">Avg Weekday</span>
-                        <span className="text-lg font-bold text-orange-600">67 cases</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Risk Level Trends */}
-                <Card className="border border-gray-200">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base flex items-center">
-                      <div className="w-6 h-6 bg-pink-100 rounded-lg flex items-center justify-center mr-2">
-                        <TrendingUp className="w-3 h-3 text-pink-600" />
-                      </div>
-                      Risk Level Trends
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {[
-                        { level: 'Critical', trend: '+25%', color: 'red', icon: AlertTriangle },
-                        { level: 'High', trend: '+12%', color: 'orange', icon: TrendingUp },
-                        { level: 'Medium', trend: '+8%', color: 'yellow', icon: BarChart3 },
-                        { level: 'Low', trend: '-5%', color: 'green', icon: TrendingDown }
-                      ].map((item, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 bg-${item.color}-100 rounded-lg flex items-center justify-center`}>
-                              <item.icon className={`w-4 h-4 text-${item.color}-600`} />
-                            </div>
-                            <span className="font-medium text-gray-900">{item.level}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className={`text-sm font-bold ${
-                              item.trend.startsWith('+') ? 'text-red-600' : 'text-green-600'
-                            }`}>
-                              {item.trend}
-                            </span>
-                            <span className="text-xs text-gray-500">vs last week</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Predictive Analysis */}
+              {/* AI Predictive Analysis */}
               <Card className="border border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center">
@@ -1151,7 +347,7 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
                     </div>
                     <div className="text-center p-4 bg-white rounded-lg border border-pink-200">
                       <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <Target className="w-6 h-6 text-pink-600" />
+                        <Brain className="w-6 h-6 text-pink-600" />
                       </div>
                       <h4 className="font-semibold text-gray-900 mb-1">Confidence</h4>
                       <p className="text-2xl font-bold text-pink-600 mb-1">87%</p>
@@ -1283,14 +479,11 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
                   <p className="text-sm text-muted-foreground mt-1">All cases are being processed normally</p>
                 </div>
               ) : (
-                criticalCases.map((case_) => (
+                sortedCriticalCases.map((case_) => (
                   <CriticalCaseCard 
                     key={case_.id} 
                     case_={case_} 
                     onSelect={() => onCaseSelect?.(case_.id)}
-                    getRiskLevelColor={getRiskLevelColor}
-                    getStatusColor={getStatusColor}
-                    getUrgencyIcon={getUrgencyIcon}
                   />
                 ))
               )}
@@ -1316,9 +509,6 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
                   key={case_.id} 
                   case_={case_} 
                   onSelect={() => onCaseSelect?.(case_.id)}
-                  getRiskLevelColor={getRiskLevelColor}
-                  getStatusColor={getStatusColor}
-                  getUrgencyIcon={getUrgencyIcon}
                   compact={true}
                 />
               ))}
@@ -1359,345 +549,6 @@ export function MTFDetectionDashboard({ onCaseSelect }: MTFDetectionDashboardPro
           </Card>
         </div>
       </div>
-
     </div>
   );
 }
-
-// Animated Counter Component
-interface AnimatedCounterProps {
-  value: number;
-  duration?: number;
-}
-
-function AnimatedCounter({ value, duration = 2000 }: AnimatedCounterProps) {
-  const [displayValue, setDisplayValue] = useState(0);
-
-  useEffect(() => {
-    let startTime: number;
-    let animationFrame: number;
-
-    const animate = (currentTime: number) => {
-      if (!startTime) startTime = currentTime;
-      const progress = Math.min((currentTime - startTime) / duration, 1);
-      
-      setDisplayValue(Math.floor(progress * value));
-      
-      if (progress < 1) {
-        animationFrame = requestAnimationFrame(animate);
-      }
-    };
-
-    animationFrame = requestAnimationFrame(animate);
-
-    return () => {
-      if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-      }
-    };
-  }, [value, duration]);
-
-  return (
-    <span className="text-2xl font-bold text-gray-900">
-      {displayValue.toLocaleString()}
-    </span>
-  );
-}
-
-// Report Table Row Component
-interface ReportTableRowProps {
-  report: ReportScanData;
-  index: number;
-  getRiskLevelColor: (level: string) => string;
-}
-
-function ReportTableRow({ report, index, getRiskLevelColor }: ReportTableRowProps) {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, index * 100); // Staggered animation
-
-    return () => clearTimeout(timer);
-  }, [index]);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'outreach_sent': return 'bg-green-100 text-green-800';
-      case 'pending_review': return 'bg-yellow-100 text-yellow-800';
-      case 'processing': return 'bg-blue-100 text-blue-800';
-      case 'completed': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'outreach_sent': return 'Outreach Sent';
-      case 'pending_review': return 'Pending Review';
-      case 'processing': return 'Processing';
-      case 'completed': return 'Completed';
-      default: return status;
-    }
-  };
-
-  const isCritical = report.aiPriority === 'critical';
-
-  return (
-    <tr 
-      className={`border-b hover:bg-gray-50 transition-all duration-300 ${
-        isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
-      } ${isCritical ? 'bg-red-50 border-red-200' : ''}`}
-      style={{
-        animationDelay: `${index * 100}ms`,
-        animation: isCritical ? 'blink 2s ease-in-out' : 'none'
-      }}
-    >
-      <td className="py-3 px-4 font-medium text-gray-900">{report.patientId}</td>
-      <td className="py-3 px-4">
-        <Badge variant="outline" className="uppercase">
-          {report.scanType}
-        </Badge>
-      </td>
-      <td className="py-3 px-4 text-sm text-gray-600">
-        {report.scanTime.toLocaleString('en-US')}
-      </td>
-      <td className="py-3 px-4">
-        <Badge className={getRiskLevelColor(report.aiPriority)}>
-          {report.aiPriority.toUpperCase()}
-        </Badge>
-      </td>
-      <td className="py-3 px-4">
-        <div className="flex items-center gap-2">
-          <div className="w-16 bg-gray-200 rounded-full h-2">
-            <div 
-              className={`h-2 rounded-full transition-all duration-1000 ${
-                report.riskScore >= 80 ? 'bg-red-500' :
-                report.riskScore >= 60 ? 'bg-orange-500' :
-                report.riskScore >= 40 ? 'bg-yellow-500' : 'bg-green-500'
-              }`}
-              style={{ width: `${report.riskScore}%` }}
-            ></div>
-          </div>
-          <span className="text-sm font-medium">{report.riskScore}</span>
-        </div>
-      </td>
-      <td className="py-3 px-4">
-        <Badge className={getStatusColor(report.status)}>
-          {getStatusText(report.status)}
-        </Badge>
-      </td>
-    </tr>
-  );
-}
-
-// Critical Case Card Component
-interface CriticalCaseCardProps {
-  case_: MTFCase;
-  onSelect: () => void;
-  getRiskLevelColor: (level: string) => string;
-  getStatusColor: (status: string) => string;
-  getUrgencyIcon: (urgency: number) => React.ReactNode;
-}
-
-function CriticalCaseCard({ case_, onSelect, getRiskLevelColor, getStatusColor, getUrgencyIcon }: CriticalCaseCardProps) {
-  return (
-    <Card className="border-l-4 border-l-red-500 bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 transition-all duration-200 shadow-sm">
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between">
-          <div className="space-y-3 flex-1">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-red-200 rounded-lg flex items-center justify-center">
-                <User className="h-4 w-4 text-red-600" />
-              </div>
-              <div>
-                <div className="font-semibold text-lg text-gray-900">{case_.patientName}</div>
-                <div className="text-sm text-gray-600">{case_.age}y {case_.gender === 'female' ? 'F' : 'M'} • {case_.patientId}</div>
-              </div>
-              <div className="flex gap-2">
-                <Badge className={getRiskLevelColor(case_.riskLevel)}>
-                  {case_.riskLevel.toUpperCase()}
-                </Badge>
-                {case_.mtfSuspected && (
-                  <Badge variant="destructive">MTF Suspected</Badge>
-                )}
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-              <div className="bg-white/60 p-2 rounded-lg">
-                <div className="text-gray-500 text-xs">Risk Score</div>
-                <div className="font-bold text-red-600">{case_.riskScore}/100</div>
-              </div>
-              <div className="bg-white/60 p-2 rounded-lg">
-                <div className="text-gray-500 text-xs">Confidence</div>
-                <div className="font-bold text-gray-900">{case_.confidence}%</div>
-              </div>
-              <div className="bg-white/60 p-2 rounded-lg">
-                <div className="text-gray-500 text-xs">Report Type</div>
-                <div className="font-bold text-gray-900">{case_.reportType.toUpperCase()}</div>
-              </div>
-              <div className="bg-white/60 p-2 rounded-lg">
-                <div className="text-gray-500 text-xs">Urgency</div>
-                <div className="font-bold text-gray-900 flex items-center gap-1">
-                  {getUrgencyIcon(case_.urgency)}
-                  {case_.urgency}h
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Badge className={getStatusColor(case_.status)}>
-                  {case_.status === 'pending' ? 'Pending' : 
-                   case_.status === 'reviewed' ? 'Reviewed' :
-                   case_.status === 'contacted' ? 'Contacted' : 'Completed'}
-                </Badge>
-                {case_.specialistReferral && (
-                  <Badge variant="outline" className="border-red-300 text-red-700">
-                    Specialist Referral Required
-                  </Badge>
-                )}
-              </div>
-              <div className="text-xs text-gray-500">
-                {case_.createdAt.toLocaleString('en-US')}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2 ml-4">
-            <Button size="sm" variant="outline" onClick={onSelect} className="text-red-700 border-red-300 hover:bg-red-50">
-              View Details
-            </Button>
-            <Button size="sm" variant="outline" className="text-red-700 border-red-300 hover:bg-red-50">
-              <Phone className="w-3 h-3 mr-1" />
-              Contact
-            </Button>
-            <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white">
-              <Mail className="w-3 h-3 mr-1" />
-              Outreach
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// MTF病例卡片组件
-interface MTFCaseCardProps {
-  case_: MTFCase;
-  onSelect: () => void;
-  getRiskLevelColor: (level: string) => string;
-  getStatusColor: (status: string) => string;
-  getUrgencyIcon: (urgency: number) => React.ReactNode;
-  compact?: boolean;
-}
-
-function MTFCaseCard({ case_, onSelect, getRiskLevelColor, getStatusColor, getUrgencyIcon, compact = false }: MTFCaseCardProps) {
-  if (compact) {
-    return (
-      <Card className="hover:bg-gray-50 transition-colors cursor-pointer" onClick={onSelect}>
-        <CardContent className="p-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <User className="h-4 w-4 text-gray-500" />
-              <div>
-                <div className="font-medium">{case_.patientName}</div>
-                <div className="text-sm text-gray-500">{case_.age}y {case_.gender === 'female' ? 'F' : 'M'}</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge className={getRiskLevelColor(case_.riskLevel)}>
-                {case_.riskLevel.toUpperCase()}
-              </Badge>
-              <Badge className={getStatusColor(case_.status)}>
-                {case_.status === 'pending' ? 'Pending' : 
-                 case_.status === 'reviewed' ? 'Reviewed' :
-                 case_.status === 'contacted' ? 'Contacted' : 'Completed'}
-              </Badge>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="border-l-4 border-l-blue-500 hover:bg-gray-50 transition-colors">
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between">
-          <div className="space-y-2 flex-1">
-            <div className="flex items-center gap-3">
-              <User className="h-4 w-4 text-gray-500" />
-              <span className="font-medium text-lg">{case_.patientName}</span>
-              <Badge variant="outline">{case_.age}y {case_.gender === 'female' ? 'F' : 'M'}</Badge>
-              <Badge className={getRiskLevelColor(case_.riskLevel)}>
-                {case_.riskLevel.toUpperCase()}
-              </Badge>
-              {case_.mtfSuspected && (
-                <Badge variant="destructive">MTF Suspected</Badge>
-              )}
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-              <div>
-                <span className="text-gray-500">Risk Score:</span>
-                <span className="ml-2 font-medium">{case_.riskScore}/100</span>
-              </div>
-              <div>
-                <span className="text-gray-500">Confidence:</span>
-                <span className="ml-2 font-medium">{case_.confidence}%</span>
-              </div>
-              <div>
-                <span className="text-gray-500">Report Type:</span>
-                <span className="ml-2 font-medium">{case_.reportType.toUpperCase()}</span>
-              </div>
-              <div className="flex items-center">
-                <span className="text-gray-500">Urgency:</span>
-                <span className="ml-2 flex items-center gap-1">
-                  {getUrgencyIcon(case_.urgency)}
-                  {case_.urgency}h
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Badge className={getStatusColor(case_.status)}>
-                {case_.status === 'pending' ? 'Pending' : 
-                 case_.status === 'reviewed' ? 'Reviewed' :
-                 case_.status === 'contacted' ? 'Contacted' : 'Completed'}
-              </Badge>
-              {case_.specialistReferral && (
-                <Badge variant="outline">Specialist Referral Required</Badge>
-              )}
-              <span className="text-xs text-gray-500">
-                {case_.createdAt.toLocaleString('en-US')}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex gap-2 ml-4">
-            <Button size="sm" variant="outline" onClick={onSelect}>
-              View Details
-            </Button>
-            {case_.status === 'pending' && (
-              <>
-                <Button size="sm" variant="outline">
-                  <Phone className="w-4 h-4 mr-1" />
-                  Contact Patient
-                </Button>
-                <Button size="sm">
-                  <Mail className="w-4 h-4 mr-1" />
-                  Send Outreach
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
