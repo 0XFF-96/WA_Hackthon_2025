@@ -271,7 +271,7 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
       }
     } catch (error) {
       console.error('Manual import error:', error);
-      alert(`导入失败: ${error instanceof Error ? error.message : '未知错误'}`);
+      alert(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsProcessing(false);
       setProcessingProgress(0);
@@ -330,11 +330,11 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
         await new Promise(resolve => setTimeout(resolve, 200));
       }
 
-      // 模拟OCR提取和AI处理
+      // Simulate OCR extraction and AI processing
       const mockResult = {
         patientId: `extracted_${Date.now()}`,
         reportType: 'xray',
-        reportText: `模拟从${file.name}提取的报告内容...`,
+        reportText: `Simulated report content extracted from ${file.name}...`,
         confidence: 85,
         extractionQuality: 'good'
       };
@@ -353,7 +353,7 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
         f.id === file.id ? { 
           ...f, 
           status: 'error', 
-          error: error instanceof Error ? error.message : '处理失败'
+          error: error instanceof Error ? error.message : 'Processing failed'
         } : f
       ));
     }
@@ -369,7 +369,7 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
     const completedFiles = importedFiles.filter(f => f.status === 'completed');
     
     if (completedFiles.length === 0) {
-      alert('没有可处理的文件');
+      alert('No files available for processing');
       return;
     }
 
@@ -626,7 +626,7 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
               </form>
             </TabsContent>
 
-            {/* 文件上传 */}
+            {/* File Upload */}
             <TabsContent value="file" className="space-y-4">
               <div
                 className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors"
@@ -634,8 +634,8 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
                 onDragOver={handleDragOver}
               >
                 <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-lg font-medium mb-2">拖放文件到此处或点击上传</p>
-                <p className="text-sm text-gray-500 mb-4">支持PDF、DOC、DOCX、TXT文件</p>
+                <p className="text-lg font-medium mb-2">Drop files here or click to upload</p>
+                <p className="text-sm text-gray-500 mb-4">Supports PDF, DOC, DOCX, TXT files</p>
                 <input
                   type="file"
                   multiple
@@ -646,23 +646,23 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
                 />
                 <label htmlFor="file-upload">
                   <Button variant="outline" className="cursor-pointer">
-                    选择文件
+                    Select Files
                   </Button>
                 </label>
               </div>
 
-              {/* 文件列表 */}
+              {/* File List */}
               {importedFiles.length > 0 && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-medium">上传的文件 ({importedFiles.length})</h4>
+                    <h4 className="font-medium">Uploaded Files ({importedFiles.length})</h4>
                     <div className="flex gap-2">
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => setImportedFiles([])}
                       >
-                        清空列表
+                        Clear List
                       </Button>
                       <Button
                         size="sm"
@@ -670,7 +670,7 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
                         disabled={!importedFiles.some(f => f.status === 'completed') || isProcessing}
                       >
                         <Brain className="w-4 h-4 mr-2" />
-                        批量处理
+                        Batch Process
                       </Button>
                     </div>
                   </div>
@@ -688,9 +688,9 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
                                 file.status === 'processing' ? 'secondary' :
                                 file.status === 'error' ? 'destructive' : 'outline'
                               }>
-                                {file.status === 'pending' ? '等待处理' :
-                                 file.status === 'processing' ? '处理中' :
-                                 file.status === 'completed' ? '已完成' : '错误'}
+                                {file.status === 'pending' ? 'Pending' :
+                                 file.status === 'processing' ? 'Processing' :
+                                 file.status === 'completed' ? 'Completed' : 'Error'}
                               </Badge>
                             </div>
                             <div className="text-sm text-gray-500">
@@ -704,7 +704,7 @@ export function ReportImportHub({ onImportComplete }: ReportImportHubProps) {
                             )}
                             {file.status === 'completed' && file.result && (
                               <div className="text-sm text-green-600 mt-1">
-                                提取置信度: {file.result.confidence}%
+                                Extraction Confidence: {file.result.confidence}%
                               </div>
                             )}
                           </div>
@@ -1069,7 +1069,7 @@ function SystemIntegrationTab({
   );
 }
 
-// 邮件导入标签页
+// Email Import Tab
 function EmailImportTab() {
   const [emailAddress] = useState('reports@mtf-detection.ai.com');
   const [isMonitoring, setIsMonitoring] = useState(false);
@@ -1079,13 +1079,13 @@ function EmailImportTab() {
       <Alert className="border-blue-200 bg-blue-50">
         <Mail className="h-4 w-4 text-blue-600" />
         <AlertDescription className="text-blue-800">
-          <strong>邮件导入设置</strong><br />
-          将放射学报告发送到下面的邮箱地址，系统将自动处理并分析。
+          <strong>Email Import Configuration</strong><br />
+          Send radiology reports to the email address below, and the system will automatically process and analyze them.
         </AlertDescription>
       </Alert>
 
       <div>
-        <label className="block text-sm font-medium mb-2">邮件地址</label>
+        <label className="block text-sm font-medium mb-2">Email Address</label>
         <div className="flex gap-2">
           <Input
             value={emailAddress}
@@ -1093,36 +1093,36 @@ function EmailImportTab() {
             className="flex-1"
           />
           <Button variant="outline" size="sm">
-            复制
+            Copy
           </Button>
         </div>
       </div>
 
       <div className="flex items-center justify-between p-4 border rounded-lg">
         <div>
-          <div className="font-medium">邮件监控</div>
+          <div className="font-medium">Email Monitoring</div>
           <div className="text-sm text-gray-500">
-            {isMonitoring ? '正在监控新邮件...' : '邮件监控已停止'}
+            {isMonitoring ? 'Monitoring for new emails...' : 'Email monitoring stopped'}
           </div>
         </div>
         <Button
           onClick={() => setIsMonitoring(!isMonitoring)}
           variant={isMonitoring ? 'destructive' : 'default'}
         >
-          {isMonitoring ? '停止监控' : '开始监控'}
+          {isMonitoring ? 'Stop Monitoring' : 'Start Monitoring'}
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">使用说明</CardTitle>
+          <CardTitle className="text-base">Usage Instructions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
-          <p>1. 将放射学报告作为邮件附件或正文发送到上述邮箱</p>
-          <p>2. 邮件主题请包含患者ID（如：Patient ID: P123456）</p>
-          <p>3. 系统将自动提取报告内容并进行AI分析</p>
-          <p>4. 分析结果将在控制台中显示</p>
-          <p>5. 支持的格式：PDF、DOC、DOCX、纯文本</p>
+          <p>1. Send radiology reports as email attachments or body text to the above email address</p>
+          <p>2. Include patient ID in the email subject (e.g., "Patient ID: P123456")</p>
+          <p>3. The system will automatically extract report content and perform AI analysis</p>
+          <p>4. Analysis results will be displayed in the console</p>
+          <p>5. Supported formats: PDF, DOC, DOCX, plain text</p>
         </CardContent>
       </Card>
     </div>
