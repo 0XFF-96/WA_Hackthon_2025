@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -986,6 +987,7 @@ function MiniSankeyDiagram() {
 
 // Enhanced Interactive Report Table Component
 function EnhancedReportTable() {
+  const [, setLocation] = useLocation();
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedReport, setSelectedReport] = useState<any>(null);
   const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
@@ -1210,11 +1212,8 @@ Bone Health Care Team`
   };
 
   const handleRowClick = (reportId: string) => {
-    const report = reports.find(r => r.id === reportId);
-    if (report) {
-      setSelectedReport(report);
-      setIsDetailPanelOpen(true);
-    }
+    // Navigate to dedicated case detail page
+    setLocation(`/case-detail/${reportId}`);
   };
 
   const handleRowSelect = (reportId: string) => {
@@ -1449,58 +1448,13 @@ Bone Health Care Team`
       </CardContent>
 
       {/* Detail Panel - Centered Modal */}
-      <Dialog open={isDetailPanelOpen} onOpenChange={setIsDetailPanelOpen}>
-        <DialogContent className="max-w-7xl w-[95vw] h-[90vh] overflow-hidden p-0">
-          {selectedReport && (
-            <CaseDetailPanel 
-              report={selectedReport} 
-              onClose={() => setIsDetailPanelOpen(false)}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
     </Card>
   );
 }
 
-// Case Detail Panel Component
-function CaseDetailPanel({ report, onClose }: { report: any; onClose: () => void }) {
-  const [isEmailExpanded, setIsEmailExpanded] = useState(false);
-  const [clinicianComment, setClinicianComment] = useState('');
-  const [aiOverride, setAiOverride] = useState<'agree' | 'disagree' | null>(null);
-  const [showNextSteps, setShowNextSteps] = useState(true);
-
-  const getRiskColor = (score: number) => {
-    if (score >= 80) return 'text-red-600 bg-red-50 border-red-200';
-    if (score >= 60) return 'text-orange-600 bg-orange-50 border-orange-200';
-    if (score >= 40) return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-    return 'text-green-600 bg-green-50 border-green-200';
-  };
-
-  const getMTFClassification = (score: number) => {
-    return score >= 60 ? {
-      isMTF: true,
-      label: 'MTF Suspected',
-      icon: <CheckCircle className="w-4 h-4" />,
-      color: 'bg-red-600 text-white',
-      description: 'High likelihood of minimal trauma fracture requiring intervention'
-    } : {
-      isMTF: false,
-      label: 'Not MTF',
-      icon: <X className="w-4 h-4" />,
-      color: 'bg-green-600 text-white',
-      description: 'Low likelihood of minimal trauma fracture, routine monitoring sufficient'
-    };
-  };
-
-  const getProgressBarColor = (score: number) => {
-    if (score >= 80) return 'from-red-500 to-red-600';
-    if (score >= 60) return 'from-orange-500 to-orange-600';
-    if (score >= 40) return 'from-yellow-500 to-yellow-600';
-    return 'from-green-500 to-green-600';
-  };
-
-  const highlightClinicalKeywords = (text: string) => {
+export default MTFDetectionConsole;
+// helper functions used below (kept for potential future use in page-level detail)
+const highlightClinicalKeywords = (text: string) => {
     const keywords = [
       'high-energy trauma', 'low-energy trauma', 'minimal trauma',
       'vertebral fracture', 'hip fracture', 'distal radius',
@@ -1559,8 +1513,8 @@ function CaseDetailPanel({ report, onClose }: { report: any; onClose: () => void
     return definitions[factor] || 'Clinical risk factor for bone health assessment';
   };
 
-  const mtfClassification = getMTFClassification(report.riskScore);
-  const nextStepRecommendation = getNextStepRecommendation(report.riskScore, report.aiPriority);
+  // NOTE: Case detail modal was removed; the variables below are no longer needed here.
+  // Keeping function utilities local to the previous modal is unnecessary; references removed.
 
   const getEmailStatusConfig = (status: string) => {
     switch (status) {
@@ -1591,556 +1545,556 @@ function CaseDetailPanel({ report, onClose }: { report: any; onClose: () => void
     }
   };
 
-  return (
-    <TooltipProvider>
-      <div className="h-full flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        {/* Modal Header */}
-        <div className="flex-shrink-0 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white p-6 relative overflow-hidden">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 left-0 w-40 h-40 bg-white rounded-full -translate-x-20 -translate-y-20"></div>
-            <div className="absolute bottom-0 right-0 w-32 h-32 bg-white rounded-full translate-x-16 translate-y-16"></div>
-            <div className="absolute top-1/2 left-1/3 w-20 h-20 bg-white rounded-full -translate-y-10"></div>
-          </div>
+//   return (
+//     <TooltipProvider>
+//       <div className="h-full flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+//         {/* Modal Header */
+//         <div className="flex-shrink-0 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white p-6 relative overflow-hidden">
+//           {/* Background Pattern */}
+//           <div className="absolute inset-0 opacity-10">
+//             <div className="absolute top-0 left-0 w-40 h-40 bg-white rounded-full -translate-x-20 -translate-y-20"></div>
+//             <div className="absolute bottom-0 right-0 w-32 h-32 bg-white rounded-full translate-x-16 translate-y-16"></div>
+//             <div className="absolute top-1/2 left-1/3 w-20 h-20 bg-white rounded-full -translate-y-10"></div>
+//           </div>
           
-          <div className="relative z-10">
-            <DialogHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
-                    <User className="w-7 h-7 text-white" />
-                  </div>
-                  <div>
-                    <DialogTitle className="text-3xl font-bold text-white mb-1">
-                      {report.patientName}
-                    </DialogTitle>
-                    <div className="text-white/90 text-sm font-medium">
-                      Case ID: {report.patientId} • {report.scanType} • {report.scanTime.toLocaleDateString()}
-                    </div>
-                  </div>
-                </div>
-                <Button variant="ghost" size="lg" onClick={onClose} className="text-white hover:bg-white/20 h-12 w-12 rounded-full">
-                  <X className="w-6 h-6" />
-                </Button>
-              </div>
-            </DialogHeader>
+//           <div className="relative z-10">
+//             <DialogHeader>
+//               <div className="flex items-center justify-between">
+//                 <div className="flex items-center gap-4">
+//                   <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+//                     <User className="w-7 h-7 text-white" />
+//                   </div>
+//                   <div>
+//                     <DialogTitle className="text-3xl font-bold text-white mb-1">
+//                       {report.patientName}
+//                     </DialogTitle>
+//                     <div className="text-white/90 text-sm font-medium">
+//                       Case ID: {report.patientId} • {report.scanType} • {report.scanTime.toLocaleDateString()}
+//                     </div>
+//                   </div>
+//                 </div>
+//                 <Button variant="ghost" size="lg" onClick={onClose} className="text-white hover:bg-white/20 h-12 w-12 rounded-full">
+//                   <X className="w-6 h-6" />
+//                 </Button>
+//               </div>
+//             </DialogHeader>
 
-            {/* MTF Classification Banner - Integrated in Header */}
-            <div className="mt-6 flex items-center justify-between">
-              <div className={`flex items-center gap-3 px-6 py-3 rounded-full ${mtfClassification.color} shadow-xl backdrop-blur-sm`}>
-                {mtfClassification.icon}
-                <span className="font-bold text-xl">{mtfClassification.label}</span>
-              </div>
-              <Badge className="bg-white/20 text-white border border-white/30 backdrop-blur-sm px-4 py-2 text-sm font-medium">
-                Triage: {mtfClassification.isMTF ? 'Eligible' : 'Not Eligible'}
-              </Badge>
-            </div>
-            <div className="mt-2 text-white/80 text-sm max-w-2xl">
-              {mtfClassification.description}
-            </div>
-          </div>
-        </div>
+//             {/* MTF Classification Banner - Integrated in Header */}
+//             <div className="mt-6 flex items-center justify-between">
+//               <div className={`flex items-center gap-3 px-6 py-3 rounded-full ${mtfClassification.color} shadow-xl backdrop-blur-sm`}>
+//                 {mtfClassification.icon}
+//                 <span className="font-bold text-xl">{mtfClassification.label}</span>
+//               </div>
+//               <Badge className="bg-white/20 text-white border border-white/30 backdrop-blur-sm px-4 py-2 text-sm font-medium">
+//                 Triage: {mtfClassification.isMTF ? 'Eligible' : 'Not Eligible'}
+//               </Badge>
+//             </div>
+//             <div className="mt-2 text-white/80 text-sm max-w-2xl">
+//               {mtfClassification.description}
+//             </div>
+//           </div>
+//         </div>
 
-        {/* Main Content Area */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-8 space-y-8">
+//         {/* Main Content Area */}
+//         <div className="flex-1 overflow-y-auto">
+//           <div className="p-8 space-y-8">
             
-            {/* Two-Column Layout for Better Space Utilization */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+//             {/* Two-Column Layout for Better Space Utilization */}
+//             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
               
-              {/* Left Column - Patient & Report Info */}
-              <div className="space-y-6">
+//               {/* Left Column - Patient & Report Info */}
+//               <div className="space-y-6">
                 
-                {/* Patient Information Card */}
-                <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-                  <CardHeader className="pb-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg">
-                    <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <User className="w-5 h-5 text-blue-600" />
-                      </div>
-                      Patient Information
-                    </h3>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                          <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">Patient Name</div>
-                          <div className="text-lg font-bold text-gray-900">{report.patientName || 'Unknown'}</div>
-                        </div>
-                        <div className="p-4 bg-green-50 rounded-xl border border-green-100">
-                          <div className="text-xs text-green-600 font-semibold uppercase tracking-wide mb-1">Age / Gender</div>
-                          <div className="text-lg font-bold text-gray-900">{report.age} / {report.gender}</div>
-                        </div>
-                      </div>
-                      <div className="space-y-4">
-                        <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
-                          <div className="text-xs text-purple-600 font-semibold uppercase tracking-wide mb-1">Scan Time</div>
-                          <div className="text-lg font-bold text-gray-900">{report.scanTime.toLocaleDateString()}</div>
-                          <div className="text-sm text-gray-500">{report.scanTime.toLocaleTimeString()}</div>
-                        </div>
-                        <div className="p-4 bg-orange-50 rounded-xl border border-orange-100">
-                          <div className="text-xs text-orange-600 font-semibold uppercase tracking-wide mb-1">Scan Type</div>
-                          <div className="text-lg font-bold text-gray-900">{report.scanType}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+//                 {/* Patient Information Card */}
+//                 <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+//                   <CardHeader className="pb-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg">
+//                     <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
+//                       <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+//                         <User className="w-5 h-5 text-blue-600" />
+//                       </div>
+//                       Patient Information
+//                     </h3>
+//                   </CardHeader>
+//                   <CardContent className="p-6">
+//                     <div className="grid grid-cols-2 gap-6">
+//                       <div className="space-y-4">
+//                         <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+//                           <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">Patient Name</div>
+//                           <div className="text-lg font-bold text-gray-900">{report.patientName || 'Unknown'}</div>
+//                         </div>
+//                         <div className="p-4 bg-green-50 rounded-xl border border-green-100">
+//                           <div className="text-xs text-green-600 font-semibold uppercase tracking-wide mb-1">Age / Gender</div>
+//                           <div className="text-lg font-bold text-gray-900">{report.age} / {report.gender}</div>
+//                         </div>
+//                       </div>
+//                       <div className="space-y-4">
+//                         <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
+//                           <div className="text-xs text-purple-600 font-semibold uppercase tracking-wide mb-1">Scan Time</div>
+//                           <div className="text-lg font-bold text-gray-900">{report.scanTime.toLocaleDateString()}</div>
+//                           <div className="text-sm text-gray-500">{report.scanTime.toLocaleTimeString()}</div>
+//                         </div>
+//                         <div className="p-4 bg-orange-50 rounded-xl border border-orange-100">
+//                           <div className="text-xs text-orange-600 font-semibold uppercase tracking-wide mb-1">Scan Type</div>
+//                           <div className="text-lg font-bold text-gray-900">{report.scanType}</div>
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </CardContent>
+//                 </Card>
 
-                {/* Radiology Report Card */}
-                <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-                  <CardHeader className="pb-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-t-lg">
-                    <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                      <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
-                        <FileText className="w-5 h-5 text-amber-600" />
-                      </div>
-                      Radiology Report
-                    </h3>
-                  </CardHeader>
-                  <CardContent className="p-6 space-y-6">
-                    {/* Report Text */}
-                    <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200">
-                      <p 
-                        className="text-base text-gray-700 italic leading-relaxed font-medium"
-                        dangerouslySetInnerHTML={{ 
-                          __html: `"${highlightClinicalKeywords(report.reportSummary)}"` 
-                        }}
-                      />
-                    </div>
+//                 {/* Radiology Report Card */}
+//                 <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+//                   <CardHeader className="pb-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-t-lg">
+//                     <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
+//                       <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+//                         <FileText className="w-5 h-5 text-amber-600" />
+//                       </div>
+//                       Radiology Report
+//                     </h3>
+//                   </CardHeader>
+//                   <CardContent className="p-6 space-y-6">
+//                     {/* Report Text */}
+//                     <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200">
+//                       <p 
+//                         className="text-base text-gray-700 italic leading-relaxed font-medium"
+//                         dangerouslySetInnerHTML={{ 
+//                           __html: `"${highlightClinicalKeywords(report.reportSummary)}"` 
+//                         }}
+//                       />
+//                     </div>
                     
-                    {/* Helper Text */}
-                    <div className="flex items-center gap-2 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                      <Lightbulb className="w-5 h-5 text-yellow-600" />
-                      <span className="text-sm text-yellow-800 font-medium">Clinical keywords are highlighted for rapid assessment</span>
-                    </div>
+//                     {/* Helper Text */}
+//                     <div className="flex items-center gap-2 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+//                       <Lightbulb className="w-5 h-5 text-yellow-600" />
+//                       <span className="text-sm text-yellow-800 font-medium">Clinical keywords are highlighted for rapid assessment</span>
+//                     </div>
                     
-                    {/* Key Details */}
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="p-4 bg-red-50 rounded-xl border border-red-100">
-                        <div className="text-xs text-red-600 font-semibold uppercase tracking-wide mb-1">Fracture Location</div>
-                        <div className="text-lg font-bold text-gray-900">{report.fractureLocation}</div>
-                      </div>
-                      <div className="p-4 bg-pink-50 rounded-xl border border-pink-100">
-                        <div className="text-xs text-pink-600 font-semibold uppercase tracking-wide mb-1">Injury Mechanism</div>
-                        <div className="text-lg font-bold text-gray-900">{report.injuryMechanism}</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+//                     {/* Key Details */}
+//                     <div className="grid grid-cols-1 gap-4">
+//                       <div className="p-4 bg-red-50 rounded-xl border border-red-100">
+//                         <div className="text-xs text-red-600 font-semibold uppercase tracking-wide mb-1">Fracture Location</div>
+//                         <div className="text-lg font-bold text-gray-900">{report.fractureLocation}</div>
+//                       </div>
+//                       <div className="p-4 bg-pink-50 rounded-xl border border-pink-100">
+//                         <div className="text-xs text-pink-600 font-semibold uppercase tracking-wide mb-1">Injury Mechanism</div>
+//                         <div className="text-lg font-bold text-gray-900">{report.injuryMechanism}</div>
+//                       </div>
+//                     </div>
+//                   </CardContent>
+//                 </Card>
+//               </div>
 
-              {/* Right Column - AI Assessment & Actions */}
-              <div className="space-y-6">
+//               {/* Right Column - AI Assessment & Actions */}
+//               <div className="space-y-6">
                 
-                {/* AI Risk Assessment Card */}
-                <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-                  <CardHeader className="pb-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-t-lg">
-                    <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                      <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <Brain className="w-5 h-5 text-purple-600" />
-                      </div>
-                      AI Risk Assessment
-                    </h3>
-                  </CardHeader>
-                  <CardContent className="p-6 space-y-6">
-                    {/* Risk Score Display */}
-                    <div className="text-center space-y-4">
-                      <div className="text-7xl font-bold bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
-                        {report.riskScore}
-                      </div>
-                      <div className="text-sm text-gray-500 uppercase tracking-wider font-semibold">MTF Risk Score</div>
-                      <div className="text-2xl font-bold text-gray-900">
-                        {report.riskScore >= 80 ? 'High Risk' : 
-                         report.riskScore >= 60 ? 'Moderate Risk' : 
-                         report.riskScore >= 40 ? 'Low-Moderate Risk' : 'Low Risk'}
-                      </div>
-                    </div>
+//                 {/* AI Risk Assessment Card */}
+//                 <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+//                   <CardHeader className="pb-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-t-lg">
+//                     <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
+//                       <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+//                         <Brain className="w-5 h-5 text-purple-600" />
+//                       </div>
+//                       AI Risk Assessment
+//                     </h3>
+//                   </CardHeader>
+//                   <CardContent className="p-6 space-y-6">
+//                     {/* Risk Score Display */}
+//                     <div className="text-center space-y-4">
+//                       <div className="text-7xl font-bold bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
+//                         {report.riskScore}
+//                       </div>
+//                       <div className="text-sm text-gray-500 uppercase tracking-wider font-semibold">MTF Risk Score</div>
+//                       <div className="text-2xl font-bold text-gray-900">
+//                         {report.riskScore >= 80 ? 'High Risk' : 
+//                          report.riskScore >= 60 ? 'Moderate Risk' : 
+//                          report.riskScore >= 40 ? 'Low-Moderate Risk' : 'Low Risk'}
+//                       </div>
+//                     </div>
 
-                    {/* Enhanced Progress Bar */}
-                    <div className="space-y-4">
-                      <div className="flex justify-between text-sm text-gray-600 font-medium">
-                        <span>Low Risk</span>
-                        <span>High Risk</span>
-                      </div>
-                      <div className="relative h-6 bg-gray-200 rounded-full overflow-hidden shadow-inner">
-                        <div 
-                          className={`h-full bg-gradient-to-r ${getProgressBarColor(report.riskScore)} transition-all duration-1000 ease-out rounded-full shadow-lg`}
-                          style={{ width: `${report.riskScore}%` }}
-                        />
-                        {/* Risk threshold markers */}
-                        <div className="absolute top-0 left-[60%] w-1 h-6 bg-white opacity-80" />
-                        <div className="absolute top-0 left-[80%] w-1 h-6 bg-white opacity-80" />
-                      </div>
-                      <div className="flex justify-between text-xs text-gray-500">
-                        <span>0</span>
-                        <span className="absolute left-[60%] transform -translate-x-1/2 font-semibold">60</span>
-                        <span className="absolute left-[80%] transform -translate-x-1/2 font-semibold">80</span>
-                        <span>100</span>
-                      </div>
-                    </div>
+//                     {/* Enhanced Progress Bar */}
+//                     <div className="space-y-4">
+//                       <div className="flex justify-between text-sm text-gray-600 font-medium">
+//                         <span>Low Risk</span>
+//                         <span>High Risk</span>
+//                       </div>
+//                       <div className="relative h-6 bg-gray-200 rounded-full overflow-hidden shadow-inner">
+//                         <div 
+//                           className={`h-full bg-gradient-to-r ${getProgressBarColor(report.riskScore)} transition-all duration-1000 ease-out rounded-full shadow-lg`}
+//                           style={{ width: `${report.riskScore}%` }}
+//                         />
+//                         {/* Risk threshold markers */}
+//                         <div className="absolute top-0 left-[60%] w-1 h-6 bg-white opacity-80" />
+//                         <div className="absolute top-0 left-[80%] w-1 h-6 bg-white opacity-80" />
+//                       </div>
+//                       <div className="flex justify-between text-xs text-gray-500">
+//                         <span>0</span>
+//                         <span className="absolute left-[60%] transform -translate-x-1/2 font-semibold">60</span>
+//                         <span className="absolute left-[80%] transform -translate-x-1/2 font-semibold">80</span>
+//                         <span>100</span>
+//                       </div>
+//                     </div>
 
-                    {/* AI Confidence */}
-                    <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-2xl border border-purple-200">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="text-sm text-gray-600 flex items-center gap-2 font-medium">
-                            AI Confidence
-                            <Tooltip>
-                              <TooltipTrigger>
-                                <HelpCircle className="w-4 h-4 text-gray-400" />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p className="max-w-xs">
-                                  AI confidence indicates how certain the model is about this prediction. 
-                                  Higher confidence (&gt;90%) suggests more reliable assessment.
-                                </p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </div>
-                          <div className="text-3xl font-bold text-purple-600">
-                            {Math.round(report.aiConfidence * 100)}%
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <Badge className={`text-base px-4 py-2 ${
-                            report.aiConfidence >= 0.9 ? 'bg-green-100 text-green-800' :
-                            report.aiConfidence >= 0.8 ? 'bg-blue-100 text-blue-800' :
-                            report.aiConfidence >= 0.7 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
-                          }`}>
-                            {report.aiConfidence >= 0.9 ? 'Very High' :
-                             report.aiConfidence >= 0.8 ? 'High' :
-                             report.aiConfidence >= 0.7 ? 'Moderate' : 'Low'} Confidence
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+//                     {/* AI Confidence */}
+//                     <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-2xl border border-purple-200">
+//                       <div className="flex items-center justify-between">
+//                         <div>
+//                           <div className="text-sm text-gray-600 flex items-center gap-2 font-medium">
+//                             AI Confidence
+//                             <Tooltip>
+//                               <TooltipTrigger>
+//                                 <HelpCircle className="w-4 h-4 text-gray-400" />
+//                               </TooltipTrigger>
+//                               <TooltipContent>
+//                                 <p className="max-w-xs">
+//                                   AI confidence indicates how certain the model is about this prediction. 
+//                                   Higher confidence (&gt;90%) suggests more reliable assessment.
+//                                 </p>
+//                               </TooltipContent>
+//                             </Tooltip>
+//                           </div>
+//                           <div className="text-3xl font-bold text-purple-600">
+//                             {Math.round(report.aiConfidence * 100)}%
+//                           </div>
+//                         </div>
+//                         <div className="text-right">
+//                           <Badge className={`text-base px-4 py-2 ${
+//                             report.aiConfidence >= 0.9 ? 'bg-green-100 text-green-800' :
+//                             report.aiConfidence >= 0.8 ? 'bg-blue-100 text-blue-800' :
+//                             report.aiConfidence >= 0.7 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
+//                           }`}>
+//                             {report.aiConfidence >= 0.9 ? 'Very High' :
+//                              report.aiConfidence >= 0.8 ? 'High' :
+//                              report.aiConfidence >= 0.7 ? 'Moderate' : 'Low'} Confidence
+//                           </Badge>
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </CardContent>
+//                 </Card>
                 
-                {/* Risk Factors Card */}
-                <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-                  <CardHeader className="pb-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-lg">
-                    <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <AlertCircle className="w-5 h-5 text-blue-600" />
-                      </div>
-                      Risk Factors
-                    </h3>
-                  </CardHeader>
-                  <CardContent className="p-6 space-y-4">
-                    {report.riskFactors.map((factor: string, index: number) => (
-                      <Tooltip key={index}>
-                        <TooltipTrigger asChild>
-                          <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 rounded-xl cursor-pointer transition-all duration-200 border border-blue-200 hover:border-blue-300 group hover:shadow-lg">
-                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                              <AlertCircle className="w-5 h-5 text-blue-600" />
-                            </div>
-                            <span className="text-base font-semibold text-blue-900 flex-1">{factor}</span>
-                            <HelpCircle className="w-5 h-5 text-blue-500 opacity-70 group-hover:opacity-100 transition-opacity" />
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="max-w-xs">{getRiskFactorDefinition(factor)}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    ))}
-                    <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                      <div className="text-sm text-blue-700 flex items-center gap-2 font-medium">
-                        <Target className="w-5 h-5" />
-                        Hover over risk factors for detailed clinical explanations
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+//                 {/* Risk Factors Card */}
+//                 <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+//                   <CardHeader className="pb-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-lg">
+//                     <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
+//                       <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+//                         <AlertCircle className="w-5 h-5 text-blue-600" />
+//                       </div>
+//                       Risk Factors
+//                     </h3>
+//                   </CardHeader>
+//                   <CardContent className="p-6 space-y-4">
+//                     {report.riskFactors.map((factor: string, index: number) => (
+//                       <Tooltip key={index}>
+//                         <TooltipTrigger asChild>
+//                           <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 rounded-xl cursor-pointer transition-all duration-200 border border-blue-200 hover:border-blue-300 group hover:shadow-lg">
+//                             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+//                               <AlertCircle className="w-5 h-5 text-blue-600" />
+//                             </div>
+//                             <span className="text-base font-semibold text-blue-900 flex-1">{factor}</span>
+//                             <HelpCircle className="w-5 h-5 text-blue-500 opacity-70 group-hover:opacity-100 transition-opacity" />
+//                           </div>
+//                         </TooltipTrigger>
+//                         <TooltipContent>
+//                           <p className="max-w-xs">{getRiskFactorDefinition(factor)}</p>
+//                         </TooltipContent>
+//                       </Tooltip>
+//                     ))}
+//                     <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+//                       <div className="text-sm text-blue-700 flex items-center gap-2 font-medium">
+//                         <Target className="w-5 h-5" />
+//                         Hover over risk factors for detailed clinical explanations
+//                       </div>
+//                     </div>
+//                   </CardContent>
+//                 </Card>
+//               </div>
+//             </div>
             
-            {/* Full-Width Sections */}
-            <div className="space-y-8">
+//             {/* Full-Width Sections */}
+//             <div className="space-y-8">
               
-              {/* AI Analysis & Actions Row */}
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+//               {/* AI Analysis & Actions Row */}
+//               <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 
-                {/* AI Explanation */}
-                <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm xl:col-span-2">
-                  <CardHeader className="pb-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-lg">
-                    <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                      <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                        <Brain className="w-5 h-5 text-green-600" />
-                      </div>
-                      Explainable AI Analysis
-                    </h3>
-                  </CardHeader>
-                  <CardContent className="p-6 space-y-4">
-                    {report.aiExplanation.map((explanation: any, index: number) => (
-                      <div 
-                        key={index} 
-                        className={`flex items-start gap-4 p-4 rounded-xl transition-all duration-300 border-2 ${
-                          explanation.type === 'positive' 
-                            ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 hover:border-green-300' 
-                            : 'bg-gradient-to-r from-red-50 to-pink-50 border-red-200 hover:border-red-300'
-                        }`}
-                        style={{ animationDelay: `${index * 150}ms` }}
-                      >
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                          explanation.type === 'positive' ? 'bg-green-100' : 'bg-red-100'
-                        }`}>
-                          {explanation.type === 'positive' ? (
-                            <CheckCircle className="w-6 h-6 text-green-600 animate-fade-in-right" />
-                          ) : (
-                            <X className="w-6 h-6 text-red-600 animate-fade-in-right" />
-                          )}
-                        </div>
-                        <span className={`text-base font-medium flex-1 ${
-                          explanation.type === 'positive' ? 'text-green-800' : 'text-red-800'
-                        }`}>
-                          {explanation.text}
-                        </span>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
+//                 {/* AI Explanation */}
+//                 <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm xl:col-span-2">
+//                   <CardHeader className="pb-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-lg">
+//                     <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
+//                       <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+//                         <Brain className="w-5 h-5 text-green-600" />
+//                       </div>
+//                       Explainable AI Analysis
+//                     </h3>
+//                   </CardHeader>
+//                   <CardContent className="p-6 space-y-4">
+//                     {report.aiExplanation.map((explanation: any, index: number) => (
+//                       <div 
+//                         key={index} 
+//                         className={`flex items-start gap-4 p-4 rounded-xl transition-all duration-300 border-2 ${
+//                           explanation.type === 'positive' 
+//                             ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 hover:border-green-300' 
+//                             : 'bg-gradient-to-r from-red-50 to-pink-50 border-red-200 hover:border-red-300'
+//                         }`}
+//                         style={{ animationDelay: `${index * 150}ms` }}
+//                       >
+//                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+//                           explanation.type === 'positive' ? 'bg-green-100' : 'bg-red-100'
+//                         }`}>
+//                           {explanation.type === 'positive' ? (
+//                             <CheckCircle className="w-6 h-6 text-green-600 animate-fade-in-right" />
+//                           ) : (
+//                             <X className="w-6 h-6 text-red-600 animate-fade-in-right" />
+//                           )}
+//                         </div>
+//                         <span className={`text-base font-medium flex-1 ${
+//                           explanation.type === 'positive' ? 'text-green-800' : 'text-red-800'
+//                         }`}>
+//                           {explanation.text}
+//                         </span>
+//                       </div>
+//                     ))}
+//                   </CardContent>
+//                 </Card>
 
-                  {/* Next Steps Recommendation */}
-                  {showNextSteps && (
-                    <Card className={`shadow-xl border-0 bg-white/80 backdrop-blur-sm border-l-4 ${nextStepRecommendation.color}`}>
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-semibold text-gray-900 flex items-center gap-2">
-                            <Lightbulb className="w-5 h-5 text-yellow-600" />
-                            Next Steps
-                          </h4>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => setShowNextSteps(false)}
-                            className="h-8 w-8 p-0"
-                          >
-                            <X className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-100 to-orange-100 flex items-center justify-center">
-                            {nextStepRecommendation.icon}
-                          </div>
-                          <div className="flex-1 space-y-3">
-                            <div>
-                              <div className="font-bold text-lg text-gray-900">
-                                {nextStepRecommendation.title}
-                              </div>
-                              <div className="text-sm text-gray-600 mt-1">
-                                {nextStepRecommendation.description}
-                              </div>
-                            </div>
-                            <div className="flex flex-col gap-2">
-                              <Button size="sm" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                                <ArrowRight className="w-4 h-4 mr-2" />
-                                Take Action
-                              </Button>
-                              <Button size="sm" variant="outline" className="w-full">
-                                Schedule Later
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
+//                   {/* Next Steps Recommendation */}
+//                   {showNextSteps && (
+//                     <Card className={`shadow-xl border-0 bg-white/80 backdrop-blur-sm border-l-4 ${nextStepRecommendation.color}`}>
+//                       <CardHeader className="pb-3">
+//                         <div className="flex items-center justify-between">
+//                           <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+//                             <Lightbulb className="w-5 h-5 text-yellow-600" />
+//                             Next Steps
+//                           </h4>
+//                           <Button 
+//                             variant="ghost" 
+//                             size="sm" 
+//                             onClick={() => setShowNextSteps(false)}
+//                             className="h-8 w-8 p-0"
+//                           >
+//                             <X className="w-4 h-4" />
+//                           </Button>
+//                         </div>
+//                       </CardHeader>
+//                       <CardContent className="p-4">
+//                         <div className="flex items-start gap-4">
+//                           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-100 to-orange-100 flex items-center justify-center">
+//                             {nextStepRecommendation.icon}
+//                           </div>
+//                           <div className="flex-1 space-y-3">
+//                             <div>
+//                               <div className="font-bold text-lg text-gray-900">
+//                                 {nextStepRecommendation.title}
+//                               </div>
+//                               <div className="text-sm text-gray-600 mt-1">
+//                                 {nextStepRecommendation.description}
+//                               </div>
+//                             </div>
+//                             <div className="flex flex-col gap-2">
+//                               <Button size="sm" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+//                                 <ArrowRight className="w-4 h-4 mr-2" />
+//                                 Take Action
+//                               </Button>
+//                               <Button size="sm" variant="outline" className="w-full">
+//                                 Schedule Later
+//                               </Button>
+//                             </div>
+//                           </div>
+//                         </div>
+//                       </CardContent>
+//                     </Card>
+//                   )}
 
-                  {/* Clinical Review */}
-                  <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-                    <CardHeader className="pb-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-t-lg">
-                      <h4 className="font-semibold text-gray-900 flex items-center gap-2">
-                        <MessageCircle className="w-5 h-5 text-purple-600" />
-                        Clinical Review
-                      </h4>
-                    </CardHeader>
-                    <CardContent className="p-4 space-y-4">
-                      {/* AI Agreement */}
-                      <div>
-                        <div className="text-sm font-medium text-gray-700 mb-3">
-                          Do you agree with the AI assessment?
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <Button
-                            size="sm"
-                            variant={aiOverride === 'agree' ? 'default' : 'outline'}
-                            onClick={() => setAiOverride('agree')}
-                            className="flex items-center gap-2"
-                          >
-                            <ThumbsUp className="w-4 h-4" />
-                            Agree
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant={aiOverride === 'disagree' ? 'destructive' : 'outline'}
-                            onClick={() => setAiOverride('disagree')}
-                            className="flex items-center gap-2"
-                          >
-                            <ThumbsDown className="w-4 h-4" />
-                            Disagree
-                          </Button>
-                        </div>
-                      </div>
+//                   {/* Clinical Review */}
+//                   <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+//                     <CardHeader className="pb-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-t-lg">
+//                       <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+//                         <MessageCircle className="w-5 h-5 text-purple-600" />
+//                         Clinical Review
+//                       </h4>
+//                     </CardHeader>
+//                     <CardContent className="p-4 space-y-4">
+//                       {/* AI Agreement */}
+//                       <div>
+//                         <div className="text-sm font-medium text-gray-700 mb-3">
+//                           Do you agree with the AI assessment?
+//                         </div>
+//                         <div className="grid grid-cols-2 gap-2">
+//                           <Button
+//                             size="sm"
+//                             variant={aiOverride === 'agree' ? 'default' : 'outline'}
+//                             onClick={() => setAiOverride('agree')}
+//                             className="flex items-center gap-2"
+//                           >
+//                             <ThumbsUp className="w-4 h-4" />
+//                             Agree
+//                           </Button>
+//                           <Button
+//                             size="sm"
+//                             variant={aiOverride === 'disagree' ? 'destructive' : 'outline'}
+//                             onClick={() => setAiOverride('disagree')}
+//                             className="flex items-center gap-2"
+//                           >
+//                             <ThumbsDown className="w-4 h-4" />
+//                             Disagree
+//                           </Button>
+//                         </div>
+//                       </div>
 
-                      {/* Clinical Notes */}
-                      <div>
-                        <div className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                          <Edit className="w-4 h-4" />
-                          Clinical Notes
-                        </div>
-                        <Textarea
-                          placeholder="Add observations, concerns, or rationale..."
-                          value={clinicianComment}
-                          onChange={(e) => setClinicianComment(e.target.value)}
-                          className="min-h-[80px]"
-                        />
-                      </div>
+//                       {/* Clinical Notes */}
+//                       <div>
+//                         <div className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+//                           <Edit className="w-4 h-4" />
+//                           Clinical Notes
+//                         </div>
+//                         <Textarea
+//                           placeholder="Add observations, concerns, or rationale..."
+//                           value={clinicianComment}
+//                           onChange={(e) => setClinicianComment(e.target.value)}
+//                           className="min-h-[80px]"
+//                         />
+//                       </div>
 
-                      {/* Actions */}
-                      <div className="flex gap-2 pt-2 border-t border-gray-200">
-                        <Button size="sm" variant="outline" className="flex items-center gap-2">
-                          <Flag className="w-4 h-4" />
-                          Flag
-                        </Button>
-                        <Button size="sm" className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600">
-                          <CheckCircle className="w-4 h-4" />
-                          Save
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
+//                       {/* Actions */}
+//                       <div className="flex gap-2 pt-2 border-t border-gray-200">
+//                         <Button size="sm" variant="outline" className="flex items-center gap-2">
+//                           <Flag className="w-4 h-4" />
+//                           Flag
+//                         </Button>
+//                         <Button size="sm" className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600">
+//                           <CheckCircle className="w-4 h-4" />
+//                           Save
+//                         </Button>
+//                       </div>
+//                     </CardContent>
+//                   </Card>
+//                 </div>
               
-              {/* Email Outreach - Full Width */}
-              <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-                <CardHeader className="pb-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-t-lg">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                      <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                        <MessageSquare className="w-6 h-6 text-green-600" />
-                      </div>
-                      Patient Outreach Management
-                    </h3>
-                    <Badge className={`text-base px-4 py-2 ${getEmailStatusConfig(report.emailStatus || 'not_sent').color}`}>
-                      {getEmailStatusConfig(report.emailStatus || 'not_sent').icon}
-                      <span className="ml-2">{getEmailStatusConfig(report.emailStatus || 'not_sent').label}</span>
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <Badge className={getEmailStatusConfig(report.emailStatus).color}>
-                  <span className="flex items-center gap-1">
-                    {getEmailStatusConfig(report.emailStatus).icon}
-                    {getEmailStatusConfig(report.emailStatus).label}
-                  </span>
-                </Badge>
-                {report.emailSentTime && (
-                  <div className="text-sm text-gray-500">
-                    Sent: {report.emailSentTime.toLocaleString()}
-                  </div>
-                )}
-              </div>
+//               {/* Email Outreach - Full Width */}
+//               <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+//                 <CardHeader className="pb-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-t-lg">
+//                   <div className="flex items-center justify-between">
+//                     <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+//                       <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+//                         <MessageSquare className="w-6 h-6 text-green-600" />
+//                       </div>
+//                       Patient Outreach Management
+//                     </h3>
+//                     <Badge className={`text-base px-4 py-2 ${getEmailStatusConfig(report.emailStatus || 'not_sent').color}`}>
+//                       {getEmailStatusConfig(report.emailStatus || 'not_sent').icon}
+//                       <span className="ml-2">{getEmailStatusConfig(report.emailStatus || 'not_sent').label}</span>
+//                     </Badge>
+//                   </div>
+//                 </CardHeader>
+//                 <CardContent className="p-6">
+//             <div className="flex items-center justify-between mb-4">
+//               <div className="flex items-center gap-3">
+//                 <Badge className={getEmailStatusConfig(report.emailStatus).color}>
+//                   <span className="flex items-center gap-1">
+//                     {getEmailStatusConfig(report.emailStatus).icon}
+//                     {getEmailStatusConfig(report.emailStatus).label}
+//                   </span>
+//                 </Badge>
+//                 {report.emailSentTime && (
+//                   <div className="text-sm text-gray-500">
+//                     Sent: {report.emailSentTime.toLocaleString()}
+//                   </div>
+//                 )}
+//               </div>
               
-              {report.emailStatus === 'sent' && (
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline">
-                    <RefreshCw className="w-3 h-3 mr-1" />
-                    Resend
-                  </Button>
-                  <Button size="sm" variant="outline">
-                    <Edit className="w-3 h-3 mr-1" />
-                    Edit
-                  </Button>
-                </div>
-              )}
-            </div>
+//               {report.emailStatus === 'sent' && (
+//                 <div className="flex gap-2">
+//                   <Button size="sm" variant="outline">
+//                     <RefreshCw className="w-3 h-3 mr-1" />
+//                     Resend
+//                   </Button>
+//                   <Button size="sm" variant="outline">
+//                     <Edit className="w-3 h-3 mr-1" />
+//                     Edit
+//                   </Button>
+//                 </div>
+//               )}
+//             </div>
 
-            {/* Email Content Preview */}
-            {report.emailContent && (
-              <div className="space-y-3">
-                <div 
-                  className="border rounded-lg p-3 cursor-pointer transition-all duration-200 hover:bg-gray-50"
-                  onClick={() => setIsEmailExpanded(!isEmailExpanded)}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">
-                        Subject: {report.emailContent.subject}
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        Click to {isEmailExpanded ? 'collapse' : 'expand'} email content
-                      </div>
-                    </div>
-                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-                      isEmailExpanded ? 'rotate-180' : ''
-                    }`} />
-                  </div>
-                </div>
+//             {/* Email Content Preview */}
+//             {report.emailContent && (
+//               <div className="space-y-3">
+//                 <div 
+//                   className="border rounded-lg p-3 cursor-pointer transition-all duration-200 hover:bg-gray-50"
+//                   onClick={() => setIsEmailExpanded(!isEmailExpanded)}
+//                 >
+//                   <div className="flex items-center justify-between">
+//                     <div>
+//                       <div className="text-sm font-medium text-gray-900">
+//                         Subject: {report.emailContent.subject}
+//                       </div>
+//                       <div className="text-xs text-gray-500 mt-1">
+//                         Click to {isEmailExpanded ? 'collapse' : 'expand'} email content
+//                       </div>
+//                     </div>
+//                     <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
+//                       isEmailExpanded ? 'rotate-180' : ''
+//                     }`} />
+//                   </div>
+//                 </div>
 
-                {isEmailExpanded && (
-                  <div className="border rounded-lg p-4 bg-gray-50 animate-slide-in-up">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h5 className="font-semibold text-gray-900">Email Content</h5>
-                        <Button size="sm" variant="ghost">
-                          <Copy className="w-3 h-3 mr-1" />
-                          Copy
-                        </Button>
-                      </div>
-                      <div className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
-                        {report.emailContent.body}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
+//                 {isEmailExpanded && (
+//                   <div className="border rounded-lg p-4 bg-gray-50 animate-slide-in-up">
+//                     <div className="space-y-3">
+//                       <div className="flex items-center justify-between">
+//                         <h5 className="font-semibold text-gray-900">Email Content</h5>
+//                         <Button size="sm" variant="ghost">
+//                           <Copy className="w-3 h-3 mr-1" />
+//                           Copy
+//                         </Button>
+//                       </div>
+//                       <div className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+//                         {report.emailContent.body}
+//                       </div>
+//                     </div>
+//                   </div>
+//                 )}
+//               </div>
+//             )}
 
-            {report.emailStatus === 'pending' && (
-              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Clock className="w-4 h-4 text-yellow-600" />
-                  <span className="text-sm font-medium text-yellow-800">Email Pending</span>
-                </div>
-                <p className="text-sm text-yellow-700">
-                  This case requires review before automated outreach can be sent.
-                </p>
-                <div className="flex gap-2 mt-3">
-                  <Button size="sm" className="bg-yellow-600 hover:bg-yellow-700">
-                    Generate & Send Email
-                  </Button>
-                  <Button size="sm" variant="outline">
-                    Mark as No Contact Required
-                  </Button>
-                </div>
-              </div>
-            )}
+//             {report.emailStatus === 'pending' && (
+//               <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+//                 <div className="flex items-center gap-2 mb-2">
+//                   <Clock className="w-4 h-4 text-yellow-600" />
+//                   <span className="text-sm font-medium text-yellow-800">Email Pending</span>
+//                 </div>
+//                 <p className="text-sm text-yellow-700">
+//                   This case requires review before automated outreach can be sent.
+//                 </p>
+//                 <div className="flex gap-2 mt-3">
+//                   <Button size="sm" className="bg-yellow-600 hover:bg-yellow-700">
+//                     Generate & Send Email
+//                   </Button>
+//                   <Button size="sm" variant="outline">
+//                     Mark as No Contact Required
+//                   </Button>
+//                 </div>
+//               </div>
+//             )}
 
-            {report.emailStatus === 'not_required' && (
-              <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <Info className="w-4 h-4 text-gray-600" />
-                  <span className="text-sm font-medium text-gray-800">No Outreach Required</span>
-                </div>
-                <p className="text-sm text-gray-600 mt-1">
-                  Based on the AI assessment, this case does not require patient outreach.
-                </p>
-              </div>
-            )}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </div>
-    </TooltipProvider>
-  );
-}
+//             {report.emailStatus === 'not_required' && (
+//               <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+//                 <div className="flex items-center gap-2">
+//                   <Info className="w-4 h-4 text-gray-600" />
+//                   <span className="text-sm font-medium text-gray-800">No Outreach Required</span>
+//                 </div>
+//                 <p className="text-sm text-gray-600 mt-1">
+//                   Based on the AI assessment, this case does not require patient outreach.
+//                 </p>
+//               </div>
+//             )}
+//                 </CardContent>
+//               </Card>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </TooltipProvider>
+//   );
+// }
 
-export default MTFDetectionConsole;
+// export default MTFDetectionConsole;
