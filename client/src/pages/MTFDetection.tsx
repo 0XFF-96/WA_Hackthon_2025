@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MTFDetectionDashboard } from '@/components/mtf/MTFDetectionDashboard';
+import { MTFDetectionConsole } from '@/components/mtf/MTFDetectionConsole';
 import { ReportImportHub } from '@/components/mtf/ReportImportHub';
 import { PatientOutreachCenter } from '@/components/mtf/PatientOutreachCenter';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -124,116 +124,79 @@ export default function MTFDetectionPage() {
   return (
     <div className="container mx-auto py-6 space-y-8">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between">
         <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Shield className="w-6 h-6 text-white" />
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Shield className="w-7 h-7 text-white" />
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">MTF Detection & Patient Outreach</h1>
-              <p className="text-gray-600 mt-1">Intelligent minimal trauma fracture detection and automated patient management system</p>
+              <p className="text-gray-600 mt-1 text-lg">Intelligent minimal trauma fracture detection and automated patient management system</p>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Badge variant="secondary" className="bg-green-100 text-green-800 px-3 py-1">
-            <Activity className="w-3 h-3 mr-1" />
+        <div className="flex items-center gap-3 mt-2">
+          <Badge variant="secondary" className="bg-green-100 text-green-800 px-4 py-2 text-sm font-medium">
+            <Activity className="w-4 h-4 mr-2" />
             System Online
           </Badge>
-          <Badge variant="secondary" className="bg-blue-100 text-blue-800 px-3 py-1">
-            <Zap className="w-3 h-3 mr-1" />
+          <Badge variant="secondary" className="bg-blue-100 text-blue-800 px-4 py-2 text-sm font-medium">
+            <Zap className="w-4 h-4 mr-2" />
             AI Ready
           </Badge>
         </div>
       </div>
-
-      {/* Workflow Overview */}
-      {!importResult && (
-        <Card className="border-t-4 border-t-blue-500 shadow-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <BarChart3 className="h-5 w-5 text-blue-600" />
-              MTF Detection Workflow
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              {workflowSteps.map((step, index) => (
-                <div key={step.id} className="flex items-center">
-                  <div className="flex flex-col items-center">
-                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-200 ${
-                      step.status === 'completed' 
-                        ? 'bg-green-100 text-green-600 shadow-md border-2 border-green-200' :
-                      step.status === 'in_progress' 
-                        ? 'bg-blue-100 text-blue-600 shadow-md border-2 border-blue-200' :
-                        `bg-gray-50 text-gray-400 border-2 border-gray-200 hover:bg-${step.color}-50 hover:text-${step.color}-500`
-                    }`}>
-                      <step.icon className="w-6 h-6" />
-                    </div>
-                    <div className="text-center mt-3 max-w-24">
-                      <div className="font-semibold text-sm text-gray-900">{step.title}</div>
-                      <div className="text-xs text-gray-600 mt-1 leading-tight">{step.description}</div>
-                    </div>
-                  </div>
-                  {index < workflowSteps.length - 1 && (
-                    <div className="flex items-center mx-6">
-                      <ArrowRight className="w-5 h-5 text-gray-300" />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Analysis Results Display */}
       {importResult && (
         <Card className="border-l-4 border-l-green-500 bg-gradient-to-r from-green-50 to-emerald-50 shadow-md">
           <CardContent className="p-6">
-            <div className="flex items-start gap-6">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="h-6 w-6 text-green-600" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-green-900 mb-3 text-lg">AI Analysis Complete</h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-sm">
-                  <div className="bg-white/70 p-3 rounded-lg">
-                    <span className="text-green-700 font-medium">Risk Score:</span>
-                    <div className="text-xl font-bold text-green-900 mt-1">{importResult.scanResult?.riskScore || 0}/100</div>
-                  </div>
-                  <div className="bg-white/70 p-3 rounded-lg">
-                    <span className="text-green-700 font-medium">Confidence:</span>
-                    <div className="text-xl font-bold text-green-900 mt-1">{importResult.scanResult?.confidence || 0}%</div>
-                  </div>
-                  <div className="bg-white/70 p-3 rounded-lg">
-                    <span className="text-green-700 font-medium">MTF Suspected:</span>
-                    <div className="text-xl font-bold text-green-900 mt-1">
-                      {importResult.scanResult?.mtfSuspected ? 'Yes' : 'No'}
-                    </div>
-                  </div>
-                  <div className="bg-white/70 p-3 rounded-lg">
-                    <span className="text-green-700 font-medium">Processing Time:</span>
-                    <div className="text-xl font-bold text-green-900 mt-1">{importResult.processingTimeMs || 0}ms</div>
-                  </div>
+            <div className="flex items-start justify-between gap-6">
+              <div className="flex items-start gap-6 flex-1">
+                <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <CheckCircle className="h-7 w-7 text-green-600" />
                 </div>
-                {importResult.scanResult?.mtfSuspected && (
-                  <div className="mt-4 p-4 bg-red-50 border-l-4 border-l-red-400 rounded-lg">
-                    <div className="flex items-center gap-3 text-red-800">
-                      <AlertTriangle className="h-5 w-5" />
-                      <span className="font-semibold">Minimal Trauma Fracture detected - Immediate specialist evaluation recommended</span>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-green-900 mb-4 text-xl">AI Analysis Complete</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                    <div className="bg-white/70 p-4 rounded-lg border border-green-200">
+                      <span className="text-green-700 font-medium block mb-2">Risk Score</span>
+                      <div className="text-2xl font-bold text-green-900">{importResult.scanResult?.riskScore || 0}/100</div>
+                    </div>
+                    <div className="bg-white/70 p-4 rounded-lg border border-green-200">
+                      <span className="text-green-700 font-medium block mb-2">Confidence</span>
+                      <div className="text-2xl font-bold text-green-900">{importResult.scanResult?.confidence || 0}%</div>
+                    </div>
+                    <div className="bg-white/70 p-4 rounded-lg border border-green-200">
+                      <span className="text-green-700 font-medium block mb-2">MTF Suspected</span>
+                      <div className="text-2xl font-bold text-green-900">
+                        {importResult.scanResult?.mtfSuspected ? 'Yes' : 'No'}
+                      </div>
+                    </div>
+                    <div className="bg-white/70 p-4 rounded-lg border border-green-200">
+                      <span className="text-green-700 font-medium block mb-2">Processing Time</span>
+                      <div className="text-2xl font-bold text-green-900">{importResult.processingTimeMs || 0}ms</div>
                     </div>
                   </div>
-                )}
+                  {importResult.scanResult?.mtfSuspected && (
+                    <div className="mt-6 p-4 bg-red-50 border-l-4 border-l-red-400 rounded-lg">
+                      <div className="flex items-center gap-3 text-red-800">
+                        <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+                        <span className="font-semibold">Minimal Trauma Fracture detected - Immediate specialist evaluation recommended</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-              <Button 
-                onClick={() => setActiveTab('outreach')}
-                className="bg-green-600 hover:bg-green-700 px-6 py-3 shadow-md"
-              >
-                Generate Patient Outreach
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+              <div className="flex-shrink-0">
+                <Button 
+                  onClick={() => setActiveTab('outreach')}
+                  className="bg-green-600 hover:bg-green-700 px-6 py-3 shadow-md text-white font-medium"
+                >
+                  Generate Patient Outreach
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -241,28 +204,30 @@ export default function MTFDetectionPage() {
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4 h-12 bg-gray-100 rounded-xl p-1">
-          <TabsTrigger value="dashboard" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-            <Shield className="w-4 h-4" />
-            Detection Console
-          </TabsTrigger>
-          <TabsTrigger value="import" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-            <Upload className="w-4 h-4" />
-            Report Import
-          </TabsTrigger>
-          <TabsTrigger value="outreach" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm" disabled={!selectedCase && !importResult}>
-            <Users className="w-4 h-4" />
-            Patient Outreach
-          </TabsTrigger>
-          <TabsTrigger value="analytics" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-            <BarChart3 className="w-4 h-4" />
-            Analytics
-          </TabsTrigger>
-        </TabsList>
+        <div className="w-full">
+          <TabsList className="grid w-full grid-cols-4 h-12 bg-gray-100 rounded-xl p-1">
+            <TabsTrigger value="dashboard" className="flex items-center justify-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-blue-500">
+              <Shield className="w-4 h-4" />
+              Detection Console
+            </TabsTrigger>
+            <TabsTrigger value="import" className="flex items-center justify-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-blue-500">
+              <Upload className="w-4 h-4" />
+              Report Import
+            </TabsTrigger>
+            <TabsTrigger value="outreach" className="flex items-center justify-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-blue-500" disabled={!selectedCase && !importResult}>
+              <Users className="w-4 h-4" />
+              Patient Outreach
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center justify-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-blue-500">
+              <BarChart3 className="w-4 h-4" />
+              Analytics
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Detection Console */}
-        <TabsContent value="dashboard" className="mt-6">
-          <MTFDetectionDashboard onCaseSelect={handleCaseSelect} />
+        <TabsContent value="dashboard" className="mt-4">
+          <MTFDetectionConsole onCaseSelect={handleCaseSelect} />
         </TabsContent>
 
         {/* Report Import */}
@@ -282,7 +247,16 @@ export default function MTFDetectionPage() {
                 gender: 'female'
               }}
               scanResult={selectedCase?.scanResult || importResult?.scanResult}
-              riskAssessment={selectedCase?.riskAssessment || importResult?.riskAssessment}
+              riskAssessment={selectedCase?.riskAssessment || importResult?.riskAssessment || {
+                riskLevel: 'medium',
+                riskScore: 75,
+                priority: 'medium',
+                confidence: 85,
+                mtfSuspected: true,
+                specialistReferral: true,
+                followUpRequired: true,
+                estimatedCost: 450
+              }}
               onOutreachSent={(outreach) => {
                 console.log('Outreach sent:', outreach);
                 // Update patient status or show success message

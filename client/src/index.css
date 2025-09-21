@@ -325,4 +325,394 @@
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
   }
+
+  /* Custom animations for MTF Detection Dashboard */
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.7; }
+  }
+
+  @keyframes fade-in-right {
+    0% {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-in-up {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+    }
+  }
+
+  .animate-fade-in-right {
+    animation: fade-in-right 0.6s ease-out;
+  }
+
+  .animate-slide-in-up {
+    animation: slide-in-up 0.5s ease-out;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s infinite;
+  }
+
+  /* Report Import Hub animations */
+  @keyframes slide-in-up {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes sync-pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+    }
+  }
+
+  @keyframes report-import {
+    0% {
+      opacity: 0;
+      transform: translateX(-20px) scale(0.95);
+    }
+    50% {
+      opacity: 0.8;
+      transform: translateX(0) scale(1.02);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  .animate-slide-in-up {
+    animation: slide-in-up 0.5s ease-out;
+  }
+
+  .animate-sync-pulse {
+    animation: sync-pulse 2s infinite;
+  }
+
+  .animate-report-import {
+    animation: report-import 0.6s ease-out;
+  }
+
+  .sync-card {
+    transition: all 0.3s ease;
+  }
+
+  .sync-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Batch Processing Monitor animations */
+  @keyframes processing-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes progress-fill {
+    0% {
+      width: 0%;
+    }
+    100% {
+      width: var(--progress-width);
+    }
+  }
+
+  @keyframes metric-update {
+    0% {
+      transform: scale(1);
+      color: inherit;
+    }
+    50% {
+      transform: scale(1.1);
+      color: #10b981;
+    }
+    100% {
+      transform: scale(1);
+      color: inherit;
+    }
+  }
+
+  .animate-processing-pulse {
+    animation: processing-pulse 2s ease-in-out infinite;
+  }
+
+  .animate-progress-fill {
+    animation: progress-fill 2s ease-out;
+  }
+
+  .animate-metric-update {
+    animation: metric-update 0.6s ease-out;
+  }
+
+  .batch-card {
+    transition: all 0.3s ease;
+  }
+
+  .batch-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .processing-indicator {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .processing-indicator::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+
+  /* Workflow animations */
+  @keyframes workflow-flow {
+    0% { 
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% { 
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes step-highlight {
+    0%, 100% { 
+      background-color: white;
+      border-color: rgb(229, 231, 235);
+      transform: scale(1);
+    }
+    50% { 
+      background-color: rgb(239, 246, 255);
+      border-color: rgb(59, 130, 246);
+      transform: scale(1.02);
+    }
+  }
+
+  @keyframes data-flow {
+    0% { 
+      left: -10px;
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% { 
+      left: calc(100% + 10px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes progress-wave {
+    0% { 
+      background-position: -200% 50%;
+    }
+    100% { 
+      background-position: 200% 50%;
+    }
+  }
+
+  .animate-workflow-flow {
+    animation: workflow-flow 3s ease-in-out infinite;
+  }
+
+  .animate-step-highlight {
+    animation: step-highlight 2s ease-in-out infinite;
+  }
+
+  .animate-data-flow {
+    animation: data-flow 4s linear infinite;
+  }
+
+  .animate-progress-wave {
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), transparent);
+    background-size: 200% 100%;
+    animation: progress-wave 2s linear infinite;
+  }
+
+  .workflow-step-active {
+    animation: step-highlight 2s ease-in-out infinite;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .data-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgb(59, 130, 246);
+    border-radius: 50%;
+    animation: data-flow 4s linear infinite;
+  }
+
+  /* Auto Sync specific animations */
+  @keyframes sync-glow {
+    0%, 100% {
+      box-shadow: 0 0 5px rgba(34, 197, 94, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.6), 0 0 30px rgba(34, 197, 94, 0.4);
+    }
+  }
+
+  @keyframes status-pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes countdown-warning {
+    0%, 100% {
+      color: rgb(220, 38, 38);
+      transform: scale(1);
+    }
+    50% {
+      color: rgb(185, 28, 28);
+      transform: scale(1.1);
+    }
+  }
+
+  .animate-sync-glow {
+    animation: sync-glow 2s ease-in-out infinite;
+  }
+
+  .animate-status-pulse {
+    animation: status-pulse 1.5s ease-in-out infinite;
+  }
+
+  .animate-countdown-warning {
+    animation: countdown-warning 0.8s ease-in-out infinite;
+  }
+
+  /* Enhanced table animations */
+  @keyframes fade-in-right {
+    0% {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 5px rgba(139, 92, 246, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.6), 0 0 30px rgba(139, 92, 246, 0.4);
+    }
+  }
+
+  @keyframes row-highlight {
+    0% {
+      background-color: rgba(59, 130, 246, 0.1);
+      transform: scale(1.02);
+    }
+    100% {
+      background-color: transparent;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes priority-pulse {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .animate-fade-in-right {
+    animation: fade-in-right 0.3s ease-out;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .animate-row-highlight {
+    animation: row-highlight 0.5s ease-out;
+  }
+
+  .animate-priority-pulse {
+    animation: priority-pulse 1.5s ease-in-out infinite;
+  }
+
+  /* Critical row blinking */
+  @keyframes critical-blink {
+    0%, 100% {
+      border-left-color: rgb(239, 68, 68);
+      box-shadow: -2px 0 0 rgba(239, 68, 68, 0.3);
+    }
+    50% {
+      border-left-color: rgb(220, 38, 38);
+      box-shadow: -4px 0 8px rgba(239, 68, 68, 0.5);
+    }
+  }
+
+  .animate-critical-blink {
+    animation: critical-blink 1s ease-in-out infinite;
+  }
 }

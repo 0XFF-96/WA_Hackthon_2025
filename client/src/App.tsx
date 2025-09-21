@@ -70,6 +70,11 @@ function AppRoutes() {
           <MTFDetection />
         </DashboardLayout>
       </Route>
+      <Route path="/case-detail/:caseId">
+        <DashboardLayout>
+          <CaseDetail />
+        </DashboardLayout>
+      </Route>
       <Route path="/cases" component={() => (
         <DashboardLayout>
           <CaseManagement />
