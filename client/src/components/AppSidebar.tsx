@@ -90,7 +90,7 @@ export function AppSidebar() {
           </div>
           <div>
             <h1 className="font-bold text-sm" data-testid="text-app-title">HealthAI</h1>
-            <p className="text-xs text-muted-foreground">Micro-fracture Diagnosis</p>
+            <p className="text-xs text-muted-foreground">Minimal trauma fractures Diagnosis</p>
           </div>
         </div>
       </SidebarHeader>

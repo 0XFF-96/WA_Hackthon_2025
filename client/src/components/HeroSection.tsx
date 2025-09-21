@@ -71,7 +71,7 @@ export function HeroSection({
                   </Badge>
                   <h1 className="text-4xl lg:text-6xl font-bold text-white leading-tight" data-testid="text-hero-title">
                     Advanced 
-                    <span className="block text-green-300">Micro-Fracture</span>
+                    <span className="block text-green-300">Minimal Trauma Fractures</span>
                     Diagnosis
                   </h1>
                   <p className="text-lg text-white/90 leading-relaxed" data-testid="text-hero-description">
