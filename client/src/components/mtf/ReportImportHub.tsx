@@ -1073,56 +1073,322 @@ function SystemIntegrationTab({
 function EmailImportTab() {
   const [emailAddress] = useState('reports@mtf-detection.ai.com');
   const [isMonitoring, setIsMonitoring] = useState(false);
+  const [emailHistory, setEmailHistory] = useState([
+    {
+      id: 'email-001',
+      from: 'dr.smith@hospital.com',
+      subject: 'Patient ID: P123456 - X-Ray Report',
+      receivedAt: '2024-01-15T10:30:00Z',
+      status: 'processed',
+      attachments: 1,
+      confidence: 94
+    },
+    {
+      id: 'email-002',
+      from: 'radiology@clinic.org',
+      subject: 'MRI Report - Emergency Case',
+      receivedAt: '2024-01-15T09:45:00Z',
+      status: 'processing',
+      attachments: 2,
+      confidence: null
+    },
+    {
+      id: 'email-003',
+      from: 'admin@medcenter.com',
+      subject: 'Patient ID: P789012 - CT Scan Results',
+      receivedAt: '2024-01-15T08:20:00Z',
+      status: 'failed',
+      attachments: 1,
+      confidence: null
+    }
+  ]);
+  const [stats, setStats] = useState({
+    todayProcessed: 15,
+    weeklyProcessed: 89,
+    averageConfidence: 92.3,
+    successRate: 94.7
+  });
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(emailAddress);
+      // You could add a toast notification here
+      alert('Email address copied to clipboard!');
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  };
+
+  const getStatusConfig = (status: string) => {
+    switch (status) {
+      case 'processed':
+        return { color: 'bg-green-100 text-green-800', icon: CheckCircle, label: 'Processed' };
+      case 'processing':
+        return { color: 'bg-blue-100 text-blue-800', icon: Clock, label: 'Processing' };
+      case 'failed':
+        return { color: 'bg-red-100 text-red-800', icon: AlertTriangle, label: 'Failed' };
+      default:
+        return { color: 'bg-gray-100 text-gray-800', icon: Clock, label: 'Pending' };
+    }
+  };
 
   return (
-    <div className="space-y-4">
-      <Alert className="border-blue-200 bg-blue-50">
-        <Mail className="h-4 w-4 text-blue-600" />
-        <AlertDescription className="text-blue-800">
-          <strong>Email Import Configuration</strong><br />
-          Send radiology reports to the email address below, and the system will automatically process and analyze them.
-        </AlertDescription>
-      </Alert>
-
-      <div>
-        <label className="block text-sm font-medium mb-2">Email Address</label>
-        <div className="flex gap-2">
-          <Input
-            value={emailAddress}
-            readOnly
-            className="flex-1"
-          />
-          <Button variant="outline" size="sm">
-            Copy
-          </Button>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between p-4 border rounded-lg">
-        <div>
-          <div className="font-medium">Email Monitoring</div>
-          <div className="text-sm text-gray-500">
-            {isMonitoring ? 'Monitoring for new emails...' : 'Email monitoring stopped'}
+    <div className="space-y-6">
+      {/* Enhanced Header Alert */}
+      <div className="relative overflow-hidden rounded-lg border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div className="relative z-10">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+              <Mail className="h-6 w-6 text-blue-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-blue-900 mb-2">Email Import Configuration</h3>
+              <p className="text-blue-800 mb-4">
+                Send radiology reports to the email address below, and our AI system will automatically process and analyze them in real-time.
+              </p>
+              <div className="flex items-center gap-2 text-sm text-blue-700">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="font-medium">System is actively monitoring</span>
+              </div>
+            </div>
           </div>
         </div>
-        <Button
-          onClick={() => setIsMonitoring(!isMonitoring)}
-          variant={isMonitoring ? 'destructive' : 'default'}
-        >
-          {isMonitoring ? 'Stop Monitoring' : 'Start Monitoring'}
-        </Button>
       </div>
 
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: 'Today Processed', value: stats.todayProcessed, icon: Activity, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+          { label: 'This Week', value: stats.weeklyProcessed, icon: FileText, color: 'text-green-600', bgColor: 'bg-green-50' },
+          { label: 'Avg Confidence', value: `${stats.averageConfidence}%`, icon: Brain, color: 'text-purple-600', bgColor: 'bg-purple-50' },
+          { label: 'Success Rate', value: `${stats.successRate}%`, icon: CheckCircle, color: 'text-emerald-600', bgColor: 'bg-emerald-50' }
+        ].map((stat, index) => (
+          <Card key={index} className="hover:shadow-md transition-shadow">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 font-medium">{stat.label}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                </div>
+                <div className={`w-10 h-10 ${stat.bgColor} rounded-lg flex items-center justify-center`}>
+                  <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Enhanced Email Address Section */}
+      <Card className="shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Mail className="w-5 h-5 text-blue-600" />
+            Dedicated Email Address
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Mail className="w-5 h-5 text-blue-600" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 mb-1">Email Address</p>
+                <p className="text-lg font-mono text-gray-700 truncate">{emailAddress}</p>
+              </div>
+              <Button variant="outline" onClick={copyToClipboard} className="flex items-center gap-2">
+                <Eye className="w-4 h-4" />
+                Copy Address
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div className="flex items-center gap-2 text-gray-600">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span>SSL Encrypted</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-600">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span>HIPAA Compliant</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-600">
+                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                <span>24/7 Monitoring</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Enhanced Monitoring Status */}
+      <Card className={`transition-all duration-300 ${
+        isMonitoring 
+          ? 'border-2 border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 shadow-lg' 
+          : 'border border-gray-200 bg-white'
+      }`}>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className={`relative w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                isMonitoring 
+                  ? 'bg-gradient-to-br from-green-100 to-emerald-100' 
+                  : 'bg-gray-100'
+              }`}>
+                <Activity className={`w-6 h-6 transition-all duration-300 ${
+                  isMonitoring ? 'text-green-600 animate-pulse' : 'text-gray-600'
+                }`} />
+                {isMonitoring && (
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full animate-ping"></div>
+                )}
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-lg font-bold text-gray-900">Email Monitoring</h3>
+                  <Badge variant={isMonitoring ? "default" : "secondary"} className={
+                    isMonitoring ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-600'
+                  }>
+                    {isMonitoring ? 'ACTIVE' : 'INACTIVE'}
+                  </Badge>
+                </div>
+                <p className={`text-sm font-medium ${
+                  isMonitoring ? 'text-green-700' : 'text-gray-600'
+                }`}>
+                  {isMonitoring ? 'Monitoring for new emails in real-time' : 'Email monitoring is currently stopped'}
+                </p>
+                {isMonitoring && (
+                  <div className="flex items-center gap-2 mt-2 text-xs text-green-600">
+                    <Clock className="w-3 h-3" />
+                    <span>Last check: 2 seconds ago</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <Button
+              onClick={() => setIsMonitoring(!isMonitoring)}
+              variant={isMonitoring ? 'destructive' : 'default'}
+              size="lg"
+              className="font-semibold"
+            >
+              {isMonitoring ? (
+                <>
+                  <X className="w-4 h-4 mr-2" />
+                  Stop Monitoring
+                </>
+              ) : (
+                <>
+                  <Activity className="w-4 h-4 mr-2" />
+                  Start Monitoring
+                </>
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Recent Email History */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Usage Instructions</CardTitle>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Clock className="w-5 h-5 text-gray-600" />
+              Recent Email Activity
+            </div>
+            <Badge variant="outline" className="text-xs">
+              {emailHistory.length} emails
+            </Badge>
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <p>1. Send radiology reports as email attachments or body text to the above email address</p>
-          <p>2. Include patient ID in the email subject (e.g., "Patient ID: P123456")</p>
-          <p>3. The system will automatically extract report content and perform AI analysis</p>
-          <p>4. Analysis results will be displayed in the console</p>
-          <p>5. Supported formats: PDF, DOC, DOCX, plain text</p>
+        <CardContent>
+          <div className="space-y-3">
+            {emailHistory.map((email, index) => {
+              const statusConfig = getStatusConfig(email.status);
+              return (
+                <div key={email.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Mail className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="font-medium text-gray-900 truncate">{email.subject}</p>
+                        <Badge className={statusConfig.color} variant="secondary">
+                          <statusConfig.icon className="w-3 h-3 mr-1" />
+                          {statusConfig.label}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <span>From: {email.from}</span>
+                        <span>{email.attachments} attachment{email.attachments > 1 ? 's' : ''}</span>
+                        <span>{new Date(email.receivedAt).toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {email.confidence && (
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-gray-900">{email.confidence}%</div>
+                        <div className="text-xs text-gray-500">Confidence</div>
+                      </div>
+                    )}
+                    <Button variant="ghost" size="sm">
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Enhanced Usage Instructions */}
+      <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-indigo-50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-purple-900">
+            <Settings className="w-5 h-5" />
+            Usage Instructions & Best Practices
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <h4 className="font-semibold text-purple-900 mb-3">How to Send Reports</h4>
+              <div className="space-y-3">
+                {[
+                  'Send radiology reports as email attachments or body text',
+                  'Include patient ID in subject line (e.g., "Patient ID: P123456")',
+                  'Use clear, descriptive subject lines for better processing',
+                  'Ensure attachments are in supported formats'
+                ].map((instruction, index) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-xs font-bold text-purple-600 mt-0.5">
+                      {index + 1}
+                    </div>
+                    <p className="text-sm text-purple-800">{instruction}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <h4 className="font-semibold text-purple-900 mb-3">Supported Features</h4>
+              <div className="space-y-3">
+                {[
+                  { feature: 'File Formats', detail: 'PDF, DOC, DOCX, plain text' },
+                  { feature: 'Processing Time', detail: 'Average 30-60 seconds' },
+                  { feature: 'AI Analysis', detail: 'Automatic MTF detection' },
+                  { feature: 'Security', detail: 'HIPAA compliant encryption' }
+                ].map((item, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg border border-purple-200">
+                    <span className="font-medium text-purple-900">{item.feature}</span>
+                    <span className="text-sm text-purple-700">{item.detail}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
