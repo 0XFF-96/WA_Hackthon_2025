@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
@@ -15,9 +15,12 @@ import {
   TrendingUp,
   AlertTriangle,
   Clock,
-  MessageSquare
+  MessageSquare,
+  Mic,
+  Bot
 } from 'lucide-react';
 import { DailyInputForm, ActivityType } from '@/types/monitoring';
+import { VoiceHealthAssistant } from './VoiceHealthAssistant';
 
 interface DailyInputProps {
   onSave: (data: DailyInputForm) => void;
@@ -43,6 +46,8 @@ export function DailyInput({ onSave, onCancel, initialData }: DailyInputProps) {
     activities: initialData?.activities || []
   });
 
+  const [showVoiceAssistant, setShowVoiceAssistant] = useState(false);
+
   const [newActivity, setNewActivity] = useState<{
     type: ActivityType;
     duration: number;
@@ -55,6 +60,20 @@ export function DailyInput({ onSave, onCancel, initialData }: DailyInputProps) {
 
   const handleSave = () => {
     onSave(formData);
+  };
+
+  const handleVoiceDataExtracted = (voiceData: Partial<DailyInputForm>) => {
+    setFormData(prev => ({
+      ...prev,
+      ...voiceData,
+      // Merge activities properly
+      activities: voiceData.activities ? 
+        [...prev.activities, ...voiceData.activities.map(activity => ({
+          ...activity,
+          id: `voice-${Date.now()}-${Math.random()}`
+        }))] : 
+        prev.activities
+    }));
   };
 
   const addActivity = () => {
@@ -96,6 +115,20 @@ export function DailyInput({ onSave, onCancel, initialData }: DailyInputProps) {
 
   const totalActivityMinutes = formData.activities.reduce((sum, activity) => sum + activity.duration, 0);
 
+  if (showVoiceAssistant) {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div className="w-full max-w-4xl h-[90vh] bg-white rounded-lg overflow-hidden">
+          <VoiceHealthAssistant
+            onHealthDataExtracted={handleVoiceDataExtracted}
+            onClose={() => setShowVoiceAssistant(false)}
+            initialData={formData}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -110,6 +143,30 @@ export function DailyInput({ onSave, onCancel, initialData }: DailyInputProps) {
           })}
         </p>
       </div>
+
+      {/* Voice Assistant Toggle */}
+      <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-indigo-50">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                <Bot className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-purple-900">AI Voice Assistant</h3>
+                <p className="text-sm text-purple-700">Tell me about your health instead of filling forms</p>
+              </div>
+            </div>
+            <Button 
+              onClick={() => setShowVoiceAssistant(true)}
+              className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white shadow-lg"
+            >
+              <Mic className="w-4 h-4 mr-2" />
+              Use Voice Assistant
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Pain Score */}
       <Card>

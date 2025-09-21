@@ -13,10 +13,13 @@ import {
   Bell,
   Activity,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  Mic,
+  Bot
 } from 'lucide-react';
 import { DailyInput } from './DailyInput';
 import { MonitoringVisualization } from './MonitoringVisualization';
+import { VoiceHealthAssistant } from './VoiceHealthAssistant';
 import { 
   DailyMonitoringData, 
   DailyInputForm, 
@@ -33,6 +36,7 @@ interface MonitoringDashboardProps {
 export function MonitoringDashboard({ onClose }: MonitoringDashboardProps) {
   const [activeTab, setActiveTab] = useState('overview');
   const [showDailyInput, setShowDailyInput] = useState(false);
+  const [showVoiceAssistant, setShowVoiceAssistant] = useState(false);
   const [monitoringData, setMonitoringData] = useState<DailyMonitoringData[]>([]);
   const [settings, setSettings] = useState<MonitoringSettings>({
     enabled: true,
@@ -102,6 +106,21 @@ export function MonitoringDashboard({ onClose }: MonitoringDashboardProps) {
 
     setMonitoringData(prev => [newEntry, ...prev]);
     setShowDailyInput(false);
+  };
+
+  const handleVoiceDataExtracted = (data: Partial<DailyInputForm>) => {
+    // Auto-save complete voice data as daily input
+    if (data.painScore !== undefined && (data.gaitStable !== undefined || data.activities?.length)) {
+      const completeData: DailyInputForm = {
+        painScore: data.painScore,
+        painNote: data.painNote || '',
+        gaitStable: data.gaitStable ?? true,
+        limpingOrImbalance: data.limpingOrImbalance ?? false,
+        activities: data.activities || []
+      };
+      handleSaveDailyInput(completeData);
+      setShowVoiceAssistant(false);
+    }
   };
 
   const generateTrends = (): MonitoringTrend => {
@@ -224,6 +243,15 @@ export function MonitoringDashboard({ onClose }: MonitoringDashboardProps) {
             <Plus className="w-4 h-4 mr-2" />
             Log Today
           </Button>
+          <Button 
+            onClick={() => setShowVoiceAssistant(true)} 
+            size="sm"
+            variant="outline"
+            className="border-purple-200 text-purple-600 hover:bg-purple-50"
+          >
+            <Mic className="w-4 h-4 mr-2" />
+            Voice Log
+          </Button>
         </div>
       </div>
 
@@ -242,6 +270,19 @@ export function MonitoringDashboard({ onClose }: MonitoringDashboardProps) {
               />
             </CardContent>
           </Card>
+        </div>
+      )}
+
+      {/* Voice Assistant Modal */}
+      {showVoiceAssistant && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="w-full max-w-4xl h-[90vh] bg-white rounded-lg overflow-hidden">
+            <VoiceHealthAssistant
+              onHealthDataExtracted={handleVoiceDataExtracted}
+              onClose={() => setShowVoiceAssistant(false)}
+              initialPrompt="Hello! I'm here to help you log your daily health status. Please tell me about your pain level, activities, and how you're feeling today."
+            />
+          </div>
         </div>
       )}
 
