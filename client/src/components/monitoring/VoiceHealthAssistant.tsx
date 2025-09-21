@@ -62,6 +62,8 @@ export function VoiceHealthAssistant({
   const [apiKey, setApiKey] = useState('');
   const [isMuted, setIsMuted] = useState(false);
   const [isConfigured, setIsConfigured] = useState(false);
+  const [isTestingApi, setIsTestingApi] = useState(false);
+  const [showDemoConversation, setShowDemoConversation] = useState(true);
 
   // Refs
   const recognitionRef = useRef<any>(null);
@@ -148,16 +150,82 @@ export function VoiceHealthAssistant({
     }
   }, [messages]);
 
-  // Initial greeting
+  // Initial greeting and demo conversation
   useEffect(() => {
-    if (isConfigured) {
+    if (isConfigured && showDemoConversation) {
+      // Add demo conversation for testing
+      const demoConversation = [
+        {
+          type: 'assistant' as const,
+          content: "Hello! I'm your health assistant. Please tell me about your health today. You can mention your pain level, activities, or how you're feeling."
+        },
+        {
+          type: 'user' as const,
+          content: "Hi there! My pain level is about 4 out of 10 today, mostly in my lower back."
+        },
+        {
+          type: 'assistant' as const,
+          content: "I've recorded your pain level as 4 out of 10 with lower back pain. That sounds manageable but I understand it can still be uncomfortable. Have you been able to do any activities today?"
+        },
+        {
+          type: 'user' as const,
+          content: "Yes, I walked for about 30 minutes this morning and did some light stretching for 15 minutes."
+        },
+        {
+          type: 'assistant' as const,
+          content: "Excellent! I've logged your walking for 30 minutes and stretching for 15 minutes. That's great that you're staying active despite the discomfort. How has your walking been? Any issues with balance or stability?"
+        },
+        {
+          type: 'user' as const,
+          content: "My walking feels pretty stable today. No limping or balance issues."
+        },
+        {
+          type: 'assistant' as const,
+          content: "Perfect! I've recorded that your gait is stable with no balance issues. It sounds like you're managing well today. Is there anything else about your health you'd like me to record?"
+        },
+        {
+          type: 'user' as const,
+          content: "I think that covers everything for today. Thank you!"
+        },
+        {
+          type: 'assistant' as const,
+          content: "You're welcome! I've successfully logged all your health data for today. Keep up the good work with staying active, and please don't hesitate to reach out if your pain increases or if you have any concerns."
+        }
+      ];
+
+      // Add demo messages with some delay for realism
+      setTimeout(() => {
+        demoConversation.forEach((msg, index) => {
+          setTimeout(() => {
+            addMessage(msg.type, msg.content);
+            
+            // Extract data from user messages for demo
+            if (msg.type === 'user') {
+              const extractedData = extractHealthDataFromText(msg.content);
+              if (Object.keys(extractedData).length > 0) {
+                setExtractedData(prev => ({ ...prev, ...extractedData }));
+                onHealthDataExtracted({ ...extractedData });
+              }
+            }
+          }, index * 800); // Stagger messages
+        });
+
+        // Speak the greeting after demo is loaded
+        if (!isMuted) {
+          setTimeout(() => {
+            speakText("Demo conversation loaded. You can now start speaking to log your real health data, or clear the conversation to start fresh.");
+          }, demoConversation.length * 800 + 1000);
+        }
+      }, 500);
+    } else if (isConfigured && !showDemoConversation) {
+      // Just add the greeting without demo
       const greeting = "Hello! I'm your health assistant. Please tell me about your health today. You can mention your pain level, activities, or how you're feeling.";
       addMessage('assistant', greeting);
       if (!isMuted) {
         setTimeout(() => speakText(greeting), 500);
       }
     }
-  }, [isConfigured, isMuted]);
+  }, [isConfigured, isMuted, showDemoConversation]);
 
   const startListening = () => {
     if (!isConfigured) {
@@ -217,10 +285,223 @@ export function VoiceHealthAssistant({
     }
   };
 
+  const validateApiKey = (key: string): boolean => {
+    // OpenAI API keys should start with 'sk-' and be at least 20 characters
+    return key.startsWith('sk-') && key.length >= 20;
+  };
+
+  const testApiConnection = async (): Promise<boolean> => {
+    if (!validateApiKey(apiKey)) {
+      throw new Error('Invalid API key format');
+    }
+
+    setIsTestingApi(true);
+    
+    try {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey.trim()}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'gpt-3.5-turbo', // Use cheaper model for testing
+          messages: [{ role: 'user', content: 'Test connection' }],
+          max_tokens: 5
+        })
+      });
+
+      if (response.ok) {
+        return true;
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        switch (response.status) {
+          case 401:
+            throw new Error('Invalid API key. Please check your OpenAI API key.');
+          case 403:
+            throw new Error('API access forbidden. Your account may have issues or insufficient credits.');
+          case 429:
+            throw new Error('Rate limit exceeded. Please try again later.');
+          default:
+            throw new Error(`API test failed: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+        }
+      }
+    } catch (error) {
+      console.error('API test error:', error);
+      throw error;
+    } finally {
+      setIsTestingApi(false);
+    }
+  };
+
+  const handleConfigureApi = async () => {
+    try {
+      await testApiConnection();
+      setIsConfigured(true);
+      addMessage('assistant', 'Great! Your API key is working. I\'m ready to help you log your health data. Please tell me about your health today.');
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'API test failed';
+      setStatus(prev => ({ 
+        ...prev, 
+        hasError: true, 
+        errorMessage: errorMsg 
+      }));
+    }
+  };
+
+  const extractHealthDataFromText = (text: string): Partial<DailyInputForm> => {
+    const lowerText = text.toLowerCase();
+    const healthData: Partial<DailyInputForm> = {};
+
+    // Extract pain score (0-10)
+    const painPatterns = [
+      /pain.*?(\d+)/,
+      /(\d+).*?pain/,
+      /hurt.*?(\d+)/,
+      /(\d+).*?hurt/,
+      /score.*?(\d+)/,
+      /level.*?(\d+)/,
+      /(\d+).*?out of 10/,
+      /(\d+)\/10/
+    ];
+
+    for (const pattern of painPatterns) {
+      const match = lowerText.match(pattern);
+      if (match) {
+        const score = parseInt(match[1]);
+        if (score >= 0 && score <= 10) {
+          healthData.painScore = score;
+          break;
+        }
+      }
+    }
+
+    // Extract pain location/note
+    const bodyParts = ['back', 'knee', 'shoulder', 'hip', 'neck', 'ankle', 'wrist', 'head', 'chest', 'stomach'];
+    const painDescriptions = [];
+    
+    for (const part of bodyParts) {
+      if (lowerText.includes(part)) {
+        painDescriptions.push(part);
+      }
+    }
+    
+    if (painDescriptions.length > 0) {
+      healthData.painNote = `${painDescriptions.join(', ')} pain`;
+    }
+
+    // Extract gait stability
+    const stableKeywords = ['stable', 'steady', 'good balance', 'walking well', 'no problems walking'];
+    const unstableKeywords = ['unstable', 'unsteady', 'wobbl', 'imbalance', 'limp', 'difficult walking', 'trouble walking'];
+
+    const hasStableKeywords = stableKeywords.some(keyword => lowerText.includes(keyword));
+    const hasUnstableKeywords = unstableKeywords.some(keyword => lowerText.includes(keyword));
+
+    if (hasStableKeywords && !hasUnstableKeywords) {
+      healthData.gaitStable = true;
+      healthData.limpingOrImbalance = false;
+    } else if (hasUnstableKeywords) {
+      healthData.gaitStable = false;
+      healthData.limpingOrImbalance = true;
+    }
+
+    // Extract activities
+    const activities = [];
+    
+    // Walking
+    const walkMatches = lowerText.match(/walk.*?(\d+).*?minute|(\d+).*?minute.*?walk/);
+    if (walkMatches) {
+      const duration = parseInt(walkMatches[1] || walkMatches[2]);
+      if (duration > 0 && duration <= 480) {
+        activities.push({
+          type: 'walking' as const,
+          duration,
+          note: 'Voice logged walking'
+        });
+      }
+    }
+
+    // Exercise
+    const exerciseMatches = lowerText.match(/exercise.*?(\d+).*?minute|(\d+).*?minute.*?exercise|workout.*?(\d+).*?minute/);
+    if (exerciseMatches) {
+      const duration = parseInt(exerciseMatches[1] || exerciseMatches[2] || exerciseMatches[3]);
+      if (duration > 0 && duration <= 480) {
+        activities.push({
+          type: 'exercise' as const,
+          duration,
+          note: 'Voice logged exercise'
+        });
+      }
+    }
+
+    // Rest
+    const restMatches = lowerText.match(/rest.*?(\d+).*?minute|(\d+).*?minute.*?rest|sleep.*?(\d+).*?hour/);
+    if (restMatches) {
+      let duration = parseInt(restMatches[1] || restMatches[2] || restMatches[3]);
+      if (restMatches[3]) duration *= 60; // Convert hours to minutes
+      if (duration > 0 && duration <= 720) {
+        activities.push({
+          type: 'rest' as const,
+          duration,
+          note: 'Voice logged rest'
+        });
+      }
+    }
+
+    if (activities.length > 0) {
+      healthData.activities = activities;
+    }
+
+    return healthData;
+  };
+
+  const generateSimpleResponse = (extractedData: Partial<DailyInputForm>): string => {
+    const responses = [];
+    
+    if (extractedData.painScore !== undefined) {
+      responses.push(`I've recorded your pain level as ${extractedData.painScore} out of 10.`);
+    }
+    
+    if (extractedData.painNote) {
+      responses.push(`I noted your ${extractedData.painNote}.`);
+    }
+    
+    if (extractedData.gaitStable !== undefined) {
+      responses.push(extractedData.gaitStable 
+        ? "I've recorded that your walking is stable." 
+        : "I've noted that you're experiencing some walking difficulties."
+      );
+    }
+    
+    if (extractedData.activities && extractedData.activities.length > 0) {
+      const activitySummary = extractedData.activities.map(a => 
+        `${a.duration} minutes of ${a.type}`
+      ).join(', ');
+      responses.push(`I've logged your activities: ${activitySummary}.`);
+    }
+    
+    if (responses.length === 0) {
+      return "I'm listening. Please tell me about your pain level, activities, or how you're feeling today.";
+    }
+    
+    responses.push("Is there anything else you'd like to record?");
+    return responses.join(' ');
+  };
+
   const callHealthAI = async (message: string): Promise<{
     message: string;
     healthData?: Partial<DailyInputForm>;
   }> => {
+    // If no valid API key, use simple rule-based extraction
+    if (!apiKey || !validateApiKey(apiKey)) {
+      const extractedData = extractHealthDataFromText(message);
+      const response = generateSimpleResponse(extractedData);
+      return {
+        message: response,
+        healthData: extractedData
+      };
+    }
+
     const systemPrompt = `You are a healthcare assistant helping patients log their daily health status for monitoring recovery progress. 
 
     Extract relevant health information from user input and provide supportive, empathetic responses.
@@ -256,42 +537,66 @@ export function VoiceHealthAssistant({
       { role: 'user', content: message }
     ];
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'gpt-4',
-        messages: messages,
-        max_tokens: 400,
-        temperature: 0.7
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`API request failed: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const assistantMessage = data.choices[0].message.content;
-    
-    // Update conversation history
-    conversationHistory.current.push(
-      { role: 'user', content: message },
-      { role: 'assistant', content: assistantMessage }
-    );
-    
     try {
-      const parsed = JSON.parse(assistantMessage);
-      return {
-        message: parsed.message || assistantMessage,
-        healthData: parsed.healthData || {}
-      };
-    } catch {
-      // Fallback if response is not JSON
-      return { message: assistantMessage };
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey.trim()}`, // Trim whitespace
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'gpt-4',
+          messages: messages,
+          max_tokens: 400,
+          temperature: 0.7
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        
+        // Handle different error statuses
+        switch (response.status) {
+          case 401:
+            throw new Error('Invalid API key. Please check your OpenAI API key and make sure it\'s valid and active.');
+          case 403:
+            throw new Error('API access forbidden. Your API key may not have access to GPT-4 or your account may have issues.');
+          case 429:
+            throw new Error('Rate limit exceeded. Please wait a moment and try again.');
+          case 500:
+            throw new Error('OpenAI server error. Please try again in a moment.');
+          default:
+            throw new Error(`API request failed: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+        }
+      }
+
+      const data = await response.json();
+      
+      if (!data.choices || data.choices.length === 0) {
+        throw new Error('No response received from OpenAI API');
+      }
+
+      const assistantMessage = data.choices[0].message.content;
+      
+      // Update conversation history
+      conversationHistory.current.push(
+        { role: 'user', content: message },
+        { role: 'assistant', content: assistantMessage }
+      );
+      
+      try {
+        const parsed = JSON.parse(assistantMessage);
+        return {
+          message: parsed.message || assistantMessage,
+          healthData: parsed.healthData || {}
+        };
+      } catch {
+        // Fallback if response is not JSON
+        return { message: assistantMessage };
+      }
+    } catch (error) {
+      console.error('OpenAI API Error:', error);
+      throw error;
     }
   };
 
@@ -333,6 +638,74 @@ export function VoiceHealthAssistant({
     setCurrentTranscript('');
     synthesisRef.current.cancel();
     onHealthDataExtracted(initialData);
+  };
+
+  const loadDemoConversation = () => {
+    clearConversation();
+    
+    const demoConversation = [
+      {
+        type: 'assistant' as const,
+        content: "Hello! I'm your health assistant. Please tell me about your health today. You can mention your pain level, activities, or how you're feeling."
+      },
+      {
+        type: 'user' as const,
+        content: "Hi there! My pain level is about 4 out of 10 today, mostly in my lower back."
+      },
+      {
+        type: 'assistant' as const,
+        content: "I've recorded your pain level as 4 out of 10 with lower back pain. That sounds manageable but I understand it can still be uncomfortable. Have you been able to do any activities today?"
+      },
+      {
+        type: 'user' as const,
+        content: "Yes, I walked for about 30 minutes this morning and did some light stretching for 15 minutes."
+      },
+      {
+        type: 'assistant' as const,
+        content: "Excellent! I've logged your walking for 30 minutes and stretching for 15 minutes. That's great that you're staying active despite the discomfort. How has your walking been? Any issues with balance or stability?"
+      },
+      {
+        type: 'user' as const,
+        content: "My walking feels pretty stable today. No limping or balance issues."
+      },
+      {
+        type: 'assistant' as const,
+        content: "Perfect! I've recorded that your gait is stable with no balance issues. It sounds like you're managing well today. Is there anything else about your health you'd like me to record?"
+      },
+      {
+        type: 'user' as const,
+        content: "I think that covers everything for today. Thank you!"
+      },
+      {
+        type: 'assistant' as const,
+        content: "You're welcome! I've successfully logged all your health data for today. Keep up the good work with staying active, and please don't hesitate to reach out if your pain increases or if you have any concerns."
+      }
+    ];
+
+    // Add demo messages with some delay for realism
+    setTimeout(() => {
+      demoConversation.forEach((msg, index) => {
+        setTimeout(() => {
+          addMessage(msg.type, msg.content);
+          
+          // Extract data from user messages for demo
+          if (msg.type === 'user') {
+            const extractedData = extractHealthDataFromText(msg.content);
+            if (Object.keys(extractedData).length > 0) {
+              setExtractedData(prev => ({ ...prev, ...extractedData }));
+              onHealthDataExtracted({ ...extractedData });
+            }
+          }
+        }, index * 600); // Slightly faster for manual loading
+      });
+
+      // Speak completion message
+      if (!isMuted) {
+        setTimeout(() => {
+          speakText("Demo conversation loaded successfully! You can now see how health data extraction works.");
+        }, demoConversation.length * 600 + 500);
+      }
+    }, 100);
   };
 
   const getStatusColor = () => {
@@ -397,23 +770,82 @@ export function VoiceHealthAssistant({
             <div className="flex items-start gap-3">
               <Settings className="w-5 h-5 text-amber-600 mt-0.5" />
               <div className="flex-1">
-                <h4 className="font-medium text-amber-900 mb-2">Configure OpenAI API</h4>
-                <div className="flex gap-2">
-                  <Input
-                    type="password"
-                    placeholder="Enter your OpenAI API key"
-                    value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Button 
-                    onClick={() => setIsConfigured(true)}
-                    disabled={!apiKey.trim()}
-                    size="sm"
-                  >
-                    <CheckCircle className="w-4 h-4 mr-1" />
-                    Configure
-                  </Button>
+                <h4 className="font-medium text-amber-900 mb-2">Configure OpenAI API Key</h4>
+                <p className="text-sm text-amber-800 mb-3">
+                  You need a valid OpenAI API key to use the voice assistant. Your API key should start with "sk-" and be at least 20 characters long.
+                </p>
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <Input
+                      type="password"
+                      placeholder="sk-..."
+                      value={apiKey}
+                      onChange={(e) => setApiKey(e.target.value)}
+                      className={`flex-1 ${
+                        apiKey && !validateApiKey(apiKey) 
+                          ? 'border-red-300 focus:border-red-500' 
+                          : ''
+                      }`}
+                    />
+                    <Button 
+                      onClick={handleConfigureApi}
+                      disabled={!apiKey.trim() || !validateApiKey(apiKey) || isTestingApi}
+                      size="sm"
+                    >
+                      {isTestingApi ? (
+                        <>
+                          <div className="animate-spin w-4 h-4 mr-1 border-2 border-white border-t-transparent rounded-full" />
+                          Testing...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          Test & Configure
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  {apiKey && !validateApiKey(apiKey) && (
+                    <p className="text-xs text-red-600">
+                      ⚠️ Invalid API key format. OpenAI keys should start with "sk-" and be at least 20 characters.
+                    </p>
+                  )}
+                  <div className="text-xs text-amber-700">
+                    <p>💡 <strong>How to get an API key:</strong></p>
+                    <ol className="list-decimal list-inside mt-1 space-y-1">
+                      <li>Visit <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="underline">platform.openai.com/api-keys</a></li>
+                      <li>Sign in to your OpenAI account</li>
+                      <li>Click "Create new secret key"</li>
+                      <li>Copy the key and paste it here</li>
+                    </ol>
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-amber-300">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="showDemo"
+                          checked={showDemoConversation}
+                          onChange={(e) => setShowDemoConversation(e.target.checked)}
+                          className="w-4 h-4 text-amber-600 border-amber-300 rounded focus:ring-amber-500"
+                        />
+                        <label htmlFor="showDemo" className="text-xs text-amber-700">
+                          Load demo conversation for testing
+                        </label>
+                      </div>
+                      <Button 
+                        onClick={() => setIsConfigured(true)}
+                        variant="outline"
+                        size="sm"
+                        className="w-full text-amber-700 border-amber-300 hover:bg-amber-100"
+                      >
+                        Skip AI - Use Basic Voice Recognition
+                      </Button>
+                      <p className="text-xs text-amber-600 text-center">
+                        Continue with simple voice recognition (limited features)
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -589,6 +1021,16 @@ export function VoiceHealthAssistant({
               <MessageCircle className="w-5 h-5 mr-2" />
               Clear
             </Button>
+
+            <Button
+              onClick={loadDemoConversation}
+              variant="outline"
+              size="lg"
+              className="px-6 py-3 border-blue-300 text-blue-600 hover:bg-blue-50"
+            >
+              <Brain className="w-5 h-5 mr-2" />
+              Load Demo
+            </Button>
           </div>
 
           {/* Quick Examples */}
@@ -606,6 +1048,37 @@ export function VoiceHealthAssistant({
             <Badge variant="outline" className="text-xs cursor-pointer hover:bg-gray-50">
               "My walking is unsteady"
             </Badge>
+            <Badge variant="outline" className="text-xs cursor-pointer hover:bg-gray-50">
+              "My knee hurts 6 out of 10"
+            </Badge>
+            <Badge variant="outline" className="text-xs cursor-pointer hover:bg-gray-50">
+              "I exercised for 45 minutes"
+            </Badge>
+          </div>
+          
+          {/* Demo Scenarios */}
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-xs text-blue-800 font-medium mb-2">💡 Demo Scenarios Available:</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+              <div className="text-blue-700">
+                <strong>Basic Health Log:</strong><br/>
+                Pain: 4/10 (lower back)<br/>
+                Activities: Walking, stretching<br/>
+                Gait: Stable
+              </div>
+              <div className="text-blue-700">
+                <strong>Recovery Progress:</strong><br/>
+                Pain improvement noted<br/>
+                Increased activity<br/>
+                Better mobility
+              </div>
+              <div className="text-blue-700">
+                <strong>Pain Management:</strong><br/>
+                Multiple pain locations<br/>
+                Activity limitations<br/>
+                Balance concerns
+              </div>
+            </div>
           </div>
         </div>
       </div>
